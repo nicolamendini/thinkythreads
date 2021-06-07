@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/thinkythreads/static/css/main.6dea0f05.chunk.css",
+    "main.js": "/thinkythreads/static/js/main.df90824f.chunk.js",
+    "main.js.map": "/thinkythreads/static/js/main.df90824f.chunk.js.map",
+    "runtime-main.js": "/thinkythreads/static/js/runtime-main.2aecb65e.js",
+    "runtime-main.js.map": "/thinkythreads/static/js/runtime-main.2aecb65e.js.map",
+    "static/js/2.316f7a7c.chunk.js": "/thinkythreads/static/js/2.316f7a7c.chunk.js",
+    "static/js/2.316f7a7c.chunk.js.map": "/thinkythreads/static/js/2.316f7a7c.chunk.js.map",
+    "static/js/3.37fa1234.chunk.js": "/thinkythreads/static/js/3.37fa1234.chunk.js",
+    "static/js/3.37fa1234.chunk.js.map": "/thinkythreads/static/js/3.37fa1234.chunk.js.map",
+    "index.html": "/thinkythreads/index.html",
+    "static/css/main.6dea0f05.chunk.css.map": "/thinkythreads/static/css/main.6dea0f05.chunk.css.map",
+    "static/js/2.316f7a7c.chunk.js.LICENSE.txt": "/thinkythreads/static/js/2.316f7a7c.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.2aecb65e.js",
+    "static/js/2.316f7a7c.chunk.js",
+    "static/css/main.6dea0f05.chunk.css",
+    "static/js/main.df90824f.chunk.js"
+  ]
+}
