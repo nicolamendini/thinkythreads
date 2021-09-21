@@ -1,0 +1,64 @@
+/*
+Author: Nicola Mendini
+Date: 13/09/2021
+ThinkyThreads Project
+LinksArea component
+Defines the lowest row of notes of the dashboard
+which shows the links starting from/coming into the selectedNote
+Based of a rootsOrBranches flag
+*/
+
+import React from 'react';
+import NotesList from './NotesList';
+import { getCaption } from '../helpers/DashboardUtils';
+
+// LinksArea component,
+// takes the dashboard to get the notes from,
+// The darkmode flag
+// some draggableInfo to know where the drags start from
+const LinksArea = ({ 
+    dashboard, 
+    darkMode, 
+    mergeMode, 
+    threadOrCollection, 
+    openEditor, 
+    rootsOrBranches,
+    draggableInfo
+}) => { 
+
+    const isDropDisabled = 
+        draggableInfo.sourceArea!=='search-area' ||
+        draggableInfo.note.id===dashboard.selectedNoteId
+
+    return (
+        <div>
+
+            {dashboard.notes.get(dashboard.selectedNoteId) && threadOrCollection && 
+            <div>
+
+                <label className='stripe-label'>
+                    {!rootsOrBranches ? ' BRANCH LINKS - ' : ' ROOT LINKS - '}
+                    {getCaption(dashboard.notes.get(dashboard.selectedNoteId))} 
+                </label>
+
+                <NotesList
+                    notes={dashboard.links}
+                    areaName={'branches-area'}
+                    darkMode={darkMode}
+                    handleNotePress={() => {}}
+                    selectedNote={dashboard.notes.get(dashboard.selectedNoteId)}
+                    mergeMode={mergeMode}
+                    threadOrCollection={threadOrCollection}
+                    openEditor={openEditor}
+                    rootsOrBranches={rootsOrBranches}
+                    isDropDisabled={isDropDisabled}
+                />
+
+            </div>      
+            }
+
+        </div>
+    )
+}
+
+export default LinksArea
