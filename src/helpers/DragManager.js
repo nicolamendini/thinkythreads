@@ -53,7 +53,7 @@ export function dragManager(
             else if(threadOrCollection){
                 const newDashboard = {...dashboard}
                 addToWorkspace(newDashboard, targetId, result.destination.index);
-                getLinksFromProps(newDashboard, rootsOrBranches)
+                getLinksFromProps(newDashboard, rootsOrBranches, setNotesUpdating)
                 getWorkspace(newDashboard)
                 setDashboard(newDashboard)
             }
@@ -101,7 +101,7 @@ export function dragManager(
                     backupNote(noteFrom, 'meta', setNotesUpdating)
                 }   
             }
-            getLinksFromProps(newDashboard, rootsOrBranches)
+            getLinksFromProps(newDashboard, rootsOrBranches, setNotesUpdating)
             setDashboard(newDashboard);
         }
 
@@ -184,7 +184,7 @@ export function dragManager(
             newDashboard.workspaceIds = removeElementAt(newDashboard.workspaceIds, result.source.index)
             if(result.source.index>0 && threadOrCollection){
                 newDashboard.selectedNoteId = newDashboard.workspaceIds[result.source.index-1];
-                getLinksFromProps(newDashboard, rootsOrBranches)
+                getLinksFromProps(newDashboard, rootsOrBranches, setNotesUpdating)
             }
             getWorkspace(newDashboard)
             setDashboard(newDashboard)
@@ -225,7 +225,7 @@ export function dragManager(
             }
 
             //setLinks(pack([]));
-            getLinksFromProps(newDashboard, rootsOrBranches)
+            getLinksFromProps(newDashboard, rootsOrBranches, setNotesUpdating)
             getSearchFromProps(newDashboard, searchProps)
             setDashboard(newDashboard);
         }
@@ -239,7 +239,7 @@ export function dragManager(
             else{
                 const newDashboard = {...dashboard}
                 addToWorkspace(dashboard.links[result.source.index].id, result.destination.index);
-                getLinksFromProps(newDashboard, rootsOrBranches)
+                getLinksFromProps(newDashboard, rootsOrBranches, setNotesUpdating)
                 getWorkspace(newDashboard)
                 setDashboard(newDashboard)
             }

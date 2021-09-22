@@ -151,7 +151,7 @@ export function wrapWorkspace(newDashboard, targetNoteId, setNotesUpdating, thre
             // if thread mode, add to the thread of the note and set color to yellow
             if(threadOrCollection){
                 targetNote.thread = newDashboard.workspaceIds;
-                targetNote.color = '#FEF3BD';
+                targetNote.color = '#fef3bd';
                 targetNote.colorPreview = '#fccb00';
                 linkThreadNotes(newDashboard, targetNote.thread, setNotesUpdating)
             }
@@ -159,7 +159,7 @@ export function wrapWorkspace(newDashboard, targetNoteId, setNotesUpdating, thre
             // if collection mode, add to the collection of the note and set color to blue
             else{
                 targetNote.collection = newDashboard.workspaceIds;
-                targetNote.color = '#C4DEF6';
+                targetNote.color = '#c4def6';
                 targetNote.colorPreview = '#1273de';
             }
 

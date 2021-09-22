@@ -6,22 +6,25 @@ DashboardPacker functions
 Update the functions based on the new states of the dashboard
 */
 
-import { copyNote } from "./DashboardUtils";
+import { copyNote } from "./DashboardUtils"
+import { backupNote } from "./RequestsMakers"
 
 // Change the search as the user is typing
 export function getSearchFromProps(newDashboard, searchProps){
 
     // go through all the notes and decide whether each note should be inserted
-    var newSearch = [];
-    var insertingNote = [];
+    var newSearch = []
+    var insertingNote = []
+    const removingIdxs = []
     
-    for(let key of newDashboard.notesOrder){
+    for(let i=0; i<newDashboard.notesOrder.length; i++){
 
-        const note = newDashboard.notes.get(key);
+        const key = newDashboard.notesOrder[i]
+        const note = newDashboard.notes.get(key)
 
         // if the note exists
         if(note){
-            insertingNote = [];
+            insertingNote = []
 
             // if the text matched with the text on the searchBar insert it
             if(note.preview.replace( /(<([^>]+)>)/ig, '').toLowerCase().includes(searchProps.searchText)){
@@ -59,47 +62,127 @@ export function getSearchFromProps(newDashboard, searchProps){
                 // if the note is pinned, put at the beginning, if not, at the end
                 if(insertingNote.length){
                     if(note.pinned){
-                        newSearch = [copyNote(insertingNote[0]), ...newSearch];
+                        newSearch = [copyNote(insertingNote[0]), ...newSearch]
                     }
                     else{
-                        newSearch = [...newSearch, copyNote(insertingNote[0])];
+                        newSearch = [...newSearch, copyNote(insertingNote[0])]
                     }
                 }
             }
         }
         else{
+            removingIdxs.push(i)
             console.log('noteOfSearchNotFoundError!')
         }
     }
 
-    newDashboard.search = newSearch;
+    if(removingIdxs.length){
+        newDashboard.notesOrder = removeFromSequence(removingIdxs, newDashboard.notesOrder)
+        window.localStorage.setItem('notes-order', JSON.stringify(newDashboard.notesOrder))
+    }
+    newDashboard.search = newSearch
     // eslint-disable-next-line
 }
 
 // Function to pack the workspace
 export function getWorkspace(newDashboard){
-    newDashboard.workspace = newDashboard.workspaceIds.flatMap((id) =>
-    newDashboard.notes.get(id) ? [copyNote(newDashboard.notes.get(id))] : 
-    !console.log('noteOfWorkspaceNotFoundError!')&&[])
+    const removingIdxs = []
+    const newWorkspace = newDashboard.workspaceIds.flatMap(
+        (id, index) => reportAndAdd(
+            newDashboard, 
+            id, 
+            index, 
+            removingIdxs, 
+            'noteOfWorkspaceNotFoundError!'
+        )
+    )
+    newDashboard.workspace = newWorkspace
+    if(removingIdxs.length){
+        newDashboard.workspaceIds = removeFromSequence(removingIdxs, newDashboard.workspaceIds)
+
+    }
 } 
 
 // Get the notes that are links of the selectedNote based on the direction of links given by rootsOrBranches
-export function getLinksFromProps(newDashboard, rootsOrBranches){
+export function getLinksFromProps(newDashboard, rootsOrBranches, setNotesUpdating){
         
     if(newDashboard.selectedNoteId){
 
+        const selectedNote = newDashboard.notes.get(newDashboard.selectedNoteId)
+        const removingIdxs = []
+
         if(rootsOrBranches){
-            newDashboard.links = newDashboard.notes.get(newDashboard.selectedNoteId).roots.flatMap(
-                (id) => newDashboard.notes.get(id) ? copyNote(newDashboard.notes.get(id)) : !console.log('noteOfLinksNotFoundError')&&[]
-            );
+            newDashboard.links = selectedNote.roots.flatMap(
+                (id, index) => reportAndAdd(
+                    newDashboard, 
+                    id, 
+                    index, 
+                    removingIdxs, 
+                    'noteOfLinksNotFoundError'
+                )   
+            )
+            if(removingIdxs.length){
+                selectedNote.roots = removeFromSequence(removingIdxs, selectedNote.roots)
+                backupNote(selectedNote, 'meta', setNotesUpdating)
+            }
         }
         else{
-            newDashboard.links = newDashboard.notes.get(newDashboard.selectedNoteId).branches.flatMap(
-                (id) => newDashboard.notes.get(id) ? copyNote(newDashboard.notes.get(id)) : !console.log('noteOfLinksNotFoundError')&&[]
-            );
+            newDashboard.links = selectedNote.branches.flatMap(
+                (id, index) => reportAndAdd(
+                    newDashboard, 
+                    id, 
+                    index, 
+                    removingIdxs, 
+                    'noteOfLinksNotFoundError'
+                )
+            )
+            if(removingIdxs.length){
+                selectedNote.branches = removeFromSequence(removingIdxs, selectedNote.branches)
+                backupNote(selectedNote, 'meta', setNotesUpdating)
+            }   
         }
     }
     else{
-        newDashboard.links = [];
+        newDashboard.links = []
+    }
+}
+
+// Removes several elements from a sequence
+// Used if some ghost ids are present in some sequence
+export function removeFromSequence(removingIdxs, sequence){
+    return sequence.filter(
+        (e, idx) => !removingIdxs.includes(idx)
+    )
+}
+
+// if the note corresponding to the id exists, return it
+// otherwise show an error report
+export function reportAndAdd(newDashboard, id, index, removingIdxs, message){
+    const note = newDashboard.notes.get(id)
+
+    if(note){
+        return [copyNote(newDashboard.notes.get(id))]
+    }
+
+    else{
+        removingIdxs.push(index)
+        window.alert(
+            '-------- BETA VERSION ERROR REPORT ------- \n' + 
+            '---- PLEASE SHARE WITH THE DEVELOPER --- \n' +
+            'along with some info about what you did to get here \n' +
+            'EMAIL: nicolamendini0@gmail.com \n' +
+            'THANK YOU!' +
+            '\n\nERROR: \n' + 
+            message + 
+            '\n\nNOTE: \n' + 
+            id + '\n' +
+            '\n\nNOTES-ORDER: \n' + 
+            newDashboard.notesOrder + 
+            '\n\nLINKS: \n' + 
+            newDashboard.links +
+            '\n\nWORKSPACE-IDS: \n' +
+            newDashboard.workspaceIds
+        )
+        return []
     }
 }

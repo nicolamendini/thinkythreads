@@ -202,7 +202,7 @@ const Dashboard = ({
 
     // Change the notes appearing in the Links area based on the rootsOrBranches flag
     const getLinks = async (newDashboard) => {
-        getLinksFromProps(newDashboard, rootsOrBranches)
+        getLinksFromProps(newDashboard, rootsOrBranches, setNotesUpdating)
     }
 
     // Add a new note to the notes hashmap and put it first in the Search Order

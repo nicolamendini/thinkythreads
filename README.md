@@ -1,70 +1,96 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Why Thinkythreads?
 
-## Available Scripts
+Thinkythreads is a note-taking system designed to mimic the natural processes 
+of thought as they happen in the human brain. Sticky notes are initially taken in the form 
+of disconnected atoms and are then be progressively linked and grouped to form a network 
+of notes that represents the individual's knowledge. The purposes of this app are the following.
 
-In the project directory, you can run:
+1. To make you formalise your knowledge. You know way more things than you expect, 
+you just never had the chance to give them an explicit form.
 
-### `yarn start`
+1. To give structure and context to the new knowledge you gain. This is done by inserting it 
+directly into a wider network of concepts and relations.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+1. To make you remember and retrieve things effectively. This is because the 
+network representation of the notes makes navigation simple and efficient.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+1. To prompt you to improve your network of knowledge iteratively, 
+you will be surprised to see how far you can get!
 
-### `yarn test`
+# How does it work?
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+The system is designed to be and stay simple. Here's how it works. You can structure your atomic 
+notes into 2 fundamental structures: Threads and Collections. Threads are ordered sequences of notes
+that represent 'lines of thought' and that define the causal relationships between notes. On the other 
+hand, Collections are unordered sets of notes. Unlikely Threads, Collections cannot contain repeated notes. 
+A note can belong to multiple Collections, and indeed Collections define the different groups 
+a note belongs to. Every Thread or Collection must be contained, or wrapped, inside a note in a way that 
+each note contains at most a Thread or a Collection.
 
-### `yarn build`
+The Dashboard is made of 5 main components.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+* A Search Bar that allows you to search notes by matching the keywords that you input 
+with the text of the preview of each note. In addition, the Search Bar gives you the 
+option to apply the Thread (T) and Collection (C) filters, which only show you notes 
+that contain a Thread or a Collection, respectively. You can also drop a note onto the
+Search Bar to only display notes that are contained in that note's Collection.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+* A Search Area, that shows the results of your search. Notes here can be arbitrarily reordered
+and pinned at the beginning of the sequence.
 
-### `yarn eject`
+* A Workspace, that contains the Thread or Collection you are currently working at. 
+The Workspace can either be in Thread or Collection mode. Thread Mode means that whenever 
+you WRAP the Workspace by dropping a note onto the Wrapper, the Workspace will be saved as a Thread
+inside the note you used to WRAP. In addition, the system will add a causal link between 
+each consecutive note. On the other hand, whenever you WRAP a Workspace in 
+Collection Mode, the Workspace will simply be saved as a Collection inside the note that you
+have chosen and no links will be created. You cannot wrap the Workspace within a note that 
+is contained in it, or with a note that already has a Thread or a Collection. As a complementary 
+functionality, whenever the Workspace is empty you can drop a note onto the Wrapper to expand 
+the Thread or Collection that is contained into the note.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+* A Links Area, that shows you all the links related to a note that your system has recorded so far.
+The Links Area can be in Branch or Root Mode. The first mode shows you the causal relations that start 
+FROM the note that you selected (Branches) whereas the second mode shows you all the causal relations
+that land TO the note that you selected (Roots)
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+* A Footer, that allows you to access the settings as well as allow you to swap between modes and 
+see your backup status.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
-## Learn More
+Here's how you use the Dashboard.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+1. First of all, make sure you log in with your Google Account. Thinkythreads uses your Google Drive
+to store an online backup of all your notes so that you never lose them. Without this, your notes
+will only be stored locally and will be lost everytime you clean your browser's data.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+1. From the Dashboard, you can create as many notes as you want by pressing the 'Add' button. 
+The notes will appear in the Search Area, which contains all the notes you ever created 
+filtered by the options that you specify. 
 
-### Code Splitting
+1. Let's say you've created enough notes and now you want to structure them. All you have to
+do is to set whether you want the Thread or Collection mode and then drag the notes
+you desire to structure from the Search Area into the Workspace. For Threads, you can reorder 
+the notes in the Workspace by dragging them in the desired position. If you want to remove a note
+from the Workspace, you can just drag it back into the Search Area. Once you're done with 
+your Workspace, you can wrap it into an existing note by dragging the note that you want 
+to use onto the Wrapper Area at the very left of the Workspace Area.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+1. As you keep adding structure to your notes, especially Threads, you'll notice that some Links
+will appear in the Links area when you select certain notes. The Links recommend the notes that
+you can use to build Threads, or simply give you contextual hints about the ideas that you are 
+working at. This is when the system starts giving you back the knowledge that you inserted. If 
+you want to use a note of the Links Area inside the Workspace, just drag it on it. If you want to 
+manually add or remove a link, just drag notes between the Links Area and the Search Area.
 
-### Analyzing the Bundle Size
+1. The last functionality implemented by this system is the Merge Mode. The Merge Mode allows you to 
+merge the content and context of any two arbitrary notes provided that at most one of the two notes
+already contain a Thread or a Collection. Merging notes in this way is much simpler than doing it 
+manually. All you have to do is to select a note by clicking on it, enable the Merge Mode from the
+button on the footer, and then select the note you want to merge the previous note with.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+1. You've made it! This is all you need to know to start using Thinkythreads, all the rest is up to you!
 
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
