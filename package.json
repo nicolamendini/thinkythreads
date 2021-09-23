@@ -1,39 +1,39 @@
 {
   "name": "thinkythreads",
-  "homepage": "http://nicolamendini.github.io/thinkythreads",
   "version": "0.1.0",
+  "homepage": "http://nicolamendini.github.io/thinkythreads",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
-    "browser-image-compression": "^1.0.15",
     "dexie": "^3.0.3",
-    "draft-js": "^0.11.7",
-    "gapi-script": "^1.2.0",
-    "icons": "^1.0.0",
-    "long-press-event": "^2.4.4",
+    "katex": "^0.13.18",
     "quill-image-compress": "^1.2.15",
     "react": "^17.0.2",
     "react-beautiful-dnd": "^13.1.0",
     "react-color": "^2.19.3",
-    "react-confirm-alert": "^2.7.0",
-    "react-copy-to-clipboard": "^5.0.3",
-    "react-detect-offline": "^2.4.5",
     "react-dom": "^17.0.2",
     "react-google-button": "^0.7.2",
-    "react-google-login": "^5.2.2",
     "react-icons": "^4.2.0",
-    "react-katex": "^2.0.2",
     "react-loader-spinner": "^4.0.0",
-    "react-quill": "^2.0.0-beta.2",
-    "react-ripples": "^2.2.1",
-    "react-rte": "^0.16.3",
+    "react-quill": "^1.3.5",
     "react-scripts": "4.0.3",
     "reactjs-popup": "^2.0.5",
     "trunc-html": "^1.1.2",
-    "web-vitals": "^1.0.1",
-    "workbox-cli": "^6.2.4"
+    "web-vitals": "^0.2.4",
+    "workbox-background-sync": "^5.1.3",
+    "workbox-broadcast-update": "^5.1.3",
+    "workbox-cacheable-response": "^5.1.3",
+    "workbox-core": "^5.1.3",
+    "workbox-expiration": "^5.1.3",
+    "workbox-google-analytics": "^5.1.3",
+    "workbox-navigation-preload": "^5.1.3",
+    "workbox-precaching": "^5.1.3",
+    "workbox-range-requests": "^5.1.3",
+    "workbox-routing": "^5.1.3",
+    "workbox-strategies": "^5.1.3",
+    "workbox-streams": "^5.1.3"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -60,8 +60,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "gh-pages": "^3.2.0"
   }
 }
