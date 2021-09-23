@@ -43,6 +43,7 @@ export default class App extends Component {
     }
   }
 
+  // access is restricted
   initClient = async () => {
     try{
       window.gapi.client.init({
