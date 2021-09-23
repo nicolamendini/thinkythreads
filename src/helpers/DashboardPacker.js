@@ -72,7 +72,7 @@ export function getSearchFromProps(newDashboard, searchProps){
         }
         else{
             removingIdxs.push(i)
-            console.log('noteOfSearchNotFoundError!')
+            errorAlert('noteOfSearchNotFoundError!', key, newDashboard)
         }
     }
 
@@ -166,23 +166,27 @@ export function reportAndAdd(newDashboard, id, index, removingIdxs, message){
 
     else{
         removingIdxs.push(index)
-        window.alert(
-            '-------- BETA VERSION ERROR REPORT ------- \n' + 
-            '---- PLEASE SHARE WITH THE DEVELOPER --- \n' +
-            'along with some info about what you did to get here \n' +
-            'EMAIL: nicolamendini0@gmail.com \n' +
-            'THANK YOU!' +
-            '\n\nERROR: \n' + 
-            message + 
-            '\n\nNOTE: \n' + 
-            id + '\n' +
-            '\n\nNOTES-ORDER: \n' + 
-            newDashboard.notesOrder + 
-            '\n\nLINKS: \n' + 
-            newDashboard.links +
-            '\n\nWORKSPACE-IDS: \n' +
-            newDashboard.workspaceIds
-        )
+        errorAlert(message, id, newDashboard)
         return []
     }
+}
+
+export function errorAlert(message, id, newDashboard){
+    window.alert(
+        '-------- BETA VERSION ERROR REPORT ------- \n' + 
+        '---- PLEASE SHARE WITH THE DEVELOPER --- \n' +
+        'along with some info about what you did to get here \n' +
+        'EMAIL: nicolamendini0@gmail.com \n' +
+        'THANK YOU!' +
+        '\n\nERROR: \n' + 
+        message + 
+        '\n\nNOTE: \n' + 
+        id + '\n' +
+        '\n\nNOTES-ORDER: \n' + 
+        newDashboard.notesOrder + 
+        '\n\nLINKS: \n' + 
+        newDashboard.links +
+        '\n\nWORKSPACE-IDS: \n' +
+        newDashboard.workspaceIds
+    )
 }
