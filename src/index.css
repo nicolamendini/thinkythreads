@@ -177,7 +177,7 @@ textarea:focus {
 .wrapper {
 	display: flex;
 	border-radius: 10px;
-	font: 2vh sans-serif;
+	font: 2.5vh sans-serif;
 	align-items: center;
 	text-align: center;
 	color: #646464;
@@ -297,9 +297,9 @@ li h2{
 }
 
 .settings-back{
-	width: 95%;
+	width: 90%;
 	align-items: left;
-	padding-top: 15px
+	padding-top: 15px;
 }
 
 .info{
@@ -318,4 +318,8 @@ li h2{
 
 .info li{
 	margin-bottom: 10px;
+}
+
+.settings-page{
+	overflow-x: hidden;
 }
