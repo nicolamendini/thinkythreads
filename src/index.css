@@ -116,8 +116,8 @@ textarea:focus {
 	box-shadow: 1px 1px 4px #8f8f8f;
 	max-width: 1240px;
 	width: 90%;
-	height: 4.3vh;
-	max-height: 4.3vh;
+	height: 4.5vh;
+	max-height: 4.5vh;
 }
 
 .search input {
@@ -177,7 +177,7 @@ textarea:focus {
 .wrapper {
 	display: flex;
 	border-radius: 10px;
-	font: 1.7vh sans-serif;
+	font: 2vh sans-serif;
 	align-items: center;
 	text-align: center;
 	color: #646464;
@@ -297,13 +297,13 @@ li h2{
 }
 
 .settings-back{
-	width: 100%;
+	width: 95%;
 	align-items: left;
-	padding: 15px 0 0 30px;
+	padding-top: 15px
 }
 
 .info{
-	margin: 8vw;
+	padding: 8vw;
 }
 
 .info ul{

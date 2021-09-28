@@ -307,7 +307,7 @@ export function setConfigFromDrive(newDashboard, mediaResp, packDashboard){
         // retrieve the notes order and check that it covers every single note stored
         // must make sure that notes are not left out
         const notesOrder = JSON.parse(mediaResp.body).notesOrder
-        if(notesOrder.length === newDashboard.notesOrder.length){
+        if(notesOrder.length===newDashboard.notes.size){
             newDashboard.notesOrder = notesOrder
         }
 
