@@ -21,7 +21,12 @@ export default class App extends Component {
   initScript = async () => {
     // Load authentication script and get Drive API ready
     var viewport = document.querySelector("meta[name=viewport]");
-    viewport.setAttribute("content", viewport.content + ", height=" + window.innerHeight + ', user-scalable=no');
+    viewport.setAttribute(
+      "content", 
+      viewport.content + 
+      ", height=" + window.innerHeight + 
+      ', user-scalable=no'
+    );
     window.addEventListener('online', () => this.setState({onlineState: true}));
     window.addEventListener('offline', () => this.setState({onlineState: false}));
     if(this.state.onlineState){

@@ -32,7 +32,8 @@ const NotesPage = ({
     threadOrCollectionManage,
     setRootsOrBranches,
     searchProps,
-    setSearchProps
+    setSearchProps,
+    synchNotes
 }) => {
 
     return(
@@ -67,6 +68,7 @@ const NotesPage = ({
                 setCurrentPage={setCurrentPage}
                 notesUpdating={notesUpdating}
                 loadedUser={GAPIloaded && currentUser}
+                synchNotes={synchNotes}
             />
             
         </div>

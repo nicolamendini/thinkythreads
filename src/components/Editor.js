@@ -149,7 +149,6 @@ const NoteEditor = ({
                         modules={modules}
                         placeholder={'Write your next idea here...'}
                         ref={editorRef}
-                        className
                     />
                 </div>
 

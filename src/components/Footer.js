@@ -32,8 +32,8 @@ const Footer = ({
     selectedNote,
     setCurrentPage,
     notesUpdating,
-    loadedUser
-
+    loadedUser,
+    synchNotes
 }) => {
     return(
         <div className='page-footer'>
@@ -119,6 +119,8 @@ const Footer = ({
 
                     <FcCheckmark
                         size='2.3em'
+                        className='tools-btn'
+                        onClick={()=>synchNotes()}
                     />
             ) :
 

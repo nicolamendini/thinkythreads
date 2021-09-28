@@ -80,6 +80,21 @@ export function getSearchFromProps(newDashboard, searchProps){
         newDashboard.notesOrder = removeFromSequence(removingIdxs, newDashboard.notesOrder)
         window.localStorage.setItem('notes-order', JSON.stringify(newDashboard.notesOrder))
     }
+
+    if(newDashboard.notesOrder.length !== newDashboard.notes.size){
+        newDashboard.notesOrder = [...newDashboard.notes.keys()]
+        window.localStorage.setItem('notes-order', JSON.stringify(newDashboard.notesOrder))
+        window.alert(
+            '-------- BETA VERSION ERROR REPORT ------- \n' + 
+        '---- PLEASE SHARE WITH THE DEVELOPER --- \n' +
+        'along with some info about what you did to get here \n' +
+        'EMAIL: nicolamendini0@gmail.com \n' +
+        'THANK YOU!' +
+        '\n\nERROR: \n' + 
+        'The order of the notes was lost'
+        )
+    }
+
     newDashboard.search = newSearch
     // eslint-disable-next-line
 }

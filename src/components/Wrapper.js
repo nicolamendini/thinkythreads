@@ -63,7 +63,7 @@ const Wrapper = ({
                     }
                 >
 
-                <div className='vertical-text'>{notesLength>0 ? 'WRAP' : 'EXPAND NOTE'}</div>
+                <div className='vertical-text'>{notesLength>0 ? 'WRAP' : 'Drop to Expand'}</div>
 
                 {provided.placeholder}
 

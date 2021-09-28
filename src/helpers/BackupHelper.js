@@ -50,7 +50,16 @@ export function updateNoteFile(note, mediaOrMeta, setNotesUpdating, counter){
                 else{
                     setNotesUpdating((prev) => prev-1)
                 }
-            }).catch((error) => errorCatcher(error, counter, updateNoteFile, note, mediaOrMeta, setNotesUpdating))
+            }).catch((error) => 
+                errorCatcher(
+                    error, 
+                    counter, 
+                    updateNoteFile, 
+                    note, 
+                    mediaOrMeta, 
+                    setNotesUpdating
+                )
+            )
         }
 
         // if the file exists, get its id and initialise a placeholder for the 
@@ -81,9 +90,27 @@ export function updateNoteFile(note, mediaOrMeta, setNotesUpdating, counter){
                     setNotesUpdating((prev) => prev-1)
                 }
 
-            }).catch((error) => errorCatcher(error, counter, updateNoteFile, note, mediaOrMeta, setNotesUpdating))
+            }).catch((error) => 
+                errorCatcher(
+                    error, 
+                    counter, 
+                    updateNoteFile, 
+                    note, 
+                    mediaOrMeta, 
+                    setNotesUpdating
+                )
+            )
         }
-    }).catch((error) => errorCatcher(error, counter, updateNoteFile, note, mediaOrMeta, setNotesUpdating))
+    }).catch((error) =>     
+        errorCatcher(
+            error, 
+            counter,    
+            updateNoteFile, 
+            note, 
+            mediaOrMeta, 
+            setNotesUpdating
+        )
+    )
 }
 
 // Function to update the config file on drive
@@ -150,14 +177,34 @@ export function removeNoteFile(note, deletedNotes, setDeletedNotes, setNotesUpda
                 // if successful, delete from tracker as well
                 removeFromDeletionTracker(note, deletedNotes, setDeletedNotes)
 
-            }).catch((error) => errorCatcher(error, counter, removeNoteFile, note, deletedNotes, setDeletedNotes, setNotesUpdating))
+            }).catch((error) => 
+                errorCatcher(
+                    error, 
+                    counter, 
+                    removeNoteFile, 
+                    note, 
+                    deletedNotes, 
+                    setDeletedNotes, 
+                    setNotesUpdating
+                )
+            )
         }
 
         // if it does not exist, remove from tracker and that is it
         else{
             removeFromDeletionTracker(note, deletedNotes, setDeletedNotes)
         }
-    }).catch((error) => errorCatcher(error, counter, removeNoteFile, note, deletedNotes, setDeletedNotes, setNotesUpdating))
+    }).catch((error) => 
+        errorCatcher(
+            error, 
+            counter, 
+            removeNoteFile, 
+            note, 
+            deletedNotes, 
+            setDeletedNotes, 
+            setNotesUpdating
+        )
+    )
     
 }
 

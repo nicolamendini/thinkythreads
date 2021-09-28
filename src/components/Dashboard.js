@@ -166,18 +166,21 @@ const Dashboard = ({
     // Once the folder is found or created, this effect retrieves all notes from drive
     useEffect(() => {
         shareDriveFolderId = driveFolderId
-        const newDashboard = {...dashboard}
         if(GAPIloaded && currentUser && driveFolderId){
-            getAllNotes(
-                newDashboard, 
-                deletedNotes, 
-                setDeletedNotes, 
-                setNotesUpdating, 
-                packDashboard
-            );
+            synchNotes()
         }
     // eslint-disable-next-line
     },[driveFolderId, GAPIloaded, currentUser])
+
+    const synchNotes = () => {
+        getAllNotes(
+            {...dashboard}, 
+            deletedNotes, 
+            setDeletedNotes, 
+            setNotesUpdating, 
+            packDashboard
+        );
+    }
 
     // Utils function used to backup a note
     // takes the note itself and a metaOrMedia
@@ -429,6 +432,7 @@ const Dashboard = ({
                         setRootsOrBranches={setRootsOrBranches}
                         searchProps={searchProps}
                         setSearchProps={setSearchProps}
+                        synchNotes={synchNotes}
                     />
                 </Suspense>
                 

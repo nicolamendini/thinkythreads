@@ -186,7 +186,6 @@ textarea:focus {
 	height: 20vh;
 	padding-right: 15px;
 	margin: 2px 3px 2px 3px;
-	box-shadow: 0px 0px 2px #5a5a5a;
 }
 
 .search-spacer{
@@ -194,7 +193,7 @@ textarea:focus {
 }
 
 .vertical-text{
-	writing-mode: vertical-lr;
+	writing-mode: vertical-rl;
 	padding-left: 12px;
 }
 
@@ -306,4 +305,5 @@ li h2{
 
 .info{
 	margin: 50px;
+	overflow-y: scroll;
 }
