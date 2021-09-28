@@ -12,6 +12,7 @@ import {Droppable} from 'react-beautiful-dnd';
 import { useState } from 'react';
 import {FcNext, FcPrevious, FcPlus} from 'react-icons/fc';
 import Wrapper from './Wrapper';
+import React from 'react'
 
 // Max size of a row of notes, it is necessary to press the arrow
 // button to access further notes

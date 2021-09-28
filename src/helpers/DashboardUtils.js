@@ -9,6 +9,7 @@ Utils functions to perform small operations
 import { nanoid } from "nanoid";
 import { PREVIEWLIMIT } from "../components/Dashboard";
 import Loader from 'react-loader-spinner';
+import React from 'react'
 
 const truncHtml = require('trunc-html');
 

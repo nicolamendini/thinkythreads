@@ -9,6 +9,7 @@ arbitrary note
 */
 
 import {Droppable} from 'react-beautiful-dnd';
+import React from 'react'
 
 const Wrapper = ({
 	threadOrCollection,

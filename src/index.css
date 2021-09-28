@@ -5,7 +5,6 @@ body {
 		'Droid Sans', 'Helvetica Neue', sans-serif;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-	overflow: hidden;
 }
 
 @media only screen and (orientation: landscape) {
@@ -304,6 +303,19 @@ li h2{
 }
 
 .info{
-	margin: 50px;
-	overflow-y: scroll;
+	margin: 8vw;
+}
+
+.info ul{
+	list-style-position: outside;
+  	padding-left: 5%;
+}
+
+.info ol{
+	list-style-position: outside;
+  	padding-left: 5%;
+}
+
+.info li{
+	margin-bottom: 10px;
 }

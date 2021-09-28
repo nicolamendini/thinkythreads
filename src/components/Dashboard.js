@@ -73,7 +73,7 @@ const Dashboard = ({
             search: [],
             links: [],
             workspace: [],
-            checkedAgainstDrive: false
+            checkedAgainstDrive: true
         }
     );
 
@@ -173,13 +173,17 @@ const Dashboard = ({
     },[driveFolderId, GAPIloaded, currentUser])
 
     const synchNotes = () => {
-        getAllNotes(
-            {...dashboard}, 
-            deletedNotes, 
-            setDeletedNotes, 
-            setNotesUpdating, 
-            packDashboard
-        );
+        if(dashboard.checkedAgainstDrive){
+            console.log('synching')
+            dashboard.checkedAgainstDrive = false
+            getAllNotes(
+                {...dashboard}, 
+                deletedNotes, 
+                setDeletedNotes, 
+                setNotesUpdating, 
+                packDashboard
+            )
+        }
     }
 
     // Utils function used to backup a note

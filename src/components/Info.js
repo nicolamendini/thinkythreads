@@ -5,6 +5,7 @@ ThinkyThreads Project
 InfoPage component
 Shows information about the usage of the app
 */
+import React from 'react'
 
 const Info = () => {
     return (
@@ -94,6 +95,8 @@ const Info = () => {
                     see your backup status.
                 </li>
             </ul>
+
+            Here's how you use the App.
 
             <ol>
                 <li>

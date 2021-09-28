@@ -14,7 +14,7 @@ import {IoIosArrowRoundBack} from 'react-icons/io'
 
 const Settings = ({ setCurrentPage, signInFunction, signOutFunction, loadedUser, GAPIloaded}) => {
         return (
-            <div>
+            <div className='settings-page'>
                 <div className='settings-btns'>
                     <div className='settings-back'>
                         <IoIosArrowRoundBack

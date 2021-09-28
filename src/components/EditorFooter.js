@@ -13,6 +13,7 @@ import {IoIosArrowRoundBack} from 'react-icons/io'
 import ColorPicker from './ColorPicker';
 import OptionsPopup from './OptionsPopup';
 import { setPreview } from '../helpers/DashboardUtils';
+import React from 'react'
 
 // Editor footer component
 // takes setCurrentPage to go back to the notes page when editing is finished

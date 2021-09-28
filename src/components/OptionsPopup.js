@@ -9,6 +9,7 @@ It appears when the three dots are clicked
 
 import { FiMoreVertical } from "react-icons/fi"
 import Popup from "reactjs-popup"
+import React from 'react'
 
 const OptionsPopup = ({
     selectedNote,

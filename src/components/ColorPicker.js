@@ -11,6 +11,7 @@ for the note from a selection of pastel colors
 import { GithubPicker } from "react-color"
 import { BsDropletHalf } from "react-icons/bs"
 import Popup from "reactjs-popup"
+import React from 'react'
 
 // Utils function needed to set the color through a switch
 // Takes the chosen color, the current selected note and 

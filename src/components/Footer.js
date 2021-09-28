@@ -10,6 +10,7 @@ import { FcIdea, FcSettings, FcParallelTasks, FcBrokenLink, FcLink, FcImport, Fc
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import Loader from "react-loader-spinner";
 import { driveNotConnected, mergeModeOn } from '../helpers/Messages';
+import React from 'react'
 
 // Footer component
 // takes the threadOrCollection state and a function to change it,
