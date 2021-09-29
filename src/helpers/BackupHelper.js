@@ -24,6 +24,7 @@ export function updateConfigLoop(newDashboard, fileId, counter){
     if(!counter){counter=0}
     const configBody = JSON.stringify({
         notesOrder: newDashboard.notesOrder,
+        notesEverDeleted: newDashboard.notesEverDeleted
     })
     getMediaUpdateRequest({text: configBody}, fileId).then(
     ).catch((error) => errorCatcher(error, counter, updateConfigLoop, newDashboard))

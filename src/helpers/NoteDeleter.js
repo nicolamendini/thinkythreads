@@ -45,9 +45,13 @@ export function noteDeleter(
         const newDeletedNotes = [...deletedNotes, removingId]
         setDeletedNotes(newDeletedNotes)
 
+        // keep track of deleted note
+        newDashboard.notesEverDeleted.push(removingId)
+
         // backup the new notes order and the new deleted notes arrays
         window.localStorage.setItem('notes-order', JSON.stringify(newDashboard.notesOrder))
-        window.localStorage.setItem('deleted-notes', JSON.stringify(deletedNotes))
+        window.localStorage.setItem('deleted-notes', JSON.stringify(newDeletedNotes))
+        window.localStorage.setItem('notes-ever-deleted', JSON.stringify(newDashboard.notesEverDeleted))
 
         // if this function was not called by merge mode then sanitise all collections and dashboard
         if(!mergeMode){

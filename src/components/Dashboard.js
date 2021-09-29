@@ -66,6 +66,7 @@ const Dashboard = ({
         {
             notes: new Map(), 
             notesOrder: [],
+            notesEverDeleted: [],
             workspaceIds: [],
             selectedNoteId: null,
             openedCollectionId: null,
@@ -116,6 +117,7 @@ const Dashboard = ({
 
             const notesOrder = JSON.parse(window.localStorage.getItem('notes-order'))
             const deletedNotes = JSON.parse(window.localStorage.getItem('deleted-notes'))
+            const notesEverDeleted = JSON.parse(window.localStorage.getItem('notes-ever-deleted'))
 
             if(notesOrder){
                 newDashboard.notesOrder = notesOrder
@@ -125,6 +127,9 @@ const Dashboard = ({
             }
             if(deletedNotes){
                 setDeletedNotes(deletedNotes)
+            }
+            if(notesEverDeleted){
+                newDashboard.notesEverDeleted = notesEverDeleted
             }
             packDashboard(newDashboard)
         })

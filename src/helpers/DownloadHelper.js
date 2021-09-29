@@ -58,27 +58,98 @@ export function setNoteFromResp(
             )
         }
 
-        // otherwise if all the files have been processed
+        // otherwise if all the files have been processed set the config file
         else{
-
-            // if a config file has been found and any note has been modified by data on drive,
-            // overwrite the local configuration with the online one
-            if(notesOnDrive.configFound){
-                getMediaRequestById(notesOnDrive.configFound).then(
-                    (mediaResp) =>
-                        setConfigFromDrive(newDashboard, mediaResp, packDashboard)
-                )
-            }
-
-            // otherwise initialise a new random order for the notes
-            // this might happen if the config file is deleted
-            else{
-                newDashboard.notesOrder = [...newDashboard.notes.keys()]
-                newDashboard.checkedAgainstDrive=true
-                updateConfigFile(newDashboard)
-                packDashboard(newDashboard)
-            }
+            callSetConfig(
+                notesOnDrive, 
+                newDashboard, 
+                packDashboard, 
+                deletedNotes,
+                setDeletedNotes,
+                setNotesUpdating,
+                true
+            )
         }
+    }
+}
+
+export function callSetConfig(
+    notesOnDrive, 
+    newDashboard, 
+    packDashboard, 
+    deletedNotes,
+    setDeletedNotes,
+    setNotesUpdating, 
+    forceFlag
+){
+    // if a config file has been found and any note has been modified by data on drive,
+    // overwrite the local configuration with the online one
+    if(notesOnDrive.configFound){
+        getMediaRequestById(notesOnDrive.configFound).then(
+            (mediaResp) => {
+                // if the config is not empty
+                if(mediaResp.body!==''){
+                    
+                    // retrieve the notes order and check that it covers every single note stored
+                    // must make sure that notes are not left out
+                    const config = JSON.parse(mediaResp.body)
+                    const notesKeys = [...newDashboard.notes.keys()]
+                    const filteredNotesKeys = notesKeys.filter(
+                        (id) => !config.notesEverDeleted.includes(id)
+                    )
+
+                    // forceFlag means that the drive notes were already used to replace local notes
+                    // and therefore they get to update the config anyways
+                    // otherwise if all the drive notes were not used so far,
+                    // check if at least they are used for removing notes that the user deleted
+                    // if no, then update them because they might be outdated
+                    if(forceFlag || notesKeys.length!==filteredNotesKeys.length){
+                        setConfigFromDrive(newDashboard, config, packDashboard)
+                    }
+                    else{
+                        updateDriveNotes(
+                            newDashboard, 
+                            notesOnDrive, 
+                            deletedNotes, 
+                            setDeletedNotes, 
+                            setNotesUpdating, 
+                            packDashboard
+                        )
+                    }
+                }
+                else{
+                    updateDriveNotes(
+                        newDashboard, 
+                        notesOnDrive, 
+                        deletedNotes, 
+                        setDeletedNotes, 
+                        setNotesUpdating, 
+                        packDashboard
+                    )
+                }
+            }
+        )
+    }
+
+    // otherwise initialise a new random order for the notes
+    // this might happen if the config file is deleted
+    else if (forceFlag){
+        newDashboard.notesOrder = [...newDashboard.notes.keys()]
+        newDashboard.checkedAgainstDrive = true
+        updateConfigFile(newDashboard)
+        packDashboard(newDashboard)
+    }
+
+    // if no drive notes have been used yet and no config file was found
+    else{
+        updateDriveNotes(
+            newDashboard, 
+            notesOnDrive, 
+            deletedNotes, 
+            setDeletedNotes, 
+            setNotesUpdating, 
+            packDashboard
+        )
     }
 }
 
@@ -211,15 +282,33 @@ export function setNotesPageFromResp(
 
         // otherwise update the notes on drive because they might be outdated
         else{
-            updateDriveNotes(
-                newDashboard, 
+            callSetConfig(
                 notesOnDrive, 
-                deletedNotes, 
-                setDeletedNotes, 
-                setNotesUpdating, 
-                packDashboard
+                newDashboard, 
+                packDashboard, 
+                deletedNotes,
+                setDeletedNotes,
+                setNotesUpdating
             )
         }
+    }
+
+    // if no notes of the last page of drive are used to replace local notes
+    // call the setConfigFromDrive from here rather than from setNoteFromResp
+    else if(
+    !notesOnDrive.mightNeedUpdate && 
+    !metaResp.result.nextPageToken && 
+    notesOnDrive.finishedProcesses === metaResp.result.files.length
+    ){
+        callSetConfig(
+            notesOnDrive, 
+            newDashboard, 
+            packDashboard, 
+            deletedNotes,
+            setDeletedNotes,
+            setNotesUpdating,
+            true
+        )
     }
 }
 
@@ -299,28 +388,50 @@ export function getAllNotes(
 }
 
 // Sets a config file from the .config on drive
-export function setConfigFromDrive(newDashboard, mediaResp, packDashboard){
+export function setConfigFromDrive(newDashboard, config, packDashboard){
 
-    // if the config is not empty
-    if(mediaResp.body!==''){
-        
-        // retrieve the notes order and check that it covers every single note stored
-        // must make sure that notes are not left out
-        const notesOrder = JSON.parse(mediaResp.body).notesOrder
-        if(notesOrder.length===newDashboard.notes.size){
-            newDashboard.notesOrder = notesOrder
-        }
+    newDashboard.notesEverDeleted = config.notesEverDeleted
 
-        // otherwise just restore some pseudo order with the notes that we have and the previous order
-        else{
-            newDashboard.notesOrder = [...new Set([...newDashboard.notesOrder, ...notesOrder])]
+    for(const deletedNote of newDashboard.notesEverDeleted){
+        if(newDashboard.notes.get(deletedNote)){
+
+            // no need to call the note deleter because there will be no dependencies
+            // as all the other local notes have already been updated
+            newDashboard.notes.delete(deletedNote)
         }
     }
+
+    // make sure you are not removing a note that is employed in the dashboard
+    if(newDashboard.notesEverDeleted.includes(newDashboard.selectedNoteId)){
+        newDashboard.selectedNoteId = null
+    }
+    if(newDashboard.notesEverDeleted.includes(newDashboard.openedCollectionId)){
+        newDashboard.openedCollectionId = null
+    }
+    if(newDashboard.notesEverDeleted.includes(newDashboard.openedWorkspaceId)){
+        newDashboard.openedWorkspaceId = null
+    }
+    newDashboard.workspaceIds = newDashboard.workspaceIds.filter(
+        (id) => !newDashboard.notesEverDeleted.includes(id)
+    )
+
+    // if the config file includes all the notes and therefore is up to date
+    if(config.notesOrder.length===newDashboard.notes.size){
+        newDashboard.notesOrder = config.notesOrder
+    }
+
+    // otherwise just restore some pseudo order with the notes that we have and the previous order
+    else{
+        newDashboard.notesOrder = [...new Set([...newDashboard.notesOrder, ...config.notesOrder])]
+    }   
+
+    // backing up values received from drive
+    window.localStorage.setItem('notes-order', JSON.stringify(newDashboard.notesOrder))
+    window.localStorage.setItem('notes-ever-deleted', JSON.stringify(newDashboard.notesEverDeleted))
 
     // Tell the dashboard that the restoring is complete and backup the new order
     newDashboard.checkedAgainstDrive=true
     packDashboard(newDashboard)
-    window.localStorage.setItem('notes-order', JSON.stringify(newDashboard.notesOrder))
 }
 
 // Update the notes on google drive if they might be outdated
