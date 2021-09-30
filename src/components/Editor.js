@@ -50,6 +50,10 @@ const modules = {
         delay: 2000,
         maxStack: 500,
         userOnly: true
+    },
+
+    clipboard: {
+        matchVisual: false
     }
 }
 

@@ -53,7 +53,7 @@ const EditorFooter = ({
         }
 
         // Set the note text to be the editor state and compute the preview
-        selectedNote.text = editorState;
+        selectedNote.text = editorState
         setPreview(selectedNote)
 
         // If the note has no text, thread, collection, branches, images,
