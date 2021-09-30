@@ -44,6 +44,12 @@ const modules = {
           maxHeight: 800,
           imageType: 'image/jpeg',
           debug: false,
+    },
+
+    history: {
+        delay: 2000,
+        maxStack: 500,
+        userOnly: true
     }
 }
 
@@ -149,6 +155,7 @@ const NoteEditor = ({
                         modules={modules}
                         placeholder={'Write your next idea here...'}
                         ref={editorRef}
+                        scrollingContainer='#editor'
                     />
                 </div>
 

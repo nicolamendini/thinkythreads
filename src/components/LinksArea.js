@@ -37,7 +37,7 @@ const LinksArea = ({
             <div>
 
                 <label className='stripe-label'>
-                    {!rootsOrBranches ? ' BRANCH LINKS - ' : ' ROOT LINKS - '}
+                    {!rootsOrBranches ? ' BRANCHES - ' : ' ROOTS - '}
                     {getCaption(dashboard.notes.get(dashboard.selectedNoteId))} 
                 </label>
 

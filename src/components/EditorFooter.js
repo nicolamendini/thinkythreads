@@ -29,7 +29,6 @@ const EditorFooter = ({
     deleteNote,
     exportThread,
     setBackColor
-
 }) => {
 
     // State that defines whether the note is pinned, used to show the 
@@ -47,6 +46,11 @@ const EditorFooter = ({
 
     // Function to save and exit the note when the back arrow is pressed
     const saveAndExit = (action) => {
+
+        if(selectedNote.text===editorState){
+            setCurrentPage('notes')
+            return false
+        }
 
         // Set the note text to be the editor state and compute the preview
         selectedNote.text = editorState;

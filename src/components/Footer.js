@@ -94,7 +94,7 @@ const Footer = ({
                     }
                     size='2.3em'
                     className='tools-btn'
-                    style={{transform:'scaleX(1.2)'}}
+                    style={{transform:'scaleY(1.15) rotate(-90deg)'}}
                 />    
             : null}
 
