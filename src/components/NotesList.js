@@ -90,6 +90,7 @@ const NotesList = ({
 									notesLength={notes.length}
 									draggableInfo={draggableInfo}
 									notes={notes}
+									darkMode={darkMode}
 								/>
 							}
 

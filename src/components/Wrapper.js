@@ -15,7 +15,8 @@ const Wrapper = ({
 	threadOrCollection,
     notesLength,
     draggableInfo,
-    notes
+    notes,
+    darkMode
 }) => {
 
     // Disable dropping here unless the note comes from the search area
@@ -59,6 +60,9 @@ const Wrapper = ({
                             ), 
                             ...(!snapshot.isDraggingOver && {minWidth:"2em"})
                             })
+                        : 
+                        darkMode ?
+                        {backgroundColor: 'white', minWidth:"2em"}
                         :
                         {backgroundColor: '#e7e7e7', minWidth:"2em"}
                     }

@@ -122,8 +122,8 @@ textarea:focus {
 	box-shadow: 1px 1px 4px #8f8f8f;
 	max-width: 1240px;
 	width: 90%;
-	height: 4.75vh;
-	max-height: 4.75vh;
+	height: 30px;
+	max-height: 30px;
 }
 
 .search input {
@@ -183,10 +183,10 @@ textarea:focus {
 .wrapper {
 	display: flex;
 	border-radius: 10px;
-	font: 1.8vh sans-serif;
+	font: 14px sans-serif;
 	align-items: center;
 	text-align: center;
-	color: #646464;
+	color: #838383;
 	margin-right: 2px;
 	height: 20vh;
 	padding-right: 15px;
@@ -199,7 +199,7 @@ textarea:focus {
 
 .vertical-text{
 	writing-mode: vertical-rl;
-	padding-left: 12px;
+	padding-left: 14px;
 }
 
 .searchFilter {
