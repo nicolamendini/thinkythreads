@@ -12,7 +12,7 @@ import { useState } from 'react';
 import {IoIosArrowRoundBack} from 'react-icons/io'
 import ColorPicker from './ColorPicker';
 import OptionsPopup from './OptionsPopup';
-import { setPreview } from '../helpers/DashboardUtils';
+import { createThumbnail, setPreview } from '../helpers/DashboardUtils';
 import React from 'react'
 
 // Editor footer component
@@ -37,9 +37,12 @@ const EditorFooter = ({
     // State to define whether the popup options have been opened through the
     // three dots button
     const [open, setOpen] = useState(false);
+    // Check if the editing note has changed
+    const [hasChanged, setHasChanged] = useState(false)
 
     // Function to pin the note
     const pin = () => {
+        setHasChanged(true)
         selectedNote.pinned = !selectedNote.pinned
         setIsPinned(selectedNote.pinned)
     }
@@ -47,8 +50,9 @@ const EditorFooter = ({
     // Function to save and exit the note when the back arrow is pressed
     const saveAndExit = (action) => {
 
-        if(selectedNote.text===editorState){
+        if(selectedNote.text===editorState && !hasChanged){
             setCurrentPage('notes')
+            createThumbnail(selectedNote)
             return false
         }
 
@@ -114,6 +118,7 @@ const EditorFooter = ({
                 <ColorPicker 
                     selectedNote={selectedNote}
                     setBackColor={setBackColor}
+                    setHasChanged={setHasChanged}
                 />
 
                 <BsTrash

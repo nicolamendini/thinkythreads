@@ -35,7 +35,8 @@ const modules = {
           'image',
           'code-block',
           'formula',
-          'blockquote'
+          'blockquote',
+          'link'
         ],
     
     // Image compressor props, kicks in automatically if max size is exceeded

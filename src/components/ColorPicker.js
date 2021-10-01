@@ -16,8 +16,9 @@ import React from 'react'
 // Utils function needed to set the color through a switch
 // Takes the chosen color, the current selected note and 
 // A function to set the state of the editor
-const setColor = (color, selectedNote, setBackColor) => {
+const setColor = (color, selectedNote, setBackColor, setHasChanged) => {
 
+    setHasChanged(true)
     selectedNote.colorPreview = color.hex;
 
     switch(color.hex) {
@@ -56,7 +57,8 @@ const setColor = (color, selectedNote, setBackColor) => {
 //a function to set the color state of the editor
 const ColorPicker = ({
     selectedNote,
-    setBackColor
+    setBackColor,
+    setHasChanged
 }) => {
     
     return (
@@ -75,7 +77,7 @@ const ColorPicker = ({
         >
             <div className='picker'>
                 <GithubPicker 
-                    onChange={(color)=> setColor(color, selectedNote, setBackColor)}
+                    onChange={(color)=> setColor(color, selectedNote, setBackColor, setHasChanged)}
                     colors={['#B80000', '#DB3E00', '#FCCB00', '#008B02', '#006B76', '#1273DE', '#5300EB', '#ededed']}
                     triangle='hide'
                 />

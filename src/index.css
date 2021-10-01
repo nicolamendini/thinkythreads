@@ -217,6 +217,7 @@ textarea:focus {
 }
 
 .editor{
+	min-height: 50vh;
 	overflow-y: auto;
 }
 
