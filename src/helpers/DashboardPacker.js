@@ -73,7 +73,7 @@ export function getSearchFromProps(newDashboard, searchProps){
         }
         else{
             removingIdxs.push(i)
-            //errorAlert('noteOfSearchNotFoundError!', key, newDashboard)
+            errorAlert('noteOfSearchNotFoundError!', key, newDashboard)
         }
     }
 
@@ -83,19 +83,19 @@ export function getSearchFromProps(newDashboard, searchProps){
         updateConfigFile(newDashboard)
     }
 
-    if(newDashboard.notesOrder.length !== newDashboard.notes.size){
+    if(newDashboard.notesOrder.length && newDashboard.notesOrder.length !== newDashboard.notes.size){
         newDashboard.notesOrder = [...new Set([newDashboard.notesOrder, ...newDashboard.notes.keys()])]
         window.localStorage.setItem('notes-order', JSON.stringify(newDashboard.notesOrder))
         updateConfigFile(newDashboard)
-        ///window.alert(
-        ///    '-------- BETA VERSION ERROR REPORT ------- \n' + 
-        ///'---- PLEASE SHARE WITH THE DEVELOPER --- \n' +
-        ///'along with some info about what you did to get here \n' +
-        ///'EMAIL: nicolamendini0@gmail.com \n' +
-        ///'THANK YOU!' +
-        ///'\n\nERROR: \n' + 
-        ///'The order of the notes was lost'
-        ///)
+        window.alert(
+            '-------- BETA VERSION ERROR REPORT ------- \n' + 
+        '---- PLEASE SHARE WITH THE DEVELOPER --- \n' +
+        'along with some info about what you did to get here \n' +
+        'EMAIL: nicolamendini0@gmail.com \n' +
+        'THANK YOU!' +
+        '\n\nERROR: \n' + 
+        'The order of the notes was lost'
+        )
     }
 
     newDashboard.search = newSearch
