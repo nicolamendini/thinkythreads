@@ -56,6 +56,11 @@ const NotesList = ({
 		setCurrentSlice(currentSlice+dir)
 	}
 
+	const slicedNotes = notes.slice(currentSlice*SLICESIZE, (currentSlice+1)*SLICESIZE+SLICESIZE)
+	if(!slicedNotes.length && currentSlice!==0){
+		setCurrentSlice(0)
+	}
+
 	return (
 
 			<Droppable 
@@ -104,7 +109,7 @@ const NotesList = ({
 								}
 							</div>
 
-							{notes.slice(currentSlice*SLICESIZE, (currentSlice+1)*SLICESIZE+SLICESIZE).map((note, index) => (
+							{slicedNotes.map((note, index) => (
 
 								<Note
 									key={note.ui_id}

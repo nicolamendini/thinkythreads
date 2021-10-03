@@ -7,7 +7,7 @@ Contains functions that help the retrieval of notes on GDrive
 */
 
 import { shareDriveFolderId, db } from "../components/Dashboard";
-import { createThumbnail } from "./DashboardUtils";
+import { createThumbnail, removeElementAt } from "./DashboardUtils";
 import { getMediaRequestById, errorCatcher, sendUpdateRequest } from "./RequestsMakers";
 import { updateConfigFile, removeNoteFile } from "./BackupHelper";
 
@@ -398,6 +398,10 @@ export function setConfigFromDrive(newDashboard, config, packDashboard){
             // no need to call the note deleter because there will be no dependencies
             // as all the other local notes have already been updated
             newDashboard.notes.delete(deletedNote)
+            const index = newDashboard.notesOrder.find(id => id===deletedNote)
+            if(index){
+                newDashboard.notesOrder = removeElementAt(newDashboard.notesOrder, index)
+            }
         }
     }
 
@@ -430,7 +434,7 @@ export function setConfigFromDrive(newDashboard, config, packDashboard){
     window.localStorage.setItem('notes-ever-deleted', JSON.stringify(newDashboard.notesEverDeleted))
 
     // Tell the dashboard that the restoring is complete and backup the new order
-    newDashboard.checkedAgainstDrive=true
+    newDashboard.checkedAgainstDrive = true
     packDashboard(newDashboard)
 }
 
@@ -464,11 +468,11 @@ export function updateDriveNotes(
         updatesCounter+=1
         setTimeout(() => {
             removeNoteFile({id: removedNoteId}, deletedNotes, setDeletedNotes)
-        }, (200 * updatesCounter))
+        }, (300 * updatesCounter))
     }
 
     // Once finished update the config file on drive
-    newDashboard.checkedAgainstDrive=true
+    newDashboard.checkedAgainstDrive = true
     if(updatesCounter || !notesOnDrive.configFound){
         updateConfigFile(newDashboard)
     }

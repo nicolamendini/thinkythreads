@@ -86,7 +86,7 @@ export function noteDeleter(
 
         // if possible, backup the removal and update the .config file on drive
         if(driveBackupAuthorised){
-            removeNoteFile(noteToRemove, newDeletedNotes, setDeletedNotes, setNotesUpdating);
+            removeNoteFile(noteToRemove, newDeletedNotes, setDeletedNotes, setNotesUpdating)
             updateConfigFile(newDashboard)
         }
 
