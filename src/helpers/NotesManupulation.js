@@ -85,6 +85,8 @@ export function removeFromBranches (newDashboard, noteFrom, noteToDel) {
 // threads or collections or branches
 export function forceRemove(newDashboard, targetNoteId, setNotesUpdating){
     var presenceCheck = false
+    var updatesCounter = 0
+
     for(const [, note] of newDashboard.notes){
 
         // remove all branches occurrences
@@ -114,7 +116,10 @@ export function forceRemove(newDashboard, targetNoteId, setNotesUpdating){
 
         // if any changes have been made to the current note, backup
         if(presenceCheck){
-            backupNote(note, 'meta', setNotesUpdating)
+            updatesCounter+=1
+            setTimeout(() => {
+                backupNote(note, 'meta', setNotesUpdating)
+            }, (200 * updatesCounter))
         }
 
         presenceCheck = false           
@@ -124,6 +129,7 @@ export function forceRemove(newDashboard, targetNoteId, setNotesUpdating){
 // Link all the pairwise consecutive notes of a thread
 export function linkThreadNotes(newDashboard, thread, setNotesUpdating){
 
+    var updatesCounter=0
     // go through the whole thread and add the branch
     for(let i=1; i<thread.length; i++){
         const noteFrom = newDashboard.notes.get(thread[i-1])
@@ -131,8 +137,11 @@ export function linkThreadNotes(newDashboard, thread, setNotesUpdating){
 
         // if successful, backup
         if(addToBranches(noteFrom, noteToAdd)){
-            backupNote(noteFrom, 'meta', setNotesUpdating)
-            backupNote(noteToAdd, 'meta', setNotesUpdating)
+            updatesCounter+=1
+            setTimeout(() => {
+                backupNote(noteFrom, 'meta', setNotesUpdating)
+                backupNote(noteToAdd, 'meta', setNotesUpdating)
+            }, (200 * updatesCounter))
         }
     }
 }

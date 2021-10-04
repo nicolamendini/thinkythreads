@@ -134,7 +134,7 @@ export function callSetConfig(
     // otherwise initialise a new random order for the notes
     // this might happen if the config file is deleted
     else if (forceFlag){
-        newDashboard.notesOrder = [...newDashboard.notes.keys()]
+        newDashboard.notesOrder = [...new Set([newDashboard.notesOrder, ...newDashboard.notes.keys()])]
         newDashboard.checkedAgainstDrive = true
         updateConfigFile(newDashboard)
         packDashboard(newDashboard)
@@ -468,12 +468,15 @@ export function updateDriveNotes(
         updatesCounter+=1
         setTimeout(() => {
             removeNoteFile({id: removedNoteId}, deletedNotes, setDeletedNotes)
-        }, (300 * updatesCounter))
+        }, (200 * updatesCounter))
     }
 
     // Once finished update the config file on drive
     newDashboard.checkedAgainstDrive = true
     if(updatesCounter || !notesOnDrive.configFound){
+        if(newDashboard.notesOrder.length!==newDashboard.notes.size){
+            newDashboard.notesOrder = [...new Set([...newDashboard.notesOrder, ...[...newDashboard.notes.keys()]])]
+        }
         updateConfigFile(newDashboard)
     }
 

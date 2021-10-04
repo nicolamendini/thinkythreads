@@ -9,7 +9,7 @@ in the framework of React Beautiful Dnd
 
 import Note from './Note';
 import {Droppable} from 'react-beautiful-dnd';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {FcNext, FcPrevious, FcPlus} from 'react-icons/fc';
 import Wrapper from './Wrapper';
 import React from 'react'
@@ -35,7 +35,39 @@ const NotesList = ({
 }) => {
 
 	// State that defines the slice the user is at
-	const [currentSlice, setCurrentSlice] = useState(0);
+	const [currentSlice, setCurrentSlice] = useState(
+		window.sessionStorage.getItem('current-slice-'+areaName) ? 
+		parseInt(window.sessionStorage.getItem('current-slice-'+areaName)) :
+		0
+	)
+	// State to hide the NotesList until the scroll is performed, used to avoid flickering
+	const [isVisible, setIsVisible] = useState(false)
+
+	// Effect to set back the scroll once exiting the editor
+	useEffect(() => {
+		const slicedNotes = notes.slice(currentSlice*SLICESIZE, (currentSlice+1)*SLICESIZE+SLICESIZE)
+		var scrollSucceded=false
+
+		// If there is a selectedNote to scroll to, do it
+		if(selectedNote){
+			const focusPos = slicedNotes.find(note => note.id === selectedNote.id)
+			if(focusPos){
+				const targetElement = document.getElementById(focusPos.ui_id)
+				if(targetElement){
+					targetElement.scrollIntoView({inline: 'center'})
+					scrollSucceded=true
+				}
+			}
+		}
+
+		// Otherwise, some search is performed but there are no notesin the current slices, go to slice 0
+		if(!slicedNotes.length && currentSlice!==0 && !scrollSucceded && areaName==='search-area'){
+			setCurrentSlice(0)
+			window.sessionStorage.setItem('current-slice-'+areaName, 0)
+		}
+		setIsVisible(true)
+	// eslint-disable-next-line
+	}, [notes])
 
 	// Function used to change slice based on which arrow button has been pressed
 	const align = (dir) => {
@@ -54,14 +86,14 @@ const NotesList = ({
 		// between slices
 		document.getElementById(notes[focusPos].ui_id).scrollIntoView(prop);
 		setCurrentSlice(currentSlice+dir)
+		window.sessionStorage.setItem('current-slice-'+areaName, currentSlice+dir)
 	}
 
 	const slicedNotes = notes.slice(currentSlice*SLICESIZE, (currentSlice+1)*SLICESIZE+SLICESIZE)
-	if(!slicedNotes.length && currentSlice!==0){
-		setCurrentSlice(0)
-	}
 
 	return (
+
+		<div style={{visibility: isVisible ? 'visible' : 'hidden'}}>
 
 			<Droppable 
 				droppableId={areaName} 
@@ -141,6 +173,7 @@ const NotesList = ({
 				)}
 
 			</Droppable>
+		</div>
 	);
 };
 

@@ -104,6 +104,7 @@ export function noteMerger(
             // start cleaning all the notes that have conflicts because they relied on the id
             // of noteB that now will not exist anymore
             var presenceCheck = false
+            var updatesCounter=0
 
             for(const [, note] of newDashboard.notes){
 
@@ -150,8 +151,12 @@ export function noteMerger(
             
                 // if any changes have been applied, backup the note
                 if(presenceCheck){
-                    backupNote(note, 'meta', setNotesUpdating)
+                    updatesCounter+=1
+                    setTimeout(() => {
+                        backupNote(note, 'meta', setNotesUpdating)
+                    }, (200 * updatesCounter))
                 }
+                
                 
                 presenceCheck = false
             }        

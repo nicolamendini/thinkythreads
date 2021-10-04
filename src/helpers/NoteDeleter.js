@@ -58,11 +58,15 @@ export function noteDeleter(
 
             // sanitise all the collections by simply removing the entry
             // no conflicts because collections have no links
+            var updatesCounter=0
             for(const [, note] of newDashboard.notes){
                 const removingIndex = note.collection.findIndex(id => id===removingId)
                 if(removingIndex!==-1){
-                    note.collection = removeElementAt(note.collection, removingIndex)
-                    backupNote(note, 'meta', setNotesUpdating)
+                    note.collection = removeElementAt(note.collection, removingIndex)   
+                    updatesCounter+=1
+                    setTimeout(() => {
+                        backupNote(note, 'meta', setNotesUpdating)
+                    }, (200 * updatesCounter))
                 }
 
             }
