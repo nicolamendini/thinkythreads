@@ -60,7 +60,7 @@ textarea:focus {
 }
 
 .note {
-	font-size: 14px;
+	font-size: 13px;
 	border-radius: 10px;
 	padding: 5px;
 	display: flex;
@@ -179,7 +179,7 @@ textarea:focus {
 .stripe-label {
 	display: flex;
 	margin: 1.5vh 5% 1.2vh 4%;
-	font: bold 12px 'Montserrat';
+	font: bold 11px 'Montserrat';
 	color: rgb(120, 120, 120);
 	justify-content: space-between;
 	height: 14px;
@@ -188,7 +188,7 @@ textarea:focus {
 .wrapper {
 	display: flex;
 	border-radius: 10px;
-	font: 14px 'Avenir Next';
+	font: 13px 'Avenir Next';
 	align-items: center;
 	text-align: center;
 	color: #919191;
@@ -228,6 +228,7 @@ textarea:focus {
 
 .ql-editor{
 	font-family: 'Montserrat';
+	font-size: 13px;
 }
 
 li p{
