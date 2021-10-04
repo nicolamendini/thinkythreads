@@ -49,7 +49,7 @@ const SearchBar = ({
 					/>
 
 					<span 
-						className='searchFilter tools-btn' 
+						className='search-filter tools-btn' 
 						style={searchProps.threadFilter ?  {color:'red'} : {}}
 						onClick={() =>
 							setSearchProps({
@@ -62,7 +62,7 @@ const SearchBar = ({
 					</span>
 
 					<span 
-						className='searchFilter tools-btn'
+						className='search-filter tools-btn'
 						style={searchProps.collectionFilter ? {color:'red'} : {}}
 						onClick={() =>
 							setSearchProps({

@@ -34,10 +34,15 @@ const Footer = ({
     setCurrentPage,
     notesUpdating,
     loadedUser,
-    synchNotes
+    synchNotes,
+    darkMode
 }) => {
     return(
-        <div className='page-footer'>
+        <div className='page-footer'
+            style={{
+                borderTop: darkMode ? '1px solid #303030' : '1px solid #cccccc'
+            }}
+        >
             <FcSettings
                 className='tools-btn'
                 onClick={() => setCurrentPage('settings')}

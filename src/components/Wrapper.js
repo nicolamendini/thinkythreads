@@ -62,7 +62,7 @@ const Wrapper = ({
                             })
                         : 
                         darkMode ?
-                        {backgroundColor: 'white', minWidth:"2em"}
+                        {backgroundColor: '#4d4d4d', minWidth:"2em"}
                         :
                         {backgroundColor: '#e7e7e7', minWidth:"2em"}
                     }

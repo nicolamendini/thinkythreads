@@ -27,6 +27,7 @@ const EditorFooter = ({
     updateNote,
     editorState,
     deleteNote,
+    darkMode,
     exportThread,
     setBackColor
 }) => {
@@ -93,7 +94,10 @@ const EditorFooter = ({
     return(
 
         <div>
-            <div className='page-footer'>
+            <div className='page-footer' style={{
+                color: darkMode ? '#636363' : '#171717',
+                borderTop: darkMode ? '1px solid #303030' : '1px solid #cccccc'
+            }}>
 
                 <IoIosArrowRoundBack
                     className='tools-btn'

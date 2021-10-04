@@ -69,6 +69,7 @@ const NotesPage = ({
                 notesUpdating={notesUpdating}
                 loadedUser={GAPIloaded && currentUser}
                 synchNotes={synchNotes}
+                darkMode={darkMode}
             />
             
         </div>

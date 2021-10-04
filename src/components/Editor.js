@@ -146,8 +146,8 @@ const NoteEditor = ({
     return (
             <div className='container'
                 style={ darkMode ? (backColor!=='#ffffff' ? 
-                    {backgroundImage: 'linear-gradient(35deg, #999999 90%, ' + backColor + ' 90%)', color: 'white'} 
-                    : {backgroundColor: '#999999', color: 'white'}) :
+                    {backgroundImage: 'linear-gradient(35deg, #171717 90%, ' + backColor + ' 90%)', color: 'white'} 
+                    : {backgroundColor: '#171717', color: 'white'}) :
                     {backgroundColor: backColor}
                 }
             >
