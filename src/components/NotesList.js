@@ -11,7 +11,7 @@ import Note from './Note';
 import {Droppable} from 'react-beautiful-dnd';
 import { useEffect, useState } from 'react';
 import {FcNext, FcPrevious, FcPlus} from 'react-icons/fc';
-//import { VscAdd } from 'react-icons/vsc'
+import { BsChevronRight, BsChevronLeft } from 'react-icons/bs';
 import { BsPlusSquare } from 'react-icons/bs'
 import Wrapper from './Wrapper';
 import React from 'react'
@@ -113,13 +113,21 @@ const NotesList = ({
 						id={areaName}
 						>
 							<div>
-								{currentSlice>0 && 
-									<FcPrevious 
-										className='tools-btn arrow-btn'
-										onClick={() => align(-1)}
-										size='2.5em'
-									/>
-								}
+								{currentSlice>0 ?
+									darkMode ?
+										<BsChevronLeft 
+											className='tools-btn arrow-btn'
+											onClick={() => align(-1)}
+											size='2.5em'
+											color='#666666'
+										/>
+									:
+										<FcPrevious 
+											className='tools-btn arrow-btn'
+											onClick={() => align(-1)}
+											size='2.5em'
+										/>
+								: null}
 							</div>
 
 							{(areaName==='workspace-area' && workspaceFlag) &&
@@ -173,13 +181,22 @@ const NotesList = ({
 							{provided.placeholder}
 
 							<div> 
-								{(currentSlice+1)*SLICESIZE+SLICESIZE<notes.length && 
-									<FcNext 
-										className='tools-btn arrow-btn'
-										onClick={() => align(1)}
-										size='2.5em'
-									/>
-								}
+								{(currentSlice+1)*SLICESIZE+SLICESIZE<notes.length ? 
+
+									darkMode ?
+										<BsChevronRight 
+											className='tools-btn arrow-btn'
+											onClick={() => align(1)}
+											size='2.5em'
+											color='#666666'
+										/>
+									:
+										<FcNext 
+											className='tools-btn arrow-btn'
+											onClick={() => align(1)}
+											size='2.5em'
+										/>
+								: null}
 							</div>
 					</ul>
 				)}

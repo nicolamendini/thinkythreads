@@ -30,9 +30,9 @@ const SearchBar = ({
                     ref={provided.innerRef} 
 				>
 					{darkMode ?
-					<BiSearchAlt className='search-icons' size='2em' />
+						<BiSearchAlt className='search-icons' size='2em' style={{transform: 'scale(0.8)'}}/>
 					:
-					<FcSearch className='search-icons' size='2em' />
+						<FcSearch className='search-icons' size='2em' />
 					}
 					{provided.placeholder}
 
