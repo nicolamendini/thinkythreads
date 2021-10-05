@@ -36,7 +36,7 @@ const LinksArea = ({
             {dashboard.notes.get(dashboard.selectedNoteId) && threadOrCollection && 
             <div>
 
-                <label className='stripe-label'>
+                <label className='stripe-label stripe-not-overflow' style={{width: '90vw'}}>
                     {!rootsOrBranches ? ' BRANCHES - ' : ' ROOTS - '}
                     {getCaption(dashboard.notes.get(dashboard.selectedNoteId))} 
                 </label>

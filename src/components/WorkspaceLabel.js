@@ -20,7 +20,7 @@ const WorkspaceLabel = ({
 return(
     <div className='stripe-label'>
 
-        <div className='stripe-not-overflow'>
+        <div className='stripe-not-overflow' style={{width: '80vw'}}>
 
             CURRENT {threadOrCollection ? ' THREAD ' : ' COLLECTION '} 
             {dashboard.openedWorkspaceId ?

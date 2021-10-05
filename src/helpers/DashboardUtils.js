@@ -38,7 +38,7 @@ export function truncString (string, n){
 
 // Gets a caption from a notes preview
 export function getCaption(targetNote){
-    return truncString(targetNote.preview.split('<br/>')[0].replace(/<[^>]*>?/gm, ''), 33)
+    return truncString(targetNote.preview.split('<br/>')[0].replace(/<[^>]*>?/gm, ''), 100)
 }
 
 // Check if the note defined by idx has any conflict with any other note

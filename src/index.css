@@ -322,7 +322,6 @@ li h2{
 }
 
 .stripe-not-overflow {
-	width: 80vw;
 	overflow: hidden;
 	white-space: nowrap;
 }

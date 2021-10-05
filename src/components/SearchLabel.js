@@ -21,7 +21,7 @@ const SearchLabel = ({
     return(
         <div className='stripe-label'>
 
-            <div className='stripe-not-overflow'>
+            <div className='stripe-not-overflow' style={{width: '80vw'}}>
                 NOTE FINDER  
                 {searchProps.threadFilter && ' - THREADS'} 
                 {searchProps.collectionFilter && ' - COLLECTIONS'}
