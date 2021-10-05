@@ -58,13 +58,13 @@ const Wrapper = ({
                                 threadOrCollection ? {backgroundColor:'#fef3bd'} 
                                 : {backgroundColor:'#c4def6'}
                             ), 
-                            ...(!snapshot.isDraggingOver && {minWidth:"2em"})
+                            ...(!snapshot.isDraggingOver && {minWidth:"8vh"})
                             })
                         : 
                         darkMode ?
-                        {backgroundColor: '#4d4d4d', minWidth:"2em"}
+                        {backgroundColor: '#2e2e2e', minWidth:"8vh", color: '#666666'}
                         :
-                        {backgroundColor: '#e7e7e7', minWidth:"2em"}
+                        {backgroundColor: '#e7e7e7', minWidth:"8vh"}
                     }
                 >
 
@@ -77,7 +77,7 @@ const Wrapper = ({
                     
                         (notesLength > 0 ?
                             (
-                                <div style={{paddingLeft:'15px'}}>
+                                <div className='vertical-text'>
                                     wrap <br></br> 
                                     {threadOrCollection ? ' thread ' : ' collection '}
                                     <br></br> 
@@ -86,7 +86,7 @@ const Wrapper = ({
                             ) 
                         :
                             (
-                                <div style={{paddingLeft:'15px'}}>
+                                <div className='vertical-text'>
                                     expand
                                     <br></br> 
                                     {draggableInfo.note.thread.length ? 

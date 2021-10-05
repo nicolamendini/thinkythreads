@@ -11,6 +11,8 @@ import Note from './Note';
 import {Droppable} from 'react-beautiful-dnd';
 import { useEffect, useState } from 'react';
 import {FcNext, FcPrevious, FcPlus} from 'react-icons/fc';
+//import { VscAdd } from 'react-icons/vsc'
+import { BsPlusSquare } from 'react-icons/bs'
 import Wrapper from './Wrapper';
 import React from 'react'
 
@@ -132,12 +134,22 @@ const NotesList = ({
 							}
 
 							<div>
-								{(areaName==='search-area' && currentSlice===0) && 
-									<FcPlus 
+								{(areaName==='search-area' && currentSlice===0) &&
+									(darkMode ?
+									<BsPlusSquare 
 										className='tools-btn arrow-btn add-btn'
 										onClick={() => handleAddNote()}
-										size='2.5em'
+										size='2.25em'
+										color='#555555'
+										style={{transform: 'scale(0.8)'}}
 									/>
+									:
+									<FcPlus
+										className='tools-btn arrow-btn add-btn'
+										onClick={() => handleAddNote()}
+										size='2.25em'
+									/>
+									)
 								}
 							</div>
 

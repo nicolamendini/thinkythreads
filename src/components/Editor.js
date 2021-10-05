@@ -153,7 +153,7 @@ const NoteEditor = ({
             >
                 <div className="editor no-scrollbar" id="editor">
                     <ReactQuill 
-                        style={{zoom: 1.4}}
+                        style={{zoom: 1.4} }
                         theme="snow"
                         value={editorState}
                         onChange={(value, delta) => handleChange(value, delta, editorRef, setEditorState)}

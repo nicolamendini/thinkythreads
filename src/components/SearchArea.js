@@ -40,6 +40,7 @@ const SearchArea = ({
                 setSearchProps={setSearchProps} 
                 searchProps={searchProps}
                 isDropDisabled={isDropDisabled}
+                darkMode={darkMode}
             />
 
             {!threadOrCollection ?

@@ -7,6 +7,9 @@ Defines the buttons of the footer and calls the respective functions
 */
 
 import { FcIdea, FcSettings, FcParallelTasks, FcBrokenLink, FcLink, FcImport, FcCheckmark, FcCancel} from 'react-icons/fc'
+import { AiOutlineDisconnect, AiOutlineLink, AiOutlineBranches, AiOutlineImport, AiOutlineStop } from 'react-icons/ai';
+import { GoLightBulb } from 'react-icons/go';
+import { VscSettingsGear, VscCheck, VscSync } from 'react-icons/vsc';
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import Loader from "react-loader-spinner";
 import { driveNotConnected, mergeModeOn } from '../helpers/Messages';
@@ -43,67 +46,142 @@ const Footer = ({
                 borderTop: darkMode ? '1px solid #303030' : '1px solid #cccccc'
             }}
         >
-            <FcSettings
-                className='tools-btn'
-                onClick={() => setCurrentPage('settings')}
-                size='2.5em'
-            />
-
-            {!threadOrCollection &&
-                <FcBrokenLink
-                    onClick={() =>
-                        threadOrCollectionManage(
-                            !threadOrCollection
-                        )
-                    }
-                    size='2.5em'
+            {darkMode ?
+                <VscSettingsGear
                     className='tools-btn'
+                    onClick={() => setCurrentPage('settings')}
+                    size='2.5em'
+                    style={{transform: 'scale(0.75)'}}
+                />
+                :
+                <FcSettings
+                    className='tools-btn'
+                    onClick={() => setCurrentPage('settings')}
+                    size='2.5em'
                 />
             }
 
-            {threadOrCollection &&
-                <FcLink
-                    onClick={() =>
-                        threadOrCollectionManage(
-                            !threadOrCollection
-                        )
-                    }
-                    size='2.5em'
-                    className='tools-btn'
-                />
+            {!threadOrCollection ? (
+                darkMode ? 
+                    <AiOutlineDisconnect
+                        onClick={() =>
+                            threadOrCollectionManage(
+                                !threadOrCollection
+                            )
+                        }
+                        size='2.5em'
+                        className='tools-btn'
+                        style={{transform: 'rotate(45deg) scale(0.85)'}}
+                    />
+                :
+                    <FcBrokenLink
+                        onClick={() =>
+                            threadOrCollectionManage(
+                                !threadOrCollection
+                            )
+                        }
+                        size='2.5em'
+                        className='tools-btn'
+                    />
+            )
+            :
+            (
+                darkMode ?
+                    <AiOutlineLink
+                        onClick={() =>
+                            threadOrCollectionManage(
+                                !threadOrCollection
+                            )
+                        }
+                        size='2.5em'
+                        className='tools-btn'
+                        style={{transform: 'rotate(45deg) scale(0.85)'}}
+                    />
+                :
+                    <FcLink
+                        onClick={() =>
+                            threadOrCollectionManage(
+                                !threadOrCollection
+                            )
+                        }
+                        size='2.5em'
+                        className='tools-btn'
+                    />
+                )
             }
 
-            {threadOrCollection && 
-                <FcParallelTasks
-                    onClick={() =>
-                        setRootsOrBranches(
-                            (previous) => !previous
-                        )
-                    }
-                    size='2.5em'
-                    className='tools-btn'
-                    style={rootsOrBranches&&{transform: 'scaleX(-1)'}}
-                />
+            {threadOrCollection ? (
+                darkMode ?
+                    <AiOutlineBranches
+                        onClick={() =>
+                            setRootsOrBranches(
+                                (previous) => !previous
+                            )
+                        }
+                        size='2.1em'
+                        className='tools-btn'
+                        style={rootsOrBranches ? {transform: 'scaleX(-1) rotate(90deg)'} : {transform: 'rotate(90deg)'}}
+                    />
+                :
+                    <FcParallelTasks
+                        onClick={() =>
+                            setRootsOrBranches(
+                                (previous) => !previous
+                            )
+                        }
+                        size='2.5em'
+                        className='tools-btn'
+                        style={rootsOrBranches && {transform: 'scaleX(-1)'}}
+                    />
+            ) : null
             }
 
             {selectedNote ?
-                <FcImport
-                    onClick={() =>{
-                            setMergeMode(
-                                (previous) => !previous
-                            )
-                            if(!mergeMode){
-                                alert(mergeModeOn)
+                darkMode ?
+                    <AiOutlineImport
+                        onClick={() =>{
+                                setMergeMode(
+                                    (previous) => !previous
+                                )
+                                if(!mergeMode){
+                                    alert(mergeModeOn)
+                                }
                             }
                         }
-                    }
-                    size='2.3em'
-                    className='tools-btn'
-                    style={{transform:'scaleY(1.15) rotate(-90deg)'}}
-                />    
+                        size='1.8em'
+                        className='tools-btn'
+                        style={{transform:'scaleX(1.1) rotate(-90deg)'}}
+                    /> 
+                :
+                    <FcImport
+                        onClick={() =>{
+                                setMergeMode(
+                                    (previous) => !previous
+                                )
+                                if(!mergeMode){
+                                    alert(mergeModeOn)
+                                }
+                            }
+                        }
+                        size='2.3em'
+                        className='tools-btn'
+                        style={{transform:'scaleY(1.15) rotate(-90deg)'}}
+                    />    
             : null}
 
-            <FcIdea
+            {darkMode ?
+                <GoLightBulb
+                    onClick={() =>
+                        setDarkMode(
+                            (previousDarkMode) => !previousDarkMode
+                        )
+                    }
+                    size='2.5em'
+                    className='tools-btn'
+                    style={{transform: 'scaleY(0.7) scaleX(0.7)'}}
+                />  
+            :
+                <FcIdea
                 onClick={() =>
                     setDarkMode(
                         (previousDarkMode) => !previousDarkMode
@@ -111,29 +189,52 @@ const Footer = ({
                 }
                 size='2.5em'
                 className='tools-btn'
-            />  
+                />  
+            }
 
             {loadedUser ? (
                 notesUpdating>0?
 
-                    <Loader 
-                        type="Circles" 
-                        color="#00BFFF" 
-                        height='1.8em'
-                        width='2.3em'
-                    /> :
+                    darkMode ? 
+                        <VscSync 
+                            size='2em'
+                        /> 
+                    :
+                        <Loader 
+                            type="Circles" 
+                            color="#00BFFF" 
+                            height='1.8em'
+                            width='2.3em'
+                        /> 
 
-                    <FcCheckmark
-                        size='2.3em'
-                        className='tools-btn'
-                        onClick={()=>synchNotes()}
-                    />
+                :
+
+                    darkMode ? 
+                        <VscCheck
+                            size='2em'
+                            className='tools-btn'
+                            onClick={()=>synchNotes()}
+                            style={{transform: 'scaleY(0.85)'}}
+                        />
+                    :
+                        <FcCheckmark
+                            size='2.3em'
+                            className='tools-btn'
+                            onClick={()=>synchNotes()}
+                        />
             ) :
 
-            <FcCancel
-                size='2.3em'
-                onClick={()=>alert(driveNotConnected)}
-            />
+            darkMode ?
+                <AiOutlineStop
+                    size='1.8em'
+                    onClick={()=>alert(driveNotConnected)}
+                    style={{transform: 'scaleX(-1)'}}
+                />
+            :
+                <FcCancel
+                    size='2.3em'
+                    onClick={()=>alert(driveNotConnected)}
+                />
             }
 
         </div>
