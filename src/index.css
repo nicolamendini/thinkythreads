@@ -119,6 +119,10 @@ textarea:focus {
 	border: solid 1px rgb(179, 179, 179);
 }
 
+input:focus{
+    outline: none;
+}
+
 .search-bright {
 	display: flex;
 	background-color: white;
@@ -160,6 +164,7 @@ textarea:focus {
 	width: 100%;
 	font: 16px 'Montserrat';
 	padding-left: 10px;
+	color: white;
 }
 
 .search input:focus {
