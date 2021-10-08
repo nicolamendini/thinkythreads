@@ -30,7 +30,7 @@ export function setNoteFromResp(
     // create the note object and add the text field and version
     const newNote = JSON.parse(metaResp.result.files[currIdx].description)
     newNote.text = mediaResp.body;
-    newNote.version = metaResp.result.files[currIdx].appProperties.version
+    newNote.version = parseInt(metaResp.result.files[currIdx].appProperties.version)
 
     // add it to the dashboard and backup locally
     newDashboard.notes.set(newNote.id, newNote);
@@ -226,14 +226,15 @@ export function setNotesPageFromResp(
         
         // else if the file was not a deleted one, add it to notesOnDrive
         else if(!deletedNotes.includes(noteId)){
+            const driveNoteVersion = parseInt(noteFile.appProperties.version)
             notesOnDrive.set(
                 noteId, 
-                noteFile.appProperties.version
+                driveNoteVersion
             )
 
             // retrieve the note and check that it exists
             const note = newDashboard.notes.get(noteId)
-            if(!note || noteFile.appProperties.version>note.version){
+            if(!note || driveNoteVersion>note.version){
             
                 // if not retrieve its media and download it
                 // if even a single file is more updated than its local counterpart,
@@ -467,7 +468,8 @@ export function updateDriveNotes(
 
         updatesCounter+=1
         setTimeout(() => {
-            removeNoteFile({id: removedNoteId}, deletedNotes, setDeletedNotes)
+            setNotesUpdating((prev) => prev+1)
+            removeNoteFile({id: removedNoteId}, deletedNotes, setDeletedNotes, setNotesUpdating)
         }, (200 * updatesCounter))
     }
 

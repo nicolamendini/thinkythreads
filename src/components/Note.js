@@ -59,7 +59,7 @@ const Note = ({
 						{...provided.draggableProps}
 						{...provided.dragHandleProps}
 						onClick={()=> {handleNotePress(note)}}
-						onDoubleClick={()=> areaName!=='branches-area' ? openEditor() : {}}
+						onDoubleClick={()=> openEditor()}
 						style={
 							!(mergeMode && selectedNote.id===note.id) ? (
 								!darkMode && note.color!=='#ffffff' ? 

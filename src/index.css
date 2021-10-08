@@ -251,7 +251,7 @@ input:focus{
 }
 
 .editor{
-	min-height: 50vh;
+	min-height: 90vh;
 	overflow-y: auto;
 }
 

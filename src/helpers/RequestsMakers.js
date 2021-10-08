@@ -9,7 +9,7 @@ functions, define the requests bodies
 
 import { shareDriveFolderId, db , driveBackupAuthorised} from "../components/Dashboard"
 import { createThumbnail } from "./DashboardUtils"
-import { updateNoteFile } from "./BackupHelper"
+import { updateNoteFile, removeNoteFile } from "./BackupHelper"
 
 // Function to create a Media Update request
 // it changes the content of the file to be the text of the note
@@ -106,7 +106,7 @@ export function errorCatcher(error, counter, targetFunction, ...args){
 
         // If the function to call again is update and max calls have been attempted, 
         //subtract one from the counter because the backup will be interrupted
-        if(targetFunction===updateNoteFile){
+        if(targetFunction===updateNoteFile || targetFunction===removeNoteFile){
             const setNotesUpdating=args[2]
             setNotesUpdating((prev) => prev-1)
         }
@@ -119,7 +119,7 @@ export function errorCatcher(error, counter, targetFunction, ...args){
 export function backupNote(note, metaOrMedia, setNotesUpdating){
 
     // Increment the notes version and make a copy of it that will be backed up
-    note.version += 1
+    note.version = parseInt(note.version) + 1
     const noteCopy = {...note}
 
     // If the note contains an image, backup the original text and reset the 

@@ -160,4 +160,23 @@ export const suspenseLoader = (
     </div>
 )
 
+// Utils function to see if two arrays are equal in a shallow way
+export function arraysEqual(array1, array2){
+    var areDifferent = false
+    // if length is different, changes are sure
+    if(array1.length!==array2.length){
+        areDifferent=true
+    }
+
+    // otherwise check element by element
+    else{
+        for(let i=0; i<array1.length; i++){
+            if(array1[i]!==array2[i]){
+                areDifferent=true
+            }
+        }
+    }
+    return areDifferent
+}
+
 

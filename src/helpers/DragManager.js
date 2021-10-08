@@ -63,9 +63,7 @@ export function dragManager(
             // to the collection and update the dashboard
             else{
                 if(!dashboard.openedWorkspaceId ||
-                (
-                    dashboard.openedWorkspaceId && 
-                    dashboard.openedWorkspaceId!==targetId)
+                    dashboard.openedWorkspaceId!==targetId
                 ){
                     if(!dashboard.workspaceIds.includes(targetId)){
                         const newDashboard = {...dashboard}
@@ -140,8 +138,10 @@ export function dragManager(
 
                 // only if not trying to move between pinned notes
                 if(
-                !targetNote.pinned && 
-                !sourceNote.pinned
+                !(
+                    (!targetNote.pinned && sourceNote.pinned) ||
+                    (!sourceNote.pinned && targetNote.pinned)
+                )
                 ){
                         
                     // reorder the notes
@@ -238,7 +238,7 @@ export function dragManager(
             }
             else{
                 const newDashboard = {...dashboard}
-                addToWorkspace(dashboard.links[result.source.index].id, result.destination.index);
+                addToWorkspace(newDashboard, dashboard.links[result.source.index].id, result.destination.index);
                 getLinksFromProps(newDashboard, rootsOrBranches, setNotesUpdating)
                 getWorkspace(newDashboard)
                 setDashboard(newDashboard)

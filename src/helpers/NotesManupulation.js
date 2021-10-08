@@ -9,7 +9,7 @@ eg: add/remove links or edit threads
 
 import { LINKSLIMIT } from "../components/Dashboard";
 import { backupNote } from "./RequestsMakers";
-import { addElementAt, getCaption, removeElementAt } from "./DashboardUtils";
+import { addElementAt, arraysEqual, getCaption, removeElementAt } from "./DashboardUtils";
 import { alreadyIn, mergeBothCardsOccupied } from "./Messages";
 
 // Function to add a note to a thread if the element is not the opened thread itself
@@ -197,12 +197,12 @@ export function openInWorkspace(workspaceMode, newDashboard, setNotesUpdating, t
 
     // if it is thread mode, open the thread
     if(workspaceMode){
-        newDashboard.workspaceIds = selectedNote.thread;
+        newDashboard.workspaceIds = [...selectedNote.thread]
     }
 
     // otherwise open the collection
     else{
-        newDashboard.workspaceIds = selectedNote.collection;
+        newDashboard.workspaceIds = [...selectedNote.collection]
     }
 
     // set the openedWorkspaceId as the id of the note we want to open
@@ -224,18 +224,35 @@ export function closeAndSaveWorkspace(leaveOpen, newDashboard, setNotesUpdating,
     // otherwise if there is an openedWorkspaceId, save the thread or collection in there
     else if(newDashboard.openedWorkspaceId){
         const targetNote = newDashboard.notes.get(newDashboard.openedWorkspaceId)
+        // flag to check if any changes occurred and therefore if there needs to be backup
+        var anyChangesFlag=false
 
         if(threadOrCollection){
-            targetNote.thread = newDashboard.workspaceIds;
 
-            linkThreadNotes(newDashboard, targetNote.thread, setNotesUpdating)
+            anyChangesFlag = arraysEqual(targetNote.thread, newDashboard.workspaceIds)
+
+            // if changes, assign and relink
+            if(anyChangesFlag){
+                targetNote.thread = newDashboard.workspaceIds;
+                linkThreadNotes(newDashboard, targetNote.thread, setNotesUpdating)
+            }
         }
+
         else{
-            targetNote.collection = newDashboard.workspaceIds;
+            
+            anyChangesFlag = arraysEqual(targetNote.collection, newDashboard.workspaceIds)
+
+            if(anyChangesFlag){
+                targetNote.collection = newDashboard.workspaceIds
+            }
+        }
+
+        // if any changes, backup the note
+        if(anyChangesFlag){
+            backupNote(targetNote, 'meta', setNotesUpdating)
         }
 
         newDashboard.openedWorkspaceId = null;
-        backupNote(targetNote, 'meta', setNotesUpdating)
     }
 
     newDashboard.workspaceIds = [];

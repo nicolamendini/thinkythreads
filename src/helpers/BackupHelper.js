@@ -44,7 +44,7 @@ export function updateNoteFile(note, mediaOrMeta, setNotesUpdating, counter){
 
             // create it by calling this function again in media mode
             createNoteFile(note).then(() => {
-
+                
                 if(mediaOrMeta!=='meta'){
                     updateNoteFile(note, 'media', setNotesUpdating)
                 }
@@ -78,8 +78,7 @@ export function updateNoteFile(note, mediaOrMeta, setNotesUpdating, counter){
             else if(mediaOrMeta==='meta'){
                 requestFunction = getMetaUpdateRequest
             }
-            requestFunction(note, fileId).then(function() {
-
+            requestFunction(note, fileId).then(function(resp) {
                 // if the request is both, update meta as well after updating media
                 if(mediaOrMeta==='both'){
                     updateNoteFile(note, 'meta', setNotesUpdating)
@@ -177,6 +176,7 @@ export function removeNoteFile(note, deletedNotes, setDeletedNotes, setNotesUpda
 
                 // if successful, delete from tracker as well
                 removeFromDeletionTracker(note, deletedNotes, setDeletedNotes)
+                setNotesUpdating((prev) => prev-1)
 
             }).catch((error) => 
                 errorCatcher(

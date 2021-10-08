@@ -237,20 +237,20 @@ const Dashboard = ({
         // And backup the meta of the note that contains the collection
         if(newDashboard.openedCollectionId){
             const collectionNote = newDashboard.notes.get(newDashboard.openedCollectionId)
-            collectionNote.collection.push(newNote.id);
+            collectionNote.collection.push(newNote.id)
             backup(collectionNote, 'meta')
         }
 
         // Update the dashboard and open the editor component
-		packDashboard(newDashboard);
-        setCurrentPage('editor');
+		packDashboard(newDashboard)
+        setCurrentPage('editor')
 
         // Backup the new note and the notes order
         backup(newNote, 'meta')
         if(driveBackupAuthorised){
             updateConfigFile(newDashboard)
         }
-	};
+	}
 
     // Update a note after the editor is closed
     const updateNote = async (newSelectedNote, action) => {
