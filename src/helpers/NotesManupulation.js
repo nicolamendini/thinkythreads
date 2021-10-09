@@ -160,16 +160,12 @@ export function wrapWorkspace(newDashboard, targetNoteId, setNotesUpdating, thre
             // if thread mode, add to the thread of the note and set color to yellow
             if(threadOrCollection){
                 targetNote.thread = newDashboard.workspaceIds;
-                targetNote.color = '#fef3bd';
-                targetNote.colorPreview = '#fccb00';
                 linkThreadNotes(newDashboard, targetNote.thread, setNotesUpdating)
             }
 
             // if collection mode, add to the collection of the note and set color to blue
             else{
                 targetNote.collection = newDashboard.workspaceIds;
-                targetNote.color = '#c4def6';
-                targetNote.colorPreview = '#1273de';
             }
 
             // set the wrapping note as the selectedNote
@@ -264,8 +260,10 @@ export function noteSelector(noteToSelect, mergeMode, setMergeMode, dashboard, s
     // If the mergeMode is not on, select a new note and update the links
     if(!mergeMode){
         if(!dashboard.selectedNoteId || dashboard.selectedNoteId!==noteToSelect.id){
+            // this is done to make the update efective immediately and mitigate wrong renders
+            dashboard.selectedNoteId=noteToSelect.id
             const newDashboard = {...dashboard}
-            newDashboard.selectedNoteId = noteToSelect.id;
+            newDashboard.selectedNoteId = noteToSelect.id
             getLinks(newDashboard)
             setDashboard(newDashboard)
         } 

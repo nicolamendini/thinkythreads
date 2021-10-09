@@ -11,7 +11,6 @@ for the note from a selection of pastel colors
 import { GithubPicker } from "react-color"
 import { BsDropletHalf } from "react-icons/bs"
 import Popup from "reactjs-popup"
-import React from 'react'
 
 // Utils function needed to set the color through a switch
 // Takes the chosen color, the current selected note and 
@@ -49,7 +48,7 @@ const setColor = (color, selectedNote, setBackColor, setHasChanged) => {
         default:
             break
     }
-    setBackColor(selectedNote.color)
+    setBackColor({color: selectedNote.color, colorPreview: selectedNote.colorPreview})
 }
 
 // Color Picker component
@@ -60,7 +59,7 @@ const ColorPicker = ({
     setBackColor,
     setHasChanged
 }) => {
-    
+
     return (
         <Popup
             trigger={
@@ -78,7 +77,7 @@ const ColorPicker = ({
             <div className='picker'>
                 <GithubPicker 
                     onChange={(color)=> setColor(color, selectedNote, setBackColor, setHasChanged)}
-                    colors={['#B80000', '#DB3E00', '#FCCB00', '#008B02', '#006B76', '#1273DE', '#5300EB', '#ededed']}
+                    colors={['#B80000', '#DB3E00', '#FCCB00', '#008B02', '#006B76', '#1273DE', '#5300EB', '#EDEDED']}
                     triangle='hide'
                 />
             </div>

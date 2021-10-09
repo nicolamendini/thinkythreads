@@ -1,5 +1,5 @@
 export const alreadyIn = 'cannot insert a note inside its own Thread or Collection'
-export const cleanWorkspace = 'Please clean your workspace before changing between Thread Mode and Collection Mode.'
+export const cleanWorkspace = 'Please close your workspace before changing between Thread Mode and Collection Mode.'
 export const charLimit = 'Character limit reached. Additional content will not be saved. Please start a new note instead.'
 export const mergeModeOn = 'Merge Mode is on, please select another card to merge to the pink card. The content, links and references of the card you select will be copied. If you want to exit it, press the button again.'
 export const driveNotConnected = 'Google Drive is not connected. Please Login from the Settings page to allow the backup.'

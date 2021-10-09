@@ -27,6 +27,7 @@ const modules = {
     toolbar: [ 
           'bold', 
           'italic', 
+          'underline',
           { 'color': [] }, 
           { 'background': [] },
           {'list': 'ordered'}, 
@@ -139,16 +140,16 @@ const NoteEditor = ({
     // State of the editor, contains the html of the text that is being inserted by the user
     const [editorState, setEditorState] = useState(selectedNote.text ? selectedNote.text : '');
     // State that stores the background color of a note
-    const [backColor, setBackColor] = useState(selectedNote.color)
+    const [backColor, setBackColor] = useState({color: selectedNote.color, colorPreview: selectedNote.colorPreview})
     // Reference to the Quill object so that it is possible to access its methods
     const editorRef = useRef(null);
 
     return (
             <div className='container'
-                style={ darkMode ? (backColor!=='#ffffff' ? 
-                    {backgroundImage: 'linear-gradient(35deg, #171717 90%, ' + backColor + ' 90%)', color: 'white'} 
+                style={ darkMode ? (backColor.color!=='#ffffff' ? 
+                    {backgroundImage: 'linear-gradient(30deg, #171717 94%, ' + backColor.colorPreview + ' 94%)', color: 'white'} 
                     : {backgroundColor: '#171717', color: 'white'}) :
-                    {backgroundColor: backColor}
+                    {backgroundColor: backColor.color}
                 }
             >
                 <div className="editor no-scrollbar" id="editor">

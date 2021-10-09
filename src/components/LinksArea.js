@@ -23,7 +23,8 @@ const LinksArea = ({
     threadOrCollection, 
     openEditor, 
     rootsOrBranches,
-    draggableInfo
+    draggableInfo,
+    selectNote
 }) => { 
 
     const isDropDisabled = 
@@ -49,7 +50,7 @@ const LinksArea = ({
                     selectedNote={dashboard.notes.get(dashboard.selectedNoteId)}
                     mergeMode={mergeMode}
                     threadOrCollection={threadOrCollection}
-                    openEditor={openEditor}
+                    openEditor={!mergeMode ? (note) => {dashboard.selectedNoteId=note.id; openEditor()} : () => {}}
                     rootsOrBranches={rootsOrBranches}
                     isDropDisabled={isDropDisabled}
                 />

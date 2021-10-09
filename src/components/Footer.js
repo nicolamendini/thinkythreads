@@ -40,6 +40,11 @@ const Footer = ({
     synchNotes,
     darkMode
 }) => {
+
+    const darkModeSwitch = () =>{
+        window.localStorage.setItem('dark-mode', !darkMode)
+        setDarkMode((previousDarkMode) => !previousDarkMode)
+    }
     return(
         <div className='page-footer'
             style={{
@@ -171,22 +176,14 @@ const Footer = ({
 
             {darkMode ?
                 <GoLightBulb
-                    onClick={() =>
-                        setDarkMode(
-                            (previousDarkMode) => !previousDarkMode
-                        )
-                    }
+                    onClick={() => darkModeSwitch()}
                     size='2.5em'
                     className='tools-btn'
                     style={{transform: 'scaleY(0.7) scaleX(0.7)'}}
                 />  
             :
                 <FcIdea
-                onClick={() =>
-                    setDarkMode(
-                        (previousDarkMode) => !previousDarkMode
-                    )
-                }
+                onClick={() => darkModeSwitch()}
                 size='2.5em'
                 className='tools-btn'
                 />  

@@ -11,7 +11,7 @@ import { PREVIEWLIMIT } from "../components/Dashboard";
 import Loader from 'react-loader-spinner';
 import React from 'react'
 
-const truncHtml = require('trunc-html');
+const truncate = require('truncate-html')
 
 // Adds element at a certain position
 export function addElementAt (sequence, position, element) {
@@ -38,7 +38,8 @@ export function truncString (string, n){
 
 // Gets a caption from a notes preview
 export function getCaption(targetNote){
-    return truncString(targetNote.preview.split('<br/>')[0].replace(/<[^>]*>?/gm, ''), 100)
+    const newPreview = targetNote.preview.replace('<br/>', '<br>')
+    return truncString(newPreview.split('<br>')[0].replace(/<[^>]*>?/gm, ''), 100)
 }
 
 // Check if the note defined by idx has any conflict with any other note
@@ -120,10 +121,11 @@ export function setPreview(note){
     }
 
     // remove all spaces to compute the preview
-    var preview = truncHtml(note.text.replace(
-            /<p><br\/><\/p>|<p>(\s|(&nbsp))*<\/p>|<img .*?>/gm,''), 
-            PREVIEWLIMIT
-        ).html
+    var preview = truncate.default(
+            note.text.replace(/<p><br\/><\/p>|<p>(\s|(&nbsp))*<\/p>|<img .*?>/gm,''), 
+            PREVIEWLIMIT,
+            {ellipsis: true}
+        )
 
     // if the preview is empty
     if(preview.replace( /(<([^>]+)>)/ig, '')===''){

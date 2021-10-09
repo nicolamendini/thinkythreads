@@ -113,6 +113,7 @@ const NoteDragContext = ({
                 openEditor={openEditor}
                 rootsOrBranches={rootsOrBranches}
                 draggableInfo={draggableInfo}
+                selectNote={selectNote}
             />
 
         </DragDropContext>

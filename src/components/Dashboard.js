@@ -133,6 +133,11 @@ const Dashboard = ({
             }
             packDashboard(newDashboard)
         })
+
+        const darkModeStored = window.localStorage.getItem('dark-mode')
+        if(darkModeStored){
+            setDarkMode(darkModeStored==='true')
+        }
     // eslint-disable-next-line
     },[])
 
@@ -316,13 +321,24 @@ const Dashboard = ({
     }
 
     // Function that changes the mode of the dashboard
-    // but it has to be empty otherwise show an alert
+    // but it has to be unwrapped otherwise show an alert
+    // if its unwrapped it switched by converting the workspace
+    // to get rid of repeated notes for collections
     const threadOrCollectionManage = async () => {
-        if(dashboard.workspaceIds.length){
+        if(dashboard.openedWorkspaceId){
             alert(cleanWorkspace)
         }
         else{
-            setThreadOrCollection(!threadOrCollection)
+            if(threadOrCollection){
+                const newDashboard = {...dashboard}
+                newDashboard.workspaceIds = [...new Set([...newDashboard.workspaceIds])]
+                getWorkspace(newDashboard)
+                setDashboard(newDashboard)
+                setThreadOrCollection(false)
+            }
+            else{
+                setThreadOrCollection(true)
+            }
         }
     }
 
