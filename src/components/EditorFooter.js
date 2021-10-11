@@ -29,7 +29,9 @@ const EditorFooter = ({
     deleteNote,
     darkMode,
     exportThread,
-    setBackColor
+    setBackColor,
+    threadCollectionSwap,
+    moveToTheEnd
 }) => {
 
     // State that defines whether the note is pinned, used to show the 
@@ -49,11 +51,14 @@ const EditorFooter = ({
     }
 
     // Function to save and exit the note when the back arrow is pressed
-    const saveAndExit = (action) => {
+    const saveAndExit = (action, moveToEndFlag) => {
 
-        if(selectedNote.text===editorState && !hasChanged){
+        if(selectedNote.text===editorState && !hasChanged && editorState!==''){
             setCurrentPage('notes')
             createThumbnail(selectedNote)
+            if(moveToEndFlag){
+                moveToTheEnd(selectedNote)
+            }
             return false
         }
 
@@ -77,7 +82,7 @@ const EditorFooter = ({
 
         // Otherwise save it and go back to the notes page
         else{
-            updateNote(selectedNote, action);
+            updateNote(selectedNote, action, moveToEndFlag);
             setCurrentPage('notes');
             return true;
         }
@@ -95,9 +100,9 @@ const EditorFooter = ({
 
         <div>
             <div className='page-footer' style={{
-                color: darkMode ? '#636363' : '#171717',
-                borderTop: darkMode ? '1px solid #303030' : '1px solid #cccccc'
-            }}>
+                color: darkMode ? '#636363' : '#171717'
+                }}
+            >
 
                 <IoIosArrowRoundBack
                     className='tools-btn'
@@ -137,6 +142,7 @@ const EditorFooter = ({
                     setOpen={setOpen}
                     saveAndExit={saveAndExit}
                     exportThread={exportThread}
+                    threadCollectionSwap={threadCollectionSwap}
                 />          
 
             </div>

@@ -55,8 +55,12 @@ const Wrapper = ({
                         notesLength > 0 ? (
                             {
                             ...(
-                                threadOrCollection ? {backgroundColor:'#fccb00', color:'black'} 
-                                : {backgroundColor:'#1273de', color:'white'}
+                                darkMode ?
+                                    threadOrCollection ? {backgroundColor:'#fccb00', color:'black'} 
+                                    : {backgroundColor:'#1273de', color:'white'}
+                                :
+                                    threadOrCollection ? {backgroundColor:'#fef3bd', color:'black'} 
+                                    : {backgroundColor:'#c4def6', color:'black'}
                             ), 
                             ...(!snapshot.isDraggingOver && {minWidth:"8vh"})
                             })

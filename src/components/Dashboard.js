@@ -12,13 +12,13 @@ Uses lazy loading since the components that it contains are big
 import { useState, useEffect, Suspense} from 'react';
 import React from 'react'
 import Dexie from 'dexie'
-import { createThumbnail, getNewNote} from "../helpers/DashboardUtils";
+import { createThumbnail, getNewNote, moveNoteInsideArea} from "../helpers/DashboardUtils";
 import { updateConfigFile, exportThreadGivenProps, checkDriveFolder} from '../helpers/BackupHelper';
 import { getAllNotes } from '../helpers/DownloadHelper';
 import { backupNote } from '../helpers/RequestsMakers';
 import { getSearchFromProps, getLinksFromProps, getWorkspace } from '../helpers/DashboardPacker';
 import { dragManager } from '../helpers/DragManager';
-import { closeAndSaveWorkspace, noteSelector } from '../helpers/NotesManupulation';
+import { closeAndSaveWorkspace, collectionToThread, linkThreadNotes, noteSelector, threadToCollection } from '../helpers/NotesManupulation';
 import { noteDeleter } from '../helpers/NoteDeleter';
 import { noteMerger } from '../helpers/NoteMerger';
 import { cleanWorkspace } from '../helpers/Messages';
@@ -83,8 +83,9 @@ const Dashboard = ({
     const [searchProps, setSearchProps] = useState({
         searchText:'', 
         threadFilter: false, 
-        collectionFilter: false
-    });
+        collectionFilter: false,
+        colorFilter: '#ededed'
+    })
 
     // State containing the deleted notes, used to remove them from drive 
     // in a second moment if there are internet interruptions
@@ -246,19 +247,20 @@ const Dashboard = ({
             backup(collectionNote, 'meta')
         }
 
-        // Update the dashboard and open the editor component
-		packDashboard(newDashboard)
-        setCurrentPage('editor')
-
         // Backup the new note and the notes order
+        db.notes.put(newNote)
         backup(newNote, 'meta')
         if(driveBackupAuthorised){
             updateConfigFile(newDashboard)
         }
+
+        // Update the dashboard and open the editor component
+		packDashboard(newDashboard)
+        setCurrentPage('editor')
 	}
 
     // Update a note after the editor is closed
-    const updateNote = async (newSelectedNote, action) => {
+    const updateNote = async (newSelectedNote, action, moveToEndFlag) => {
 
         // If the action selected from the editor was to get all the occurences,
         // open them in the workspace
@@ -271,6 +273,9 @@ const Dashboard = ({
         newDashboard.notes.set(newSelectedNote.id, newSelectedNote);
         newDashboard.selectedNoteId = newSelectedNote.id
 
+        if(moveToEndFlag){
+            moveToTheEnd(newSelectedNote, newDashboard)
+        }
         backup(newSelectedNote, 'both')
         packDashboard(newDashboard);
     }
@@ -430,6 +435,48 @@ const Dashboard = ({
         setDashboard(newDashboard)
     }
 
+    // swap between thread or collection
+    const threadCollectionSwap = (threadCollectionFlag) => {
+
+        const newDashboard = {...dashboard}
+        const selectedNote = newDashboard.notes.get(newDashboard.selectedNoteId)
+        if(threadCollectionFlag){
+            threadToCollection(selectedNote)
+        }
+        else{
+            collectionToThread(selectedNote)
+            linkThreadNotes(newDashboard, selectedNote.thread, setNotesUpdating)
+            if(newDashboard.openedCollectionId===newDashboard.selectedNoteId){
+                newDashboard.openedCollectionId=null
+            }
+        }
+        if(newDashboard.openedWorkspaceId===newDashboard.selectedNoteId){
+            setThreadOrCollection(!threadOrCollection)
+        }
+        packDashboard(newDashboard)
+        backup(selectedNote, 'meta')
+        setCurrentPage('notes')
+    }
+
+    // Function to move a note all the way to the end of the search
+    const moveToTheEnd = (note, newDashboard) => {
+
+        var performUpdate = false
+        if(!newDashboard){
+            performUpdate = true
+            newDashboard = {...dashboard}
+        }
+        newDashboard.notesOrder = moveNoteInsideArea(
+            newDashboard.notesOrder,
+            newDashboard.notesOrder.findIndex(id => id===note.id),
+            newDashboard.notesOrder.length-1
+        )
+        if(performUpdate){
+            getSearchFromProps(newDashboard, searchProps)
+            setDashboard(newDashboard)
+        }
+    }
+
 	return (
         <div>
 
@@ -473,6 +520,8 @@ const Dashboard = ({
                         deleteNote={deleteNote}
                         darkMode={darkMode}
                         exportThread={exportThread}
+                        threadCollectionSwap={threadCollectionSwap}
+                        moveToTheEnd={moveToTheEnd}
                     />
                 </Suspense>
             }

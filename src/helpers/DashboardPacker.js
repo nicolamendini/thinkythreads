@@ -32,6 +32,10 @@ export function getSearchFromProps(newDashboard, searchProps){
 
                 insertingNote=[note]
 
+                if(searchProps.colorFilter!=='#ededed' && searchProps.colorFilter!==note.colorPreview){
+                    insertingNote=[]
+                }
+
                 // if the thread filter and the collections filters are on but the note has none, remove it
                 if(insertingNote.length && searchProps.collectionFilter && searchProps.threadFilter){
                     if(!note.thread.length && !note.collection.length){

@@ -15,7 +15,20 @@ import Popup from "reactjs-popup"
 // Utils function needed to set the color through a switch
 // Takes the chosen color, the current selected note and 
 // A function to set the state of the editor
-const setColor = (color, selectedNote, setBackColor, setHasChanged) => {
+const setColor = (color, selectedNote, setBackColor, setHasChanged, setSearchProps) => {
+
+    // Only used if the picker is in the dashboard
+    if(setSearchProps){
+        setSearchProps(
+            (searchProps) => ({
+                searchText: searchProps.searchText, 
+                threadFilter: searchProps.threadFilter, 
+                collectionFilter: searchProps.collectionFilter,
+                colorFilter: color.hex
+            })
+        )
+        return 
+    }
 
     setHasChanged(true)
     selectedNote.colorPreview = color.hex;
@@ -57,17 +70,20 @@ const setColor = (color, selectedNote, setBackColor, setHasChanged) => {
 const ColorPicker = ({
     selectedNote,
     setBackColor,
-    setHasChanged
+    setHasChanged,
+    searchProps,
+    setSearchProps
 }) => {
 
     return (
         <Popup
             trigger={
-                <div>
-                    <BsDropletHalf
-                        className='tools-btn'
-                        size='1.6em'
-                    />
+                <div className='tools-btn' style={{color : searchProps ? searchProps.colorFilter : undefined, fontSize: '19px'}}>
+                    {searchProps ? '⬤' :
+                        <BsDropletHalf
+                            size='1.6em'
+                        />
+                    }
                 </div>
             } 
             nested
@@ -76,7 +92,7 @@ const ColorPicker = ({
         >
             <div className='picker'>
                 <GithubPicker 
-                    onChange={(color)=> setColor(color, selectedNote, setBackColor, setHasChanged)}
+                    onChange={(color)=> setColor(color, selectedNote, setBackColor, setHasChanged, setSearchProps)}
                     colors={['#B80000', '#DB3E00', '#FCCB00', '#008B02', '#006B76', '#1273DE', '#5300EB', '#EDEDED']}
                     triangle='hide'
                 />

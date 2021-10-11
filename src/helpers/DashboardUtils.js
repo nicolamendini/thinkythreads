@@ -77,7 +77,7 @@ export function createThumbnail(note){
     if(note.attachedImg.length){
         const [imgStart, imgEnd, isFirst] = note.attachedImg
         if(isFirst && note.text.length > imgEnd-imgStart){
-            note.text = note.text.substring(imgStart, imgEnd)
+            note.text = note.text.substring(imgStart, imgEnd).split('"')[0]
         }
     }
     else{
@@ -114,7 +114,7 @@ export function setPreview(note){
     // if so, set the note.attachedImg attribute with info about the position of the img in the html 
     if(img){
         const isFirst = note.text.substring(0, img.index).replace( /(<([^>]+)>)|(\s|(&nbsp))*/gm, '')===''
-        note.attachedImg = [img.index+10, img.index+img[0].length-2, isFirst]
+        note.attachedImg = [img.index+10, img.index+img[0].length, isFirst]
     }
     else{
         note.attachedImg = false

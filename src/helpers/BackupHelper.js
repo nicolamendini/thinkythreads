@@ -44,7 +44,7 @@ export function updateNoteFile(note, mediaOrMeta, setNotesUpdating, counter){
 
             // create it by calling this function again in media mode
             createNoteFile(note).then(() => {
-                
+
                 if(mediaOrMeta!=='meta'){
                     updateNoteFile(note, 'media', setNotesUpdating)
                 }

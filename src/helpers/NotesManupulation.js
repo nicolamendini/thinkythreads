@@ -290,3 +290,15 @@ export function noteSelector(noteToSelect, mergeMode, setMergeMode, dashboard, s
         }
     }
 }
+
+// Function to convert thread to collection
+export function threadToCollection(note){
+    note.collection = [...new Set([...note.thread])]
+    note.thread = []
+}
+
+// Function to convert thread to collection
+export function collectionToThread(note){
+    note.thread = note.collection
+    note.collection = []
+}

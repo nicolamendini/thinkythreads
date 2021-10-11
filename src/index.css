@@ -8,12 +8,17 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 	-ms-touch-action: none;
 	touch-action: none;
+	overflow: hidden;
 }
 
 
 body::-webkit-scrollbar {
 	display: none;
-  }
+}
+
+html, body {
+    overscroll-behavior-x: none;
+}
 
 @media only screen and (orientation: landscape) {
     body{
@@ -45,6 +50,9 @@ code {
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
+	position: fixed;
+	max-width: 100vw;
+	min-width: 100vw;
 }
 
 textarea:focus {
@@ -74,6 +82,10 @@ textarea:focus {
 	min-width: 15vh;
 	width: 18vh;
 	height: 18vh;
+}
+
+.note h1 {
+	margin: 0
 }
 
 .just-background-note{
@@ -203,7 +215,7 @@ input:focus{
 	align-items: center;
 	justify-content: space-between;
 	padding: 5px 5vw 5px 5vw;
-	color: #666666
+	color: #666666;
 }
 
 .stripe-label {
@@ -222,7 +234,7 @@ input:focus{
 	align-items: center;
 	color: #919191;
 	margin-right: 2px;
-	height: 19.8vh;
+	height: 19.6vh;
 	margin: 0px 3px 0px 3px;
 }
 
@@ -252,16 +264,6 @@ input:focus{
 	min-width: 7.5ch;
 }
 
-.editor{
-	min-height: 90vh;
-	overflow-y: auto;
-}
-
-.ql-editor{
-	font-family: 'Montserrat';
-	font-size: 13px;
-}
-
 li p{
     margin: 0;
     padding: 0;
@@ -274,11 +276,6 @@ li h2{
 
 .picker {
 	zoom: 1.5;
-}
-
-.ql-toolbar.ql-snow,
-.ql-container.ql-snow{
-    border: none !important;
 }
 
 .header-icon{
@@ -303,7 +300,7 @@ li h2{
 	font: 16px 'Montserrat';
 	color: rgb(100, 100, 100);
 	background-color: white;
-	padding: 15px;
+	padding: 12px;
 	width: 100%
 }
 
@@ -370,11 +367,62 @@ li h2{
 	overflow-x: hidden;
 }
 
-.ql-clipboard {
-	position: fixed !important;
+.ql-clipboard{
+	position: fixed;
 }
+
 
 .quill > .ql-container > .ql-editor.ql-blank::before{
     font-size: 13px;
     color: rgb(133, 133, 133);
+}
+
+.quill > .ql-container > .ql-editor{
+	padding-top: 62px;
+	padding-bottom: 120px;
+}
+
+.ql-toolbar.ql-snow,
+.ql-container.ql-snow{
+    border: none !important;
+}
+
+.ql-toolbar.ql-snow{
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 11;
+}
+
+.editor{
+	overflow-y: scroll;
+	max-height: 92vh !important;
+}
+
+.ql-editor{
+	font-family: 'Montserrat';
+	font-size: 13px;
+}
+
+.ql-container.ql-snow {
+	border: none;
+}
+
+.ql-container.ql-snow ::-webkit-scrollbar {
+	display: none;
+}
+
+.color-flag{
+	z-index: 10;
+	position: fixed;
+	top: 0;
+	width: 100%;
+	height: 62px
+}
+
+@media only screen and (max-width: 600px) {
+    .color-flag{
+		height: 90px;
+	}
 }

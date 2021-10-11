@@ -84,10 +84,10 @@ const Note = ({
 									<FaFolder size='10px' className='header-icon'/> : ''
 								}
 
-								{threadOrCollection && !rootsOrBranches && note.branches.length ?
+								{!rootsOrBranches && note.branches.length ?
 									<ImTree size='10px' className='header-icon'/> : ''
 								}
-								{threadOrCollection && rootsOrBranches && note.roots.length ?
+								{rootsOrBranches && note.roots.length ?
 									<ImTree size='10px' className='header-icon'/> : ''
 								}
 								{note.attachedImg && !note.attachedImg[2] ?

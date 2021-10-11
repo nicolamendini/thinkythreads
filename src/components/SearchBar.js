@@ -9,6 +9,7 @@ import React from 'react';
 import { Droppable } from 'react-beautiful-dnd';
 import { FcSearch } from 'react-icons/fc';
 import { BiSearchAlt } from 'react-icons/bi'
+import ColorPicker from './ColorPicker';
 
 const SearchBar = ({ 
 	setSearchProps, 
@@ -41,8 +42,10 @@ const SearchBar = ({
 							setSearchProps({
 								searchText: event.target.value.toLowerCase(), 
 								threadFilter: searchProps.threadFilter, 
-								collectionFilter: searchProps.collectionFilter}
-							)}
+								collectionFilter: searchProps.collectionFilter,
+								colorFilter: searchProps.colorFilter
+							}
+						)}
 						type='text'
 						placeholder={
 							snapshot.isDraggingOver ?
@@ -60,8 +63,10 @@ const SearchBar = ({
 							setSearchProps({
 								searchText: searchProps.searchText, 
 								threadFilter: !searchProps.threadFilter, 
-								collectionFilter: searchProps.collectionFilter}
-							)}
+								collectionFilter: searchProps.collectionFilter,
+								colorFilter: searchProps.colorFilter
+							}
+						)}
 					>
 						T
 					</span>
@@ -73,10 +78,21 @@ const SearchBar = ({
 							setSearchProps({
 								searchText: searchProps.searchText, 
 								threadFilter: searchProps.threadFilter, 
-								collectionFilter: !searchProps.collectionFilter}
-							)}
+								collectionFilter: !searchProps.collectionFilter,
+								colorFilter: searchProps.colorFilter
+							}
+						)}
 					>
 						C
+					</span>
+
+					<span style={{margin: '0 5px 0 0'}}>
+						<ColorPicker 
+							setBackColor={{}}
+							setHasChanged={{}}
+							searchProps={searchProps}
+							setSearchProps={setSearchProps}
+						/>
 					</span>
 
 				</div>

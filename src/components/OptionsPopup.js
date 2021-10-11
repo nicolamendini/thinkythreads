@@ -16,7 +16,8 @@ const OptionsPopup = ({
     open,
     setOpen,
     saveAndExit,
-    exportThread
+    exportThread,
+    threadCollectionSwap
 }) => {
 
     return (
@@ -43,6 +44,13 @@ const OptionsPopup = ({
                         Show Threads or Collections that contain this Note
                     </button>
 
+                    <button 
+                        className='popup-btn tools-btn'
+                        onClick={() => saveAndExit('get-occurrences', true)}
+                    >
+                        Save and move at the end of the Search
+                    </button>
+
                     {selectedNote.thread.length ?
                         <div>
 
@@ -53,7 +61,25 @@ const OptionsPopup = ({
                                 Print or Export whole Thread
                             </button>
 
-                        </div> : null
+                            <button 
+                                className='popup-btn tools-btn'
+                                onClick={() => threadCollectionSwap(true)}
+                            >
+                                Convert Thread to Collection
+                            </button>
+
+                        </div> 
+                        : 
+                        <div>
+
+                        <button 
+                            className='popup-btn tools-btn'
+                            onClick={() => threadCollectionSwap(false)}
+                        >
+                            Convert Collection to Thread
+                        </button>
+
+                    </div>
                     }
                 </div>
             </div>

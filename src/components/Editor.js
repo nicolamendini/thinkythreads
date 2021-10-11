@@ -15,29 +15,35 @@ import katex from "katex";
 import "katex/dist/katex.min.css";
 import EditorFooter from "./EditorFooter"
 import ImageCompress from 'quill-image-compress';
+import ImageResize from '@taoqf/quill-image-resize-module'
 import { TEXTLIMIT } from './Dashboard';
 import { charLimit } from '../helpers/Messages';
 
-// Register the formula compiler and the imageCompressor
+// Register the formula compiler and the imageCompressor and resizer
 window.katex = katex;
 Quill.register("modules/imageCompressor", ImageCompress);
+Quill.register('modules/imageResize', ImageResize);
 
 // Define what elements to have in the editor toolbar and in what order
 const modules = {
     toolbar: [ 
-          'bold', 
-          'italic', 
-          'underline',
-          { 'color': [] }, 
-          { 'background': [] },
-          {'list': 'ordered'}, 
-          {'list': 'bullet'},
-          { 'align': [] }, 
-          'image',
-          'code-block',
-          'formula',
-          'blockquote',
-          'link'
+            //{ 'size': ['small', 'normal', 'large'] },
+            { 'header': '1' },
+            { 'header': '2' },
+            'bold', 
+            'italic', 
+            'underline',
+            'strike',
+            { 'color': [] }, 
+            { 'background': [] },
+            {'list': 'ordered'}, 
+            {'list': 'bullet'},
+            { 'align': [] }, 
+            'image',
+            'code-block',
+            'formula',
+            'blockquote',
+            'link'
         ],
     
     // Image compressor props, kicks in automatically if max size is exceeded
@@ -56,6 +62,11 @@ const modules = {
 
     clipboard: {
         matchVisual: false
+    },
+
+    imageResize: {
+        parchment: Quill.import('parchment'),
+        modules: [ 'Resize', 'DisplaySize' ]
     }
 }
 
@@ -133,7 +144,9 @@ const NoteEditor = ({
     updateNote, 
     deleteNote, 
     darkMode,
-    exportThread
+    exportThread,
+    threadCollectionSwap,
+    moveToTheEnd
 
 }) => {
 
@@ -145,23 +158,32 @@ const NoteEditor = ({
     const editorRef = useRef(null);
 
     return (
-            <div className='container'
+            <div 
+                className='container'
+                style={ darkMode ?
+                {backgroundColor: '#171717', color: 'white'} 
+                :                
+                {backgroundColor: backColor.color}
+                }
+            >            
+            <div
+                className='color-flag'
                 style={ darkMode ? (backColor.color!=='#ffffff' ? 
-                    {backgroundImage: 'linear-gradient(30deg, #171717 94%, ' + backColor.colorPreview + ' 94%)', color: 'white'} 
+                    {backgroundImage: 'linear-gradient(30deg, #171717 90%, ' + backColor.colorPreview + ' 90%)', color: 'white'} 
                     : {backgroundColor: '#171717', color: 'white'}) :
                     {backgroundColor: backColor.color}
                 }
-            >
+            ></div>
                 <div className="editor no-scrollbar" id="editor">
                     <ReactQuill 
-                        style={{zoom: 1.4} }
+                        style={{zoom: 1.4}}
                         theme="snow"
                         value={editorState}
                         onChange={(value, delta) => handleChange(value, delta, editorRef, setEditorState)}
                         modules={modules}
                         placeholder={'Write your next idea here...'}
                         ref={editorRef}
-                        scrollingContainer='#editor'
+                        scrollingContainer={'#editor'}
                     />
                 </div>
 
@@ -174,6 +196,8 @@ const NoteEditor = ({
                     darkMode={darkMode}
                     exportThread={exportThread}
                     setBackColor={setBackColor}
+                    threadCollectionSwap={threadCollectionSwap}
+                    moveToTheEnd={moveToTheEnd}
                     />
             </div>
         );

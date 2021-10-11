@@ -114,8 +114,7 @@ const Footer = ({
                     />
                 )
             }
-
-            {threadOrCollection ? (
+            {
                 darkMode ?
                     <AiOutlineBranches
                         onClick={() =>
@@ -138,7 +137,6 @@ const Footer = ({
                         className='tools-btn'
                         style={rootsOrBranches && {transform: 'scaleX(-1)'}}
                     />
-            ) : null
             }
 
             {selectedNote ?

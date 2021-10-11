@@ -26,7 +26,8 @@ export default class App extends Component {
       viewport.content + 
       ", height=" + window.innerHeight + 
       ', user-scalable=no'
-    );
+    )
+
     window.addEventListener('online', () => this.setState({onlineState: true}));
     window.addEventListener('offline', () => this.setState({onlineState: false}));
     if(this.state.onlineState){

@@ -34,29 +34,23 @@ const LinksArea = ({
     return (
         <div>
 
-            {dashboard.notes.get(dashboard.selectedNoteId) && threadOrCollection && 
-            <div>
+            <label className='stripe-label stripe-not-overflow' style={{width: '90vw'}}>
+                {!rootsOrBranches ? ' BRANCHES' : ' ROOTS'}
+                {dashboard.selectedNoteId && ' - ' + getCaption(dashboard.notes.get(dashboard.selectedNoteId))} 
+            </label>
 
-                <label className='stripe-label stripe-not-overflow' style={{width: '90vw'}}>
-                    {!rootsOrBranches ? ' BRANCHES - ' : ' ROOTS - '}
-                    {getCaption(dashboard.notes.get(dashboard.selectedNoteId))} 
-                </label>
-
-                <NotesList
-                    notes={dashboard.links}
-                    areaName={'branches-area'}
-                    darkMode={darkMode}
-                    handleNotePress={() => {}}
-                    selectedNote={dashboard.notes.get(dashboard.selectedNoteId)}
-                    mergeMode={mergeMode}
-                    threadOrCollection={threadOrCollection}
-                    openEditor={!mergeMode ? (note) => {dashboard.selectedNoteId=note.id; openEditor()} : () => {}}
-                    rootsOrBranches={rootsOrBranches}
-                    isDropDisabled={isDropDisabled}
-                />
-
-            </div>      
-            }
+            <NotesList
+                notes={dashboard.links}
+                areaName={'branches-area'}
+                darkMode={darkMode}
+                handleNotePress={() => {}}
+                selectedNote={dashboard.notes.get(dashboard.selectedNoteId)}
+                mergeMode={mergeMode}
+                threadOrCollection={threadOrCollection}
+                openEditor={!mergeMode ? (note) => {dashboard.selectedNoteId=note.id; openEditor()} : () => {}}
+                rootsOrBranches={rootsOrBranches}
+                isDropDisabled={isDropDisabled}
+            />
 
         </div>
     )

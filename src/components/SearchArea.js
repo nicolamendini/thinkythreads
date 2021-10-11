@@ -43,10 +43,6 @@ const SearchArea = ({
                 darkMode={darkMode}
             />
 
-            {!threadOrCollection ?
-                <div className='search-spacer'></div> : null
-            }
-
             <div>
                 <SearchLabel 
                     searchProps={searchProps} 
