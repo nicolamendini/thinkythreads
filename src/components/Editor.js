@@ -169,7 +169,7 @@ const NoteEditor = ({
             <div
                 className='color-flag'
                 style={ darkMode ? (backColor.color!=='#ffffff' ? 
-                    {backgroundImage: 'linear-gradient(30deg, #171717 90%, ' + backColor.colorPreview + ' 90%)', color: 'white'} 
+                    {backgroundImage: 'linear-gradient(20deg, #171717 90%, ' + backColor.colorPreview + ' 90%)', color: 'white'} 
                     : {backgroundColor: '#171717', color: 'white'}) :
                     {backgroundColor: backColor.color}
                 }

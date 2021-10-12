@@ -70,16 +70,18 @@ const OptionsPopup = ({
 
                         </div> 
                         : 
-                        <div>
+                        (selectedNote.collection.length ?
+                            <div>
 
-                        <button 
-                            className='popup-btn tools-btn'
-                            onClick={() => threadCollectionSwap(false)}
-                        >
-                            Convert Collection to Thread
-                        </button>
+                                <button 
+                                    className='popup-btn tools-btn'
+                                    onClick={() => threadCollectionSwap(false)}
+                                >
+                                    Convert Collection to Thread
+                                </button>
 
-                    </div>
+                            </div>
+                        : null)
                     }
                 </div>
             </div>

@@ -124,7 +124,7 @@ export function setPreview(note){
     var preview = truncate.default(
             note.text.replace(/<p><br\/><\/p>|<p>(\s|(&nbsp))*<\/p>|<img .*?>/gm,''), 
             PREVIEWLIMIT,
-            {ellipsis: true}
+            {ellipsis: '...'}
         )
 
     // if the preview is empty
@@ -140,7 +140,7 @@ export function setPreview(note){
             preview = 'empty note kept for its links'
         }
     }
-    note.preview = preview;
+    note.preview = preview
 }
 
 // Tiny suspense loader component to avoid blank loading pages

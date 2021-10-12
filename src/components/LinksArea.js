@@ -23,13 +23,12 @@ const LinksArea = ({
     threadOrCollection, 
     openEditor, 
     rootsOrBranches,
-    draggableInfo,
-    selectNote
+    draggableInfo
 }) => { 
 
     const isDropDisabled = 
-        draggableInfo.sourceArea!=='search-area' ||
-        draggableInfo.note.id===dashboard.selectedNoteId
+        draggableInfo.sourceArea==='workspace-area' ||
+        (draggableInfo.note && draggableInfo.note.id===dashboard.selectedNoteId)
 
     return (
         <div>

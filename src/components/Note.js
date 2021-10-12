@@ -95,7 +95,7 @@ const Note = ({
 								}
 								
 							</div>
-							{!note.attachedImg || !note.attachedImg[2] ?
+							{(!note.attachedImg || !note.attachedImg[2]) ?
 								<div className='note-content no-scrollbar' dangerouslySetInnerHTML={{__html: note.preview}}></div> : 
 								<div className='just-background-note' style={{backgroundImage: 'url('+ note.text +')'}}></div>
 							}

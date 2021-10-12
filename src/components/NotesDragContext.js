@@ -67,7 +67,7 @@ const NoteDragContext = ({
 
     const [draggableInfo, setDraggableInfo] = useState({
         sourceArea: '',
-        note: null
+        note: {id: null}
     })
 
     return(

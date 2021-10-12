@@ -158,6 +158,8 @@ export function dragManager(
                         updateConfigFile(newDashboard)
                     }
 
+                    newDashboard.selectedNoteId = sourceNote.id
+                    getLinksFromProps(newDashboard, rootsOrBranches, setNotesUpdating)
                     getSearchFromProps(newDashboard, searchProps)
                     setDashboard(newDashboard);
                 }
@@ -193,7 +195,9 @@ export function dragManager(
         // if the destination is the workspace area itself, just reorder the thread or collection and update
         else if(result.destination.droppableId==='workspace-area'){
             const newDashboard = {...dashboard}
-            newDashboard.workspaceIds = moveNoteInsideArea(newDashboard.workspaceIds, result.source.index, result.destination.index);
+            newDashboard.workspaceIds = moveNoteInsideArea(newDashboard.workspaceIds, result.source.index, result.destination.index)
+            newDashboard.selectedNoteId = newDashboard.workspaceIds[result.destination.index]
+            getLinksFromProps(newDashboard, rootsOrBranches, setNotesUpdating)
             getWorkspace(newDashboard)
             setDashboard(newDashboard)
         }
@@ -243,6 +247,29 @@ export function dragManager(
                 getWorkspace(newDashboard)
                 setDashboard(newDashboard)
             }
+        }
+
+        // if the destination is the branches area itself, just reorder and update
+        else if(result.destination.droppableId==='branches-area'){
+            const newDashboard = {...dashboard}
+            const targetNote = newDashboard.notes.get(newDashboard.selectedNoteId)
+            if(rootsOrBranches){
+                targetNote.roots = moveNoteInsideArea(
+                    targetNote.roots, 
+                    result.source.index, 
+                    result.destination.index
+                )
+            }
+            else{
+                targetNote.branches = moveNoteInsideArea(
+                    targetNote.branches, 
+                    result.source.index, 
+                    result.destination.index
+                )
+            }
+            backupNote(targetNote, 'meta', setNotesUpdating)
+            getLinksFromProps(newDashboard, rootsOrBranches, setNotesUpdating)
+            setDashboard(newDashboard)
         }
     }
 }
