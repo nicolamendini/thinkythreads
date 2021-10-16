@@ -9,7 +9,7 @@ Deletes a note and resolves potential conflicts in the process
 import { db } from "../components/Dashboard";
 import { checkConflicts, removeElementAt } from "./DashboardUtils";
 import { driveBackupAuthorised } from "../components/Dashboard";
-import { updateConfigFile, removeNoteFile } from "./BackupHelper";
+import { removeNoteFile } from "./BackupHelper";
 import { forceRemove } from "./NotesManupulation";
 import { backupNote } from "./RequestsMakers";
 import { deleteConflictAlert } from "./Messages";
@@ -22,10 +22,9 @@ export function noteDeleter(
     newDashboard, 
     mergeMode, 
     setMergeMode,
-    deletedNotes, 
-    setDeletedNotes, 
     setNotesUpdating,
-    packDashboard
+    packDashboard,
+    synchNotes
 ){
 
     // get the note to remove and check for conflicts
@@ -41,16 +40,11 @@ export function noteDeleter(
             newDashboard.notesOrder.findIndex(id => id===removingId)
         )
 
-        // add its ID to the deleted notes storage
-        const newDeletedNotes = [...deletedNotes, removingId]
-        setDeletedNotes(newDeletedNotes)
-
         // keep track of deleted note
-        newDashboard.notesEverDeleted.push(removingId)
+        newDashboard.notesEverDeleted[removingId]=true
 
         // backup the new notes order and the new deleted notes arrays
         window.localStorage.setItem('notes-order', JSON.stringify(newDashboard.notesOrder))
-        window.localStorage.setItem('deleted-notes', JSON.stringify(newDeletedNotes))
         window.localStorage.setItem('notes-ever-deleted', JSON.stringify(newDashboard.notesEverDeleted))
 
         // if this function was not called by merge mode then sanitise all collections and dashboard
@@ -81,6 +75,7 @@ export function noteDeleter(
             if(newDashboard.selectedNoteId===removingId){
                 newDashboard.selectedNoteId = null;
             }
+            newDashboard.workspaceIds = newDashboard.workspaceIds.filter(id => id!==removingId)
         }
 
         // if it was called by merge mode, assume it is already sanitised previously and end merge mode
@@ -91,8 +86,7 @@ export function noteDeleter(
         // if possible, backup the removal and update the .config file on drive
         if(driveBackupAuthorised){
             setNotesUpdating((prev) => prev+1)
-            removeNoteFile(noteToRemove, newDeletedNotes, setDeletedNotes, setNotesUpdating)
-            updateConfigFile(newDashboard)
+            removeNoteFile(noteToRemove, setNotesUpdating, () => synchNotes({...newDashboard}))
         }
 
         // remove the note locally and update the dashboard
@@ -111,8 +105,6 @@ export function noteDeleter(
                 newDashboard,
                 mergeMode, 
                 setMergeMode,
-                deletedNotes, 
-                setDeletedNotes, 
                 setNotesUpdating,
                 packDashboard
             )

@@ -11,16 +11,13 @@ import React from 'react';
 import ReactQuill, {Quill} from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import {useState, useRef} from "react"
-import katex from "katex";
-import "katex/dist/katex.min.css";
 import EditorFooter from "./EditorFooter"
 import ImageCompress from 'quill-image-compress';
 import ImageResize from '@taoqf/quill-image-resize-module'
 import { TEXTLIMIT } from './Dashboard';
 import { charLimit } from '../helpers/Messages';
 
-// Register the formula compiler and the imageCompressor and resizer
-window.katex = katex;
+// Register the imageCompressor and resizer
 Quill.register("modules/imageCompressor", ImageCompress);
 Quill.register('modules/imageResize', ImageResize);
 
@@ -140,7 +137,7 @@ const handleChange = (value, delta, editorRef, setEditorState) => {
 // note is empty, the darkMode flad and the export thread function
 const NoteEditor = ({ 
     setCurrentPage, 
-    selectedNote, 
+    dashboard, 
     updateNote, 
     deleteNote, 
     darkMode,
@@ -149,6 +146,8 @@ const NoteEditor = ({
     moveToTheEnd
 
 }) => {
+
+    const selectedNote = dashboard.notes.get(dashboard.selectedNoteId)
 
     // State of the editor, contains the html of the text that is being inserted by the user
     const [editorState, setEditorState] = useState(selectedNote.text ? selectedNote.text : '');

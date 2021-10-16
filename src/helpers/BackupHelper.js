@@ -7,18 +7,17 @@ Function to backup notes on drive
 */
 
 import { db, shareDriveFolderId } from "../components/Dashboard"
-import { removeElementAt } from "./DashboardUtils"
 import { exportBeginDelimiter, newNoteDelimiter } from "./Messages"
 import { 
     getMediaUpdateRequest, 
     getMetaUpdateRequest, 
     errorCatcher, 
     fileExistenceCheck, 
-    createNoteFile 
+    createNoteFile
 } from "./RequestsMakers"
 
 // Try to update the config file on drive by sendin the request
-export function updateConfigLoop(newDashboard, fileId, counter){
+export function updateConfigLoop(newDashboard, configFileId, counter){
 
     // The config only includes the notesOrder
     if(!counter){counter=0}
@@ -26,12 +25,12 @@ export function updateConfigLoop(newDashboard, fileId, counter){
         notesOrder: newDashboard.notesOrder,
         notesEverDeleted: newDashboard.notesEverDeleted
     })
-    getMediaUpdateRequest({text: configBody}, fileId).then(
-    ).catch((error) => errorCatcher(error, counter, updateConfigLoop, newDashboard))
+    getMediaUpdateRequest({text: configBody}, configFileId).then(
+    ).catch((error) => errorCatcher(error, counter, updateConfigLoop, newDashboard, configFileId))
 }
 
 // Function to update a note file on drive
-export function updateNoteFile(note, mediaOrMeta, setNotesUpdating, counter){
+export function updateNoteFile(note, mediaOrMeta, setNotesUpdating, synchNotes, counter){
 
     // Initialise the counter of calls
     if(!counter){counter=0}
@@ -46,11 +45,15 @@ export function updateNoteFile(note, mediaOrMeta, setNotesUpdating, counter){
             createNoteFile(note).then(() => {
 
                 if(mediaOrMeta!=='meta'){
-                    updateNoteFile(note, 'media', setNotesUpdating)
+                    updateNoteFile(note, 'media', setNotesUpdating, synchNotes)
                 }
                 else{
                     setNotesUpdating((prev) => prev-1)
+                    if(synchNotes){
+                        synchNotes()
+                    }
                 }
+
             }).catch((error) => 
                 errorCatcher(
                     error, 
@@ -58,7 +61,8 @@ export function updateNoteFile(note, mediaOrMeta, setNotesUpdating, counter){
                     updateNoteFile, 
                     note, 
                     mediaOrMeta, 
-                    setNotesUpdating
+                    setNotesUpdating,
+                    synchNotes
                 )
             )
         }
@@ -88,6 +92,9 @@ export function updateNoteFile(note, mediaOrMeta, setNotesUpdating, counter){
                 else{
                     console.log('updated')
                     setNotesUpdating((prev) => prev-1)
+                    if(synchNotes){
+                        synchNotes()
+                    }
                 }
 
             }).catch((error) => 
@@ -97,7 +104,8 @@ export function updateNoteFile(note, mediaOrMeta, setNotesUpdating, counter){
                     updateNoteFile, 
                     note, 
                     mediaOrMeta, 
-                    setNotesUpdating
+                    setNotesUpdating,
+                    synchNotes
                 )
             )
         }
@@ -108,9 +116,19 @@ export function updateNoteFile(note, mediaOrMeta, setNotesUpdating, counter){
             updateNoteFile, 
             note, 
             mediaOrMeta, 
-            setNotesUpdating
+            setNotesUpdating,
+            synchNotes
         )
     )
+}
+
+// function to create an empty config file
+export function createConfigFile(newDashboard, counter){
+    if(!counter){counter=0}
+    const configMetadata = {}
+    createNoteFile({id: '___config'}, configMetadata).then((newResp) => {
+        updateConfigLoop(newDashboard, newResp.result.id)
+    }).catch((error) => errorCatcher(error, counter, createConfigFile, newDashboard))
 }
 
 // Function to update the config file on drive
@@ -124,15 +142,14 @@ export function updateConfigFile(newDashboard, counter){
             fields: 'files(id)',
             q:"name='___config' " +
             "and mimeType='application/json' " +
-            "and trashed=false",
+            "and trashed=false and '" + 
+            shareDriveFolderId + "' in parents"
         }).then((resp)=>{
 
+            console.log(resp.result.files.length)
             // if it does not exist, create it and then call updateConfigLoop
             if(!resp.result.files.length){
-                const configMetadata = {}
-                createNoteFile({id: '___config'}, configMetadata).then((newResp) => {
-                    updateConfigLoop(newDashboard, newResp.result.id)
-                }).catch((error) => errorCatcher(error, counter, updateConfigFile, newDashboard))
+                createConfigFile(newDashboard)
             }
 
             // otherwise call updateConfigLoop directly
@@ -148,23 +165,8 @@ export function updateConfigFile(newDashboard, counter){
     }
 }
 
-// Function to remove a file from the deletedNotes tracker
-export function removeFromDeletionTracker(note, deletedNotes, setDeletedNotes){
-    console.log('deleted')
-
-    // find the index of the note to delete
-    const deletedNoteIdx = deletedNotes.findIndex(id => id===note.id)
-    if(deletedNoteIdx!==-1){
-        const newDeletedNotes = removeElementAt(deletedNotes, deletedNoteIdx)
-        setDeletedNotes(newDeletedNotes)
-
-        // backup the deleted notes array locally
-        window.localStorage.setItem('deleted-notes', JSON.stringify(newDeletedNotes))
-    }
-}
-
 // Removes a notes file from drive
-export function removeNoteFile(note, deletedNotes, setDeletedNotes, setNotesUpdating, counter){
+export function removeNoteFile(note, setNotesUpdating, synchNotes, counter){
     if(!counter){counter=0}
 
     // if it exists, try to remove
@@ -173,27 +175,27 @@ export function removeNoteFile(note, deletedNotes, setDeletedNotes, setNotesUpda
             window.gapi.client.drive.files.delete({
                 'fileId': resp.result.files[0].id
             }).then(function() { 
-
-                // if successful, delete from tracker as well
-                removeFromDeletionTracker(note, deletedNotes, setDeletedNotes)
                 setNotesUpdating((prev) => prev-1)
+                if(synchNotes){
+                    synchNotes()
+                }
 
             }).catch((error) => 
                 errorCatcher(
                     error, 
                     counter, 
                     removeNoteFile, 
-                    note, 
-                    deletedNotes, 
-                    setDeletedNotes, 
-                    setNotesUpdating
+                    note,  
+                    setNotesUpdating,
+                    synchNotes
                 )
             )
         }
-
-        // if it does not exist, remove from tracker and that is it
         else{
-            removeFromDeletionTracker(note, deletedNotes, setDeletedNotes)
+            setNotesUpdating((prev) => prev-1)
+            if(synchNotes){
+                synchNotes()
+            }
         }
     }).catch((error) => 
         errorCatcher(
@@ -201,12 +203,10 @@ export function removeNoteFile(note, deletedNotes, setDeletedNotes, setNotesUpda
             counter, 
             removeNoteFile, 
             note, 
-            deletedNotes, 
-            setDeletedNotes, 
-            setNotesUpdating
+            setNotesUpdating,
+            synchNotes
         )
     )
-    
 }
 
 // Function to export a thread as a PDF or print

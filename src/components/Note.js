@@ -41,7 +41,7 @@ const Note = ({
 					
 					<div>
 						<li 
-						className={`${
+						className={
 							(mergeMode && selectedNote.id===note.id && 'note no-scrollbar merge-mode')
 							||
 							(((darkMode && selectedNote && selectedNote.id===note.id) && 
@@ -52,7 +52,7 @@ const Note = ({
 								'note note-bright no-scrollbar selected-note') ||
 							((!darkMode && (!selectedNote ||selectedNote.id!==note.id)) &&
 								'note note-bright no-scrollbar')) 
-						}`}
+						}
 						name={note.id}
 						id={note.ui_id}
 						ref={provided.innerRef} 
@@ -65,9 +65,9 @@ const Note = ({
 								!darkMode && note.color!=='#ffffff' ? 
 									(selectedNote && selectedNote.id===note.id ? 
 										{backgroundColor: note.color, ...provided.draggableProps.style} : 
-									{backgroundColor: note.color, border: '1px solid '+note.color, ...provided.draggableProps.style}) : 
+									{backgroundColor: note.color, border: '1px solid '+ note.color, ...provided.draggableProps.style}) : 
 										(note.color!=='#ffffff' ? 
-											{backgroundImage: 'linear-gradient(25deg, rgb(92, 92, 92) 92%, '+note.colorPreview+' 92%)', ...provided.draggableProps.style} 
+											{backgroundImage: 'linear-gradient(25deg, rgb(92, 92, 92) 92%, '+note.colorPreview + ' 92%)', ...provided.draggableProps.style} 
 											: provided.draggableProps.style))
 							: provided.draggableProps.style
 							}
@@ -88,7 +88,7 @@ const Note = ({
 									<ImTree size='10px' className='header-icon'/> : ''
 								}
 								{rootsOrBranches && note.roots.length ?
-									<ImTree size='10px' className='header-icon'/> : ''
+									<ImTree size='10px' className='header-icon' style={{transform: 'scaleY(-1)'}}	/> : ''
 								}
 								{note.attachedImg && !note.attachedImg[2] ?
 									<FiPaperclip size='10px' className='header-icon' style={{transform:'rotate(-45deg)'}}/> : ''

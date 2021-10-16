@@ -7,9 +7,10 @@ Defines the buttons of the footer and calls the respective functions
 */
 
 import { FcIdea, FcSettings, FcParallelTasks, FcBrokenLink, FcLink, FcImport, FcCheckmark, FcCancel} from 'react-icons/fc'
-import { AiOutlineDisconnect, AiOutlineLink, AiOutlineBranches, AiOutlineImport, AiOutlineStop } from 'react-icons/ai';
-import { GoLightBulb } from 'react-icons/go';
+import { AiOutlineDisconnect, AiOutlineLink, AiOutlineImport, AiOutlineStop } from 'react-icons/ai';
+import { GoLightBulb } from 'react-icons/go'
 import { VscSettingsGear, VscCheck, VscSync } from 'react-icons/vsc';
+import { IoIosGitBranch } from 'react-icons/io';
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import Loader from "react-loader-spinner";
 import { driveNotConnected, mergeModeOn } from '../helpers/Messages';
@@ -48,7 +49,10 @@ const Footer = ({
     return(
         <div className='page-footer'
             style={{
-                borderTop: darkMode ? '1px solid #303030' : '1px solid #cccccc'
+                borderTop: darkMode ? '1px solid #2a2a2a' : '#dddddd',
+                backgroundColor: darkMode ? '#1e1e1e' : undefined,
+                background: darkMode ? undefined : 'linear-gradient(#eeeeee, white)',
+                boxShadow: darkMode ? undefined : '0 0 3px #bbbbbb'
             }}
         >
             {darkMode ?
@@ -116,15 +120,15 @@ const Footer = ({
             }
             {
                 darkMode ?
-                    <AiOutlineBranches
+                    <IoIosGitBranch
                         onClick={() =>
                             setRootsOrBranches(
                                 (previous) => !previous
                             )
                         }
-                        size='2.1em'
+                        size='2em'
                         className='tools-btn'
-                        style={rootsOrBranches ? {transform: 'scaleX(-1) rotate(90deg)'} : {transform: 'rotate(90deg)'}}
+                        style={!rootsOrBranches && {transform: 'scaleY(-1)'}}
                     />
                 :
                     <FcParallelTasks
@@ -133,9 +137,9 @@ const Footer = ({
                                 (previous) => !previous
                             )
                         }
-                        size='2.5em'
+                        size='2.3em'
                         className='tools-btn'
-                        style={rootsOrBranches && {transform: 'scaleX(-1)'}}
+                        style={rootsOrBranches ? {transform: 'scaleY(-1) rotate(90deg)'} : {transform: 'rotate(90deg)'}}
                     />
             }
 

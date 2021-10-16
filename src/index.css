@@ -100,12 +100,12 @@ textarea:focus {
 
 .note ul{
 	list-style-position: outside;
-  	padding-left: 15%;
+  	padding-left: 16px;
 }
 
 .note ol{
 	list-style-position: outside;
-  	padding-left: 15%;
+  	padding-left: 0;
 }
 
 .note-content {
@@ -121,7 +121,7 @@ textarea:focus {
 
 .note-bright{
 	background-color: white;
-	border: solid 1px #cecece;
+	border: solid 1px #d1d1d1;
 	color: black;
 }
 
@@ -143,7 +143,7 @@ input:focus{
 	border-radius: 11px;
 	padding: 8px;
 	margin: 1.5vh auto 20px auto;
-	box-shadow: 0px 1px 5px rgb(156, 156, 156);
+	box-shadow: 0px 1px 5px #bbbbbb;
 	max-width: 1240px;
 	width: 90%;
 	height: 30px;
@@ -215,7 +215,7 @@ input:focus{
 	align-items: center;
 	justify-content: space-between;
 	padding: 5px 5vw 5px 5vw;
-	color: #666666;
+	color: #838383;
 }
 
 .stripe-label {
@@ -261,7 +261,7 @@ input:focus{
 }
 
 .add-btn {
-	min-width: 9vh;
+	min-width: 8vh;
 }
 
 li p{
@@ -425,4 +425,33 @@ li h2{
     .color-flag{
 		height: 90px;
 	}
+}
+
+.note ol > li{
+  list-style-type: none;
+}
+.note ol li {
+counter-reset: list-1 list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9;
+counter-increment: list-0;
+}
+.note ol li:before {
+content: counter(list-0, decimal) '. ';
+}
+.note ol li.ql-indent-1 {
+counter-increment: list-1;
+}
+.note ol li.ql-indent-1:before {
+content: counter(list-1, lower-alpha) '. ';
+}
+.note ol li.ql-indent-1 {
+counter-reset: list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9;
+}
+.note ol li.ql-indent-2 {
+counter-increment: list-2;
+}
+.note ol li.ql-indent-2:before {
+content: counter(list-2, lower-roman) '. ';
+}
+.note ol li.ql-indent-2 {
+counter-reset: list-3 list-4 list-5 list-6 list-7 list-8 list-9;
 }

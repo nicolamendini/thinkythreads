@@ -6,7 +6,7 @@ DashboardPacker functions
 Update the functions based on the new states of the dashboard
 */
 
-import { updateConfigFile } from "./BackupHelper"
+import { driveBackupAuthorised } from "../components/Dashboard"
 import { copyNote } from "./DashboardUtils"
 import { backupNote } from "./RequestsMakers"
 
@@ -77,6 +77,7 @@ export function getSearchFromProps(newDashboard, searchProps){
         }
         else{
             removingIdxs.push(i)
+            console.log(newDashboard)
             errorAlert('noteOfSearchNotFoundError!', key, newDashboard)
         }
     }
@@ -84,13 +85,15 @@ export function getSearchFromProps(newDashboard, searchProps){
     if(removingIdxs.length){
         newDashboard.notesOrder = removeFromSequence(removingIdxs, newDashboard.notesOrder)
         window.localStorage.setItem('notes-order', JSON.stringify(newDashboard.notesOrder))
-        updateConfigFile(newDashboard)
+        //updateConfigFile(newDashboard)
     }
 
-    if(newDashboard.notesOrder.length && newDashboard.notesOrder.length !== newDashboard.notes.size){
+    if(newDashboard.notesOrder && newDashboard.notesOrder.length !== newDashboard.notes.size){
         newDashboard.notesOrder = [...new Set([newDashboard.notesOrder, ...newDashboard.notes.keys()])]
-        window.localStorage.setItem('notes-order', JSON.stringify(newDashboard.notesOrder))
-        updateConfigFile(newDashboard)
+        if(driveBackupAuthorised){
+            window.localStorage.setItem('notes-order', JSON.stringify(newDashboard.notesOrder))
+            //updateConfigFile(newDashboard)
+        }
         window.alert(
             '-------- BETA VERSION ERROR REPORT ------- \n' + 
         '---- PLEASE SHARE WITH THE DEVELOPER --- \n' +

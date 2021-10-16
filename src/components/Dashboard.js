@@ -13,7 +13,7 @@ import { useState, useEffect, Suspense} from 'react';
 import React from 'react'
 import Dexie from 'dexie'
 import { createThumbnail, getNewNote, moveNoteInsideArea} from "../helpers/DashboardUtils";
-import { updateConfigFile, exportThreadGivenProps, checkDriveFolder} from '../helpers/BackupHelper';
+import { exportThreadGivenProps, checkDriveFolder} from '../helpers/BackupHelper';
 import { getAllNotes } from '../helpers/DownloadHelper';
 import { backupNote } from '../helpers/RequestsMakers';
 import { getSearchFromProps, getLinksFromProps, getWorkspace } from '../helpers/DashboardPacker';
@@ -23,6 +23,11 @@ import { noteDeleter } from '../helpers/NoteDeleter';
 import { noteMerger } from '../helpers/NoteMerger';
 import { cleanWorkspace } from '../helpers/Messages';
 import { suspenseLoader } from '../helpers/DashboardUtils';
+//importing and registering the formula compiler
+import "katex/dist/katex.min.css";
+import katex from "katex";
+
+window.katex = katex;
 
 // Define the lazy loading
 const NoteEditor = React.lazy(() => import("./Editor"));
@@ -66,7 +71,7 @@ const Dashboard = ({
         {
             notes: new Map(), 
             notesOrder: [],
-            notesEverDeleted: [],
+            notesEverDeleted: {},
             workspaceIds: [],
             selectedNoteId: null,
             openedCollectionId: null,
@@ -87,9 +92,6 @@ const Dashboard = ({
         colorFilter: '#ededed'
     })
 
-    // State containing the deleted notes, used to remove them from drive 
-    // in a second moment if there are internet interruptions
-    const [deletedNotes, setDeletedNotes] = useState([]);
     // State that defines whether the user wants to see Roots or Branches
     const [rootsOrBranches, setRootsOrBranches] = useState(false);
     // State that defines the workspace mode currently on
@@ -107,17 +109,17 @@ const Dashboard = ({
     const [notesUpdating, setNotesUpdating] = useState(0)
 
     // Effect called only when the component is first loaded
-    // Retrieves the notes, notesOrder and deletedNotes from the db
+    // Retrieves the notes, notesOrder and everDeletedNotes from the db
     useEffect(() => {
         const newDashboard = {...dashboard}
         db.notes.toArray().then(function(resp){
             resp.forEach((note) => {
+                console.log(note)
                 newDashboard.notes.set(note.id, note)
                 createThumbnail(note)
             })
 
             const notesOrder = JSON.parse(window.localStorage.getItem('notes-order'))
-            const deletedNotes = JSON.parse(window.localStorage.getItem('deleted-notes'))
             const notesEverDeleted = JSON.parse(window.localStorage.getItem('notes-ever-deleted'))
 
             if(notesOrder){
@@ -125,9 +127,6 @@ const Dashboard = ({
             }
             else{
                 newDashboard.notesOrder = [...newDashboard.notes.keys()]
-            }
-            if(deletedNotes){
-                setDeletedNotes(deletedNotes)
             }
             if(notesEverDeleted){
                 newDashboard.notesEverDeleted = notesEverDeleted
@@ -183,14 +182,23 @@ const Dashboard = ({
     // eslint-disable-next-line
     },[driveFolderId, GAPIloaded, currentUser])
 
-    const synchNotes = () => {
-        if(dashboard.checkedAgainstDrive){
+    useEffect(() => {
+        console.log(dashboard.selectedNoteId)
+        if(!dashboard.selectedNoteId && currentPage==='editor'){
+            setCurrentPage('notes')
+        }
+    // eslint-disable-next-line
+    },[dashboard])
+
+    const synchNotes = (newDashboard) => {
+        if(!newDashboard){
+            newDashboard = {...dashboard}
+        }
+        if(newDashboard.checkedAgainstDrive){
             console.log('synching')
-            dashboard.checkedAgainstDrive = false
+            newDashboard.checkedAgainstDrive = false
             getAllNotes(
-                {...dashboard}, 
-                deletedNotes, 
-                setDeletedNotes, 
+                newDashboard, 
                 setNotesUpdating, 
                 packDashboard
             )
@@ -201,8 +209,8 @@ const Dashboard = ({
     // takes the note itself and a metaOrMedia
     // flag that controls whether there should be a partial or full backup
     // eg: links, colour, pinned, etc (meta) or/and main body text (media)
-    const backup = async (note, metaOrMedia) => {
-        backupNote(note, metaOrMedia, setNotesUpdating)
+    const backup = async (note, metaOrMedia, synchNotes) => {
+        backupNote(note, metaOrMedia, setNotesUpdating, synchNotes)
     }
 
     // Utils function used to refresh the whole dashboard and not just individual areas
@@ -249,10 +257,7 @@ const Dashboard = ({
 
         // Backup the new note and the notes order
         db.notes.put(newNote)
-        backup(newNote, 'meta')
-        if(driveBackupAuthorised){
-            updateConfigFile(newDashboard)
-        }
+        backup(newNote, 'meta', () => synchNotes({...newDashboard}))
 
         // Update the dashboard and open the editor component
 		packDashboard(newDashboard)
@@ -296,10 +301,9 @@ const Dashboard = ({
             newDashboard, 
             mergeMode, 
             setMergeMode,
-            deletedNotes, 
-            setDeletedNotes, 
             setNotesUpdating,
-            packDashboard
+            packDashboard,
+            synchNotes
         )
 
         // If the mergeMode was true, set it to false
@@ -515,7 +519,7 @@ const Dashboard = ({
                 <Suspense fallback={suspenseLoader}>
                     <NoteEditor 
                         setCurrentPage={setCurrentPage} 
-                        selectedNote={dashboard.notes.get(dashboard.selectedNoteId)} 
+                        dashboard={dashboard} 
                         updateNote={updateNote}
                         deleteNote={deleteNote}
                         darkMode={darkMode}

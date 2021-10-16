@@ -116,7 +116,7 @@ export function errorCatcher(error, counter, targetFunction, ...args){
 // Function called to backup a note both locally and on drive
 // takes the note, a metaOrMedia flag that controls the kind of update
 // and the setNotesUpdating Function used to keep track of the active updates
-export function backupNote(note, metaOrMedia, setNotesUpdating){
+export function backupNote(note, metaOrMedia, setNotesUpdating, synchNotes){
 
     // Increment the notes version and make a copy of it that will be backed up
     note.version = parseInt(note.version) + 1
@@ -130,7 +130,7 @@ export function backupNote(note, metaOrMedia, setNotesUpdating){
     // Perform the backup on drive as well if it is possible
     if(driveBackupAuthorised){
         setNotesUpdating((prev) => prev+1)
-        updateNoteFile(noteCopy, metaOrMedia, setNotesUpdating)
+        updateNoteFile(noteCopy, metaOrMedia, setNotesUpdating, synchNotes)
     }
 
     // Perform the backup locally on indexedDB and store the text only when it is needed

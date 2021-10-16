@@ -68,7 +68,7 @@ const Wrapper = ({
                         darkMode ?
                         {backgroundColor: '#2e2e2e', minWidth:"8vh", color: '#666666'}
                         :
-                        {backgroundColor: '#e7e7e7', minWidth:"8vh"}
+                        {backgroundColor: '#f4f4f4', minWidth:"8vh", boxShadow: '1px 0px 1px #dddddd'}
                     }
                 >
 

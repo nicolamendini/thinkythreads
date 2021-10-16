@@ -6,10 +6,9 @@ DragManager function
 Manages all the drag gestures between notes
 */
 
-import { driveBackupAuthorised, WORKSPACELIMIT } from "../components/Dashboard";
+import { WORKSPACELIMIT } from "../components/Dashboard";
 import { getWorkspace, getLinksFromProps, getSearchFromProps } from "./DashboardPacker";
 import { addToWorkspace, addToBranches, removeFromBranches, wrapWorkspace, openInWorkspace } from "./NotesManupulation";
-import { updateConfigFile } from "./BackupHelper";
 import { backupNote } from "./RequestsMakers";
 import { moveNoteInsideArea, removeElementAt } from "./DashboardUtils";
 import { alertMergeMode, workspaceLimitReached } from "./Messages";
@@ -154,9 +153,6 @@ export function dragManager(
 
                     // backup the new order locally and eventually on drive too
                     window.localStorage.setItem('notes-order', JSON.stringify(newDashboard.notesOrder))
-                    if(driveBackupAuthorised){
-                        updateConfigFile(newDashboard)
-                    }
 
                     newDashboard.selectedNoteId = sourceNote.id
                     getLinksFromProps(newDashboard, rootsOrBranches, setNotesUpdating)
