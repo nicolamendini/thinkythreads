@@ -19,16 +19,74 @@ export function addElementAt (sequence, position, element) {
 }
 
 // Removes the element at a given position
-export function removeElementAt (sequence, position) {
+export function removeElementAt(sequence, position) {
     return [...sequence.slice(0, position), ...sequence.slice(position+1)];
 }
 
 // Moves a note within an area
-export function moveNoteInsideArea (area, originalIndex, targetIndex) {
+export function moveNoteInsideArea(area, originalIndex, targetIndex) {
     var newArea = removeElementAt(area, originalIndex)
     const note = area[originalIndex];
     newArea = [...newArea.slice(0, targetIndex), note, ...newArea.slice(targetIndex)]
     return newArea;
+}
+
+// function to move notes inside the graph
+export function moveNoteInsideGraph(newDashboard, sourceNoteId, targetNoteId, dir, backupMeta){
+    const sourceNote = newDashboard.notes.get(sourceNoteId)
+    const targetNote = newDashboard.notes.get(targetNoteId)
+    detachFromPosition(newDashboard, sourceNote, backupMeta)
+    attachToPosition(newDashboard, sourceNote, targetNote, dir, backupMeta)
+}
+
+export function detachFromPosition(newDashboard, note, backupMeta){
+    const noteAtLeft = newDashboard.notes.get(note.leftLink)
+    const noteAtRight = newDashboard.notes.get(note.rightLink)
+    // detach note from its position
+    if(noteAtLeft){
+        noteAtLeft.rightLink = note.rightLink
+        backupMeta(noteAtLeft)
+    }
+    if(noteAtRight){
+        noteAtRight.leftLink = note.leftLink
+        backupMeta(noteAtRight)
+        if(note.id===newDashboard.firstNoteId){
+            newDashboard.firstNoteId = noteAtRight.id
+        }
+    }
+}
+
+export function attachToPosition(newDashboard, sourceNote, noteAtTargetPos, dir, backupMeta){
+    const noteAtLeft = newDashboard.notes.get(noteAtTargetPos.leftLink)
+    const noteAtRight = newDashboard.notes.get(noteAtTargetPos.rightLink)
+
+    if(dir){
+        sourceNote.rightLink = noteAtTargetPos.id
+        noteAtTargetPos.leftLink = sourceNote.id
+        if(noteAtLeft){
+            sourceNote.leftLink = noteAtLeft.id
+            noteAtLeft.rightLink = sourceNote.id
+            backupMeta(noteAtLeft)
+        }
+        else{
+            sourceNote.leftLink = null
+            newDashboard.firstNoteId = sourceNote.id
+        }
+    }
+    else{
+        sourceNote.leftLink = noteAtTargetPos.id
+        noteAtTargetPos.rightLink = sourceNote.id
+        if(noteAtRight){
+            sourceNote.rightLink = noteAtRight.id
+            noteAtRight.leftLink = sourceNote.id
+            backupMeta(noteAtRight)
+        }
+        else{
+            sourceNote.rightLink = null
+        }
+    }
+    backupMeta(sourceNote)
+    backupMeta(noteAtTargetPos)
 }
 
 // Truncates a string with three dots
@@ -47,9 +105,9 @@ export function checkConflicts (newDashboard, checkingId) {
     const reducer = (cumulativeClause, id) => 
         cumulativeClause && 
         !newDashboard.notes.get(id).thread.includes(checkingId) && 
-        !newDashboard.notes.get(id).branches.includes(checkingId);
-    const noConflictsFlag = newDashboard.notesOrder.reduce(reducer, true);
-    return noConflictsFlag;
+        !newDashboard.notes.get(id).branches.includes(checkingId)
+    const noConflictsFlag = [...newDashboard.notes.keys()].reduce(reducer, true);
+    return noConflictsFlag
 }
 
 // Copy note with a fresh ui_id so that it can be used as draggable
@@ -66,8 +124,10 @@ export function copyNote (note) {
         pinned: note.pinned,
         color: note.color,
         colorPreview: note.colorPreview,
-        attachedImg: note.attachedImg
-    };
+        attachedImg: note.attachedImg,
+        leftLink: note.leftLink,
+        rightLink: note.rightLink
+    }
 }
 
 // If the note has an image at the first position, it 
@@ -99,7 +159,9 @@ export function getNewNote(){
         color: '#ffffff',
         colorPreview: '#ffffff',
         attachedImg: false,
-        version: 0
+        version: 0,
+        leftLink: null,
+        rightLink: null
     }
     return newNote
 }

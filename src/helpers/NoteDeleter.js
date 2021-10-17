@@ -6,13 +6,12 @@ NoteDeleter function
 Deletes a note and resolves potential conflicts in the process
 */
 
-import { db } from "../components/Dashboard";
-import { checkConflicts, removeElementAt } from "./DashboardUtils";
-import { driveBackupAuthorised } from "../components/Dashboard";
-import { removeNoteFile } from "./BackupHelper";
+import { db, driveVariables } from "../components/Dashboard";
+import { checkConflicts, detachFromPosition, removeElementAt } from "./DashboardUtils";
 import { forceRemove } from "./NotesManupulation";
 import { backupNote } from "./RequestsMakers";
 import { deleteConflictAlert } from "./Messages";
+import { updateNoteFile } from "./BackupHelper";
 
 // Delete a note given by removingId from the notes array and cascade
 // forceFlag controls whether the removal shouldbe forced without asking
@@ -23,29 +22,19 @@ export function noteDeleter(
     mergeMode, 
     setMergeMode,
     setNotesUpdating,
-    packDashboard,
-    synchNotes
+    packDashboard
 ){
 
     // get the note to remove and check for conflicts
-    const noteToRemove = newDashboard.notes.get(removingId);
+    const noteToRemove = newDashboard.notes.get(removingId)
 
     // if no conflicts
     if(checkConflicts(newDashboard, removingId) || mergeMode){
         
         // remove it from the dashboard
+        detachFromPosition(newDashboard, noteToRemove, (note) => backupNote(note, 'meta', setNotesUpdating))
         newDashboard.notes.delete(removingId)
-        newDashboard.notesOrder = removeElementAt(
-            newDashboard.notesOrder, 
-            newDashboard.notesOrder.findIndex(id => id===removingId)
-        )
-
-        // keep track of deleted note
-        newDashboard.notesEverDeleted[removingId]=true
-
-        // backup the new notes order and the new deleted notes arrays
-        window.localStorage.setItem('notes-order', JSON.stringify(newDashboard.notesOrder))
-        window.localStorage.setItem('notes-ever-deleted', JSON.stringify(newDashboard.notesEverDeleted))
+        noteToRemove.deleted = true
 
         // if this function was not called by merge mode then sanitise all collections and dashboard
         if(!mergeMode){
@@ -84,9 +73,9 @@ export function noteDeleter(
         }
 
         // if possible, backup the removal and update the .config file on drive
-        if(driveBackupAuthorised){
+        if(driveVariables.authorisation){
             setNotesUpdating((prev) => prev+1)
-            removeNoteFile(noteToRemove, setNotesUpdating, () => synchNotes({...newDashboard}))
+            updateNoteFile(noteToRemove, 'meta', setNotesUpdating)
         }
 
         // remove the note locally and update the dashboard

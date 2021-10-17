@@ -6,10 +6,9 @@ DownloadHelper functions
 Contains functions that help the retrieval of notes on GDrive
 */
 
-import { shareDriveFolderId, db } from "../components/Dashboard";
+import { driveVariables, db } from "../components/Dashboard";
 import { createThumbnail } from "./DashboardUtils";
 import { getMediaRequestById, errorCatcher, sendUpdateRequest } from "./RequestsMakers";
-import { updateConfigFile, removeNoteFile } from "./BackupHelper";
 
 // Function to create a new note from a drive file response
 // takes both the metaResponse and the mediaResponse
@@ -32,7 +31,7 @@ export function setNoteFromResp(
     newNote.version = parseInt(metaResp.result.files[currIdx].appProperties.version)
 
     // add it to the dashboard and backup locally
-    newDashboard.notes.set(newNote.id, newNote);
+    newDashboard.notes.set(newNote.id, newNote)
     db.notes.put(newNote).then(
 
         // check if it needs a thumbnail and create it
@@ -55,66 +54,15 @@ export function setNoteFromResp(
             )
         }
 
-        // otherwise if all the files have been processed set the config file
+        // otherwise if all the files have been processed, update the notes on drive
         else{
-            callSetConfig(
-                notesOnDrive, 
+            updateDriveNotes(
                 newDashboard, 
-                packDashboard, 
-                setNotesUpdating
+                notesOnDrive, 
+                setNotesUpdating, 
+                packDashboard
             )
         }
-    }
-}
-
-// function used to decide what config file prevails, either that on drive or local
-export function callSetConfig(
-    notesOnDrive, 
-    newDashboard, 
-    packDashboard, 
-    setNotesUpdating,
-    counter
-){
-    if(!counter){counter=0}
-
-    // if a config file has been found and any note has been modified by data on drive,
-    // overwrite the local configuration with the online one
-    if(notesOnDrive.configFound){
-
-        getMediaRequestById(notesOnDrive.configFound).then(
-            (mediaResp) => {
-                // if the config is not empty
-                if(mediaResp.body){
-
-                    const config = JSON.parse(mediaResp.body)
-                    // first see what's on drive
-                    setConfigFromDrive(newDashboard, config, packDashboard)
-                }
-
-                // this comes strictly after setConfigFromDrive
-                updateDriveNotes(
-                    newDashboard, 
-                    notesOnDrive, 
-                    setNotesUpdating, 
-                    packDashboard
-                )
-            }).catch((error) => errorCatcher(
-                error, 
-                counter, 
-                callSetConfig, 
-                notesOnDrive, 
-                newDashboard, 
-                packDashboard, 
-                setNotesUpdating 
-            ))
-    }
-    else{
-        updateDriveNotes(
-            newDashboard, 
-            notesOnDrive,  
-            setNotesUpdating, 
-            packDashboard
-        )
     }
 }
 
@@ -177,20 +125,12 @@ export function setNotesPageFromResp(
         // placeholder for the noteFile object and for the note id
         const noteFile = metaResp.result.files[i]
         const noteId = noteFile.name
-
-        // if config file encountered, store the id of the file and finish the process
-        if(noteId==='___config'){
-            notesOnDrive.configFound = noteFile.id
-            finishedProcesses.count +=1
-        }
         
         // else if the file was not a deleted one, add it to notesOnDrive
-        else if(!newDashboard.notesEverDeleted[noteId]){
+        const noteDeletedFlag = noteFile.appProperties.deleted==='true'
+        if(!noteDeletedFlag){
             const driveNoteVersion = parseInt(noteFile.appProperties.version)
-            notesOnDrive.set(
-                noteId, 
-                driveNoteVersion
-            )
+            notesOnDrive[noteId] = driveNoteVersion
 
             // retrieve the note and check that it exists
             const note = newDashboard.notes.get(noteId)
@@ -216,6 +156,11 @@ export function setNotesPageFromResp(
         }
 
         else{
+            const removingNote = newDashboard.notes.get(noteId)
+            if(removingNote){
+                newDashboard.notes.delete(noteId)
+                db.notes.delete(noteId)
+            }
             finishedProcesses.count +=1
         }
     }
@@ -233,11 +178,11 @@ export function setNotesPageFromResp(
 
     // otherwise update the notes on drive because they might be outdated
     else if(finishedProcesses.count === metaResp.result.files.length){
-        callSetConfig(
-            notesOnDrive, 
+        updateDriveNotes(
             newDashboard, 
-            packDashboard, 
-            setNotesUpdating
+            notesOnDrive, 
+            setNotesUpdating, 
+            packDashboard
         )
     }
 }
@@ -257,7 +202,7 @@ export function getNotesPage(
     window.gapi.client.drive.files.list({
         fields: 'nextPageToken, files(description, id, name, appProperties)',
         q:"mimeType='application/json' and trashed=false and '" + 
-        shareDriveFolderId + "' in parents",
+        driveVariables.folderId + "' in parents",
         pageToken: targetPageToken
 
     }).then((metaResp) => {
@@ -293,69 +238,13 @@ export function getAllNotes(
 
     // notesOnDrive keeps track of the backup/restoring process
     if(!counter){counter=0}
-    const notesOnDrive = new Map()
-    notesOnDrive.configFound = false
+    const notesOnDrive = {}
 
     getNotesPage(
         newDashboard, 
         notesOnDrive,  
         setNotesUpdating, 
         packDashboard
-    )
-}
-
-// Sets a config file from the .config on drive
-export function setConfigFromDrive(newDashboard, config){
-
-    newDashboard.notesEverDeleted = {...newDashboard.notesEverDeleted, ...config.notesEverDeleted}
-
-    for(const id of newDashboard.notesOrder){
-        if(newDashboard.notesEverDeleted[id]){
-            // no need to call the note deleter because there will be no dependencies
-            // as all the other local notes have already been updated
-            newDashboard.notes.delete(id)
-            db.notes.delete(id)
-        }
-    }
-    // remove from notes orders as well
-    newDashboard.notesOrder = newDashboard.notesOrder.filter(id => !newDashboard.notesEverDeleted[id])
-    config.notesOrder = config.notesOrder.filter(id => !newDashboard.notesEverDeleted[id])
-
-    // ensured that the config file includes all the notes
-    const intersection = [...new Set([...newDashboard.notesOrder, ...config.notesOrder])]
-
-    // if the config contains all the updates, just use it as it is
-    if(
-        intersection.length===config.notesOrder.length && 
-        intersection.length > newDashboard.notesOrder.length
-    ){
-        newDashboard.notesOrder = config.notesOrder
-    }
-
-    // if the intersection contains more than either, use it
-    else if(
-        intersection.length > config.notesOrder.length && 
-        intersection.length > newDashboard.notesOrder.length
-    ){
-        newDashboard.notesOrder = intersection
-    }
-
-    // backing up values received from drive
-    window.localStorage.setItem('notes-order', JSON.stringify(newDashboard.notesOrder))
-    window.localStorage.setItem('notes-ever-deleted', JSON.stringify(newDashboard.notesEverDeleted))
-
-    // make sure you are not removing a note that is employed in the dashboard
-    if(newDashboard.notesEverDeleted[newDashboard.selectedNoteId]){
-        newDashboard.selectedNoteId = null
-    }
-    if(newDashboard.notesEverDeleted[newDashboard.openedCollectionId]){
-        newDashboard.openedCollectionId = null
-    }
-    if(newDashboard.notesEverDeleted[newDashboard.openedWorkspaceId]){
-        newDashboard.openedWorkspaceId = null
-    }
-    newDashboard.workspaceIds = newDashboard.workspaceIds.filter(
-        (id) => !newDashboard.notesEverDeleted[id]
     )
 }
 
@@ -370,38 +259,21 @@ export function updateDriveNotes(
 
     for(const [key, note] of newDashboard.notes){
 
-        const sampleVersion = notesOnDrive.get(key)
+        const sampleVersion = notesOnDrive[key]
+
+        console.log(sampleVersion, note.version)
 
         // for each of the notes that need to be updated, send a request
         if(!sampleVersion || sampleVersion<note.version){
             updatesCounter+=1
             sendUpdateRequest(key, updatesCounter, setNotesUpdating)
         }
-        // remove all the notes that are validated locally, all the remaining one will be deleted
-        if(sampleVersion){
-            notesOnDrive.delete(key)
+
+        if(!note.leftLink){
+            newDashboard.firstNoteId = note.id
         }
     }
 
-    // remove the notes that remained
-    for(const [removedNoteId,] of notesOnDrive){
-
-        updatesCounter+=1
-        setTimeout(() => {
-            setNotesUpdating((prev) => prev+1)
-            removeNoteFile({id: removedNoteId}, setNotesUpdating)
-        }, (200 * updatesCounter))
-    }
-
-    if(newDashboard.notesOrder.length !== newDashboard.notes.size){
-        console.log('orderlost')
-        newDashboard.notesOrder = [...newDashboard.notes.keys()]
-    }
-
-    // Once finished update the config file on drive
     newDashboard.checkedAgainstDrive = true
-    console.log('updatingconfig')
-    updateConfigFile(newDashboard)
-    console.log(newDashboard)
     packDashboard(newDashboard)
 }

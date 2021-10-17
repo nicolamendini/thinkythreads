@@ -75,8 +75,10 @@ export function noteMerger(
                 pinned: noteA.pinned || noteB.pinned,
                 color: noteA.color!=='#ffffff' ? noteA.color : noteB.color,
                 colorPreview: noteA.colorPreview!=='#ffffff' ? noteA.colorPreview : noteB.colorPreview,
-                version: noteA.version
-            };
+                version: noteA.version,
+                leftLink: noteA.leftLink,
+                rightLink: noteA.rightLink
+            }
 
             // set the preview of the noteC based on the text
             setPreview(noteC)
@@ -99,7 +101,7 @@ export function noteMerger(
             linkThreadNotes(newDashboard, noteC.thread, setNotesUpdating)
 
             // add noteC to the dashboard
-            newDashboard.notes.set(noteC.id, noteC);
+            newDashboard.notes.set(noteC.id, noteC)
 
             // start cleaning all the notes that have conflicts because they relied on the id
             // of noteB that now will not exist anymore
@@ -190,7 +192,7 @@ export function noteMerger(
             newDashboard.selectedNoteId = noteC.id;
             backupNote(noteC, 'both', setNotesUpdating)
             deleteNote(noteB.id, false, newDashboard)
-            packDashboard(newDashboard);
+            packDashboard(newDashboard)
         })
     )
 }

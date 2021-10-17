@@ -255,7 +255,7 @@ export function closeAndSaveWorkspace(leaveOpen, newDashboard, setNotesUpdating,
 }
 
 // Remove old selection and select a new note
-export function noteSelector(noteToSelect, mergeMode, setMergeMode, dashboard, setDashboard, getLinks, mergeNotes){
+export function noteSelector(noteToSelect, mergeMode, setMergeMode, dashboard, packDashboard, mergeNotes){
 
     // If the mergeMode is not on, select a new note and update the links
     if(!mergeMode){
@@ -264,8 +264,7 @@ export function noteSelector(noteToSelect, mergeMode, setMergeMode, dashboard, s
             dashboard.selectedNoteId=noteToSelect.id
             const newDashboard = {...dashboard}
             newDashboard.selectedNoteId = noteToSelect.id
-            getLinks(newDashboard)
-            setDashboard(newDashboard)
+            packDashboard(newDashboard, false, false, true)
         } 
     }
 

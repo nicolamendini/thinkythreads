@@ -6,7 +6,6 @@ DashboardPacker functions
 Update the functions based on the new states of the dashboard
 */
 
-import { driveBackupAuthorised } from "../components/Dashboard"
 import { copyNote } from "./DashboardUtils"
 import { backupNote } from "./RequestsMakers"
 
@@ -16,93 +15,63 @@ export function getSearchFromProps(newDashboard, searchProps){
     // go through all the notes and decide whether each note should be inserted
     var newSearch = []
     var insertingNote = []
-    const removingIdxs = []
-    
-    for(let i=0; i<newDashboard.notesOrder.length; i++){
+    var key = null
+    var note = {rightLink : newDashboard.firstNoteId}
 
-        const key = newDashboard.notesOrder[i]
-        const note = newDashboard.notes.get(key)
+    for(let i=0; i<newDashboard.notes.size; i++){
 
-        // if the note exists
-        if(note){
-            insertingNote = []
+        key = note.rightLink
+        note = newDashboard.notes.get(key)
 
-            // if the text matched with the text on the searchBar insert it
-            if(note.preview.replace( /(<([^>]+)>)/ig, '').toLowerCase().includes(searchProps.searchText)){
+        insertingNote = []
 
-                insertingNote=[note]
+        // if the text matched with the text on the searchBar insert it
+        if(note.preview.replace( /(<([^>]+)>)/ig, '').toLowerCase().includes(searchProps.searchText)){
 
-                if(searchProps.colorFilter!=='#ededed' && searchProps.colorFilter!==note.colorPreview){
+            insertingNote=[note]
+
+            if(searchProps.colorFilter!=='#ededed' && searchProps.colorFilter!==note.colorPreview){
+                insertingNote=[]
+            }
+
+            // if the thread filter and the collections filters are on but the note has none, remove it
+            if(insertingNote.length && searchProps.collectionFilter && searchProps.threadFilter){
+                if(!note.thread.length && !note.collection.length){
                     insertingNote=[]
                 }
+            }
 
-                // if the thread filter and the collections filters are on but the note has none, remove it
-                if(insertingNote.length && searchProps.collectionFilter && searchProps.threadFilter){
-                    if(!note.thread.length && !note.collection.length){
-                        insertingNote=[]
-                    }
+            // if the thread filter is on but the note has none, remove it from the insertion
+            else if(insertingNote.length && searchProps.threadFilter){
+                if(!note.thread.length){
+                    insertingNote=[]
                 }
+            }
 
-                // if the thread filter is on but the note has none, remove it from the insertion
-                else if(insertingNote.length && searchProps.threadFilter){
-                    if(!note.thread.length){
-                        insertingNote=[]
-                    }
+            // if the collection filter is on but the note has none, remove it from the insertion
+            else if(insertingNote.length && searchProps.collectionFilter){
+                if(!note.collection.length){
+                    insertingNote=[]
                 }
+            }
 
-                // if the collection filter is on but the note has none, remove it from the insertion
-                else if(insertingNote.length && searchProps.collectionFilter){
-                    if(!note.collection.length){
-                        insertingNote=[]
-                    }
+            // If a collection is opened add a new constraint
+            if(insertingNote.length && newDashboard.openedCollectionId){
+                if(!newDashboard.notes.get(newDashboard.openedCollectionId).collection.includes(note.id)){
+                    insertingNote=[]
                 }
+            }
 
-                // If a collection is opened add a new constraint
-                if(insertingNote.length && newDashboard.openedCollectionId){
-                    if(!newDashboard.notes.get(newDashboard.openedCollectionId).collection.includes(note.id)){
-                        insertingNote=[]
-                    }
+            // if the note is pinned, put at the beginning, if not, at the end
+            if(insertingNote.length){
+                if(note.pinned){
+                    newSearch = [copyNote(insertingNote[0]), ...newSearch]
                 }
-
-                // if the note is pinned, put at the beginning, if not, at the end
-                if(insertingNote.length){
-                    if(note.pinned){
-                        newSearch = [copyNote(insertingNote[0]), ...newSearch]
-                    }
-                    else{
-                        newSearch = [...newSearch, copyNote(insertingNote[0])]
-                    }
+                else{
+                    newSearch = [...newSearch, copyNote(insertingNote[0])]
                 }
             }
         }
-        else{
-            removingIdxs.push(i)
-            console.log(newDashboard)
-            errorAlert('noteOfSearchNotFoundError!', key, newDashboard)
-        }
-    }
-
-    if(removingIdxs.length){
-        newDashboard.notesOrder = removeFromSequence(removingIdxs, newDashboard.notesOrder)
-        window.localStorage.setItem('notes-order', JSON.stringify(newDashboard.notesOrder))
-        //updateConfigFile(newDashboard)
-    }
-
-    if(newDashboard.notesOrder && newDashboard.notesOrder.length !== newDashboard.notes.size){
-        newDashboard.notesOrder = [...new Set([newDashboard.notesOrder, ...newDashboard.notes.keys()])]
-        if(driveBackupAuthorised){
-            window.localStorage.setItem('notes-order', JSON.stringify(newDashboard.notesOrder))
-            //updateConfigFile(newDashboard)
-        }
-        window.alert(
-            '-------- BETA VERSION ERROR REPORT ------- \n' + 
-        '---- PLEASE SHARE WITH THE DEVELOPER --- \n' +
-        'along with some info about what you did to get here \n' +
-        'EMAIL: nicolamendini0@gmail.com \n' +
-        'THANK YOU!' +
-        '\n\nERROR: \n' + 
-        'The order of the notes was lost'
-        )
     }
 
     newDashboard.search = newSearch
@@ -214,4 +183,22 @@ export function errorAlert(message, id, newDashboard){
         '\n\nWORKSPACE-IDS: \n' +
         newDashboard.workspaceIds
     )
+}
+
+export function restoreLinks(newDashboard, backup){
+    var prevNote = {id: null, rightLink: null}
+
+    for(const [, note] of newDashboard.notes){
+        
+        note.leftLink = prevNote.id
+        prevNote.rightLink = note.id
+        prevNote = note
+    }
+
+    prevNote.rightLink = null
+
+    newDashboard.firstNoteId = prevNote.id
+    for(const [, note] of newDashboard.notes){
+        backup(note, 'meta')
+    }
 }

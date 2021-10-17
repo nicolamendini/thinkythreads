@@ -7,10 +7,10 @@ Manages all the drag gestures between notes
 */
 
 import { WORKSPACELIMIT } from "../components/Dashboard";
-import { getWorkspace, getLinksFromProps, getSearchFromProps } from "./DashboardPacker";
+import { getLinksFromProps } from "./DashboardPacker";
 import { addToWorkspace, addToBranches, removeFromBranches, wrapWorkspace, openInWorkspace } from "./NotesManupulation";
 import { backupNote } from "./RequestsMakers";
-import { moveNoteInsideArea, removeElementAt } from "./DashboardUtils";
+import { moveNoteInsideGraph, moveNoteInsideArea, removeElementAt } from "./DashboardUtils";
 import { alertMergeMode, workspaceLimitReached } from "./Messages";
 
 // Manage the dragging and dropping rules
@@ -19,12 +19,10 @@ import { alertMergeMode, workspaceLimitReached } from "./Messages";
 // from React Beautiful DnD
 export function dragManager(
     dashboard,
-    setDashboard, 
     mergeMode, 
     threadOrCollection, 
     setThreadOrCollection,
     rootsOrBranches, 
-    searchProps, 
     setNotesUpdating,
     packDashboard,
     result
@@ -52,9 +50,7 @@ export function dragManager(
             else if(threadOrCollection){
                 const newDashboard = {...dashboard}
                 addToWorkspace(newDashboard, targetId, result.destination.index);
-                getLinksFromProps(newDashboard, rootsOrBranches, setNotesUpdating)
-                getWorkspace(newDashboard)
-                setDashboard(newDashboard)
+                packDashboard(newDashboard, false, true, true)
             }
 
             // else if we are in collectionMode, check that the notes collection is not 
@@ -67,8 +63,7 @@ export function dragManager(
                     if(!dashboard.workspaceIds.includes(targetId)){
                         const newDashboard = {...dashboard}
                         newDashboard.workspaceIds.push(targetId);
-                        getWorkspace(newDashboard)
-                        setDashboard(newDashboard)
+                        packDashboard(newDashboard, false, true)
                     }
                 }
                 else{
@@ -98,8 +93,7 @@ export function dragManager(
                     backupNote(noteFrom, 'meta', setNotesUpdating)
                 }   
             }
-            getLinksFromProps(newDashboard, rootsOrBranches, setNotesUpdating)
-            setDashboard(newDashboard);
+            packDashboard(newDashboard, false, false, true);
         }
 
         // if the destination is the wrapper area
@@ -134,7 +128,7 @@ export function dragManager(
             if(result.source.index!==result.destination.index){
                 const sourceNote = dashboard.search[result.source.index]
                 const targetNote = dashboard.search[result.destination.index]
-
+                const dir = result.source.index > result.destination.index
                 // only if not trying to move between pinned notes
                 if(
                 !(
@@ -145,19 +139,26 @@ export function dragManager(
                         
                     // reorder the notes
                     const newDashboard = {...dashboard}
-                    newDashboard.notesOrder = moveNoteInsideArea(
-                            dashboard.notesOrder, 
-                            dashboard.notesOrder.findIndex(id => id===sourceNote.id), 
-                            dashboard.notesOrder.findIndex(id => id===targetNote.id)
-                    )
-
-                    // backup the new order locally and eventually on drive too
-                    window.localStorage.setItem('notes-order', JSON.stringify(newDashboard.notesOrder))
-
+                    if(sourceNote.pinned){
+                        moveNoteInsideGraph(
+                            newDashboard, 
+                            targetNote.id, 
+                            sourceNote.id, 
+                            dir, 
+                            (note) => backupNote(note, 'meta', setNotesUpdating)
+                        )
+                    }
+                    else{
+                        moveNoteInsideGraph(
+                            newDashboard, 
+                            sourceNote.id, 
+                            targetNote.id, 
+                            dir, 
+                            (note) => backupNote(note, 'meta', setNotesUpdating)
+                        )
+                    }
                     newDashboard.selectedNoteId = sourceNote.id
-                    getLinksFromProps(newDashboard, rootsOrBranches, setNotesUpdating)
-                    getSearchFromProps(newDashboard, searchProps)
-                    setDashboard(newDashboard);
+                    packDashboard(newDashboard, true, false, true)
                 }
             }
         }
@@ -167,8 +168,7 @@ export function dragManager(
             const newDashboard = {...dashboard}
             const targetNote = dashboard.search[result.source.index]
             newDashboard.openedCollectionId = targetNote.id;
-            getSearchFromProps(newDashboard, searchProps)
-            setDashboard(newDashboard)
+            packDashboard(newDashboard, true)
         }
     }
 
@@ -184,8 +184,7 @@ export function dragManager(
                 newDashboard.selectedNoteId = newDashboard.workspaceIds[result.source.index-1];
                 getLinksFromProps(newDashboard, rootsOrBranches, setNotesUpdating)
             }
-            getWorkspace(newDashboard)
-            setDashboard(newDashboard)
+            packDashboard(newDashboard, false, true)
         }
 
         // if the destination is the workspace area itself, just reorder the thread or collection and update
@@ -193,9 +192,7 @@ export function dragManager(
             const newDashboard = {...dashboard}
             newDashboard.workspaceIds = moveNoteInsideArea(newDashboard.workspaceIds, result.source.index, result.destination.index)
             newDashboard.selectedNoteId = newDashboard.workspaceIds[result.destination.index]
-            getLinksFromProps(newDashboard, rootsOrBranches, setNotesUpdating)
-            getWorkspace(newDashboard)
-            setDashboard(newDashboard)
+            packDashboard(newDashboard, false, true, true)
         }
     }
 
@@ -224,10 +221,7 @@ export function dragManager(
                 }
             }
 
-            //setLinks(pack([]));
-            getLinksFromProps(newDashboard, rootsOrBranches, setNotesUpdating)
-            getSearchFromProps(newDashboard, searchProps)
-            setDashboard(newDashboard);
+            packDashboard(newDashboard, true, false, true);
         }
 
         // if the destination is the workspace area, add to thread
@@ -239,9 +233,7 @@ export function dragManager(
             else{
                 const newDashboard = {...dashboard}
                 addToWorkspace(newDashboard, dashboard.links[result.source.index].id, result.destination.index);
-                getLinksFromProps(newDashboard, rootsOrBranches, setNotesUpdating)
-                getWorkspace(newDashboard)
-                setDashboard(newDashboard)
+                packDashboard(newDashboard, false, true, true)
             }
         }
 
@@ -264,8 +256,7 @@ export function dragManager(
                 )
             }
             backupNote(targetNote, 'meta', setNotesUpdating)
-            getLinksFromProps(newDashboard, rootsOrBranches, setNotesUpdating)
-            setDashboard(newDashboard)
+            packDashboard(newDashboard, false, false, true)
         }
     }
 }

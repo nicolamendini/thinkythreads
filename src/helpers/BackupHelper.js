@@ -6,7 +6,7 @@ BackupHelper functions
 Function to backup notes on drive
 */
 
-import { db, shareDriveFolderId } from "../components/Dashboard"
+import { db, driveVariables } from "../components/Dashboard"
 import { exportBeginDelimiter, newNoteDelimiter } from "./Messages"
 import { 
     getMediaUpdateRequest, 
@@ -16,21 +16,8 @@ import {
     createNoteFile
 } from "./RequestsMakers"
 
-// Try to update the config file on drive by sendin the request
-export function updateConfigLoop(newDashboard, configFileId, counter){
-
-    // The config only includes the notesOrder
-    if(!counter){counter=0}
-    const configBody = JSON.stringify({
-        notesOrder: newDashboard.notesOrder,
-        notesEverDeleted: newDashboard.notesEverDeleted
-    })
-    getMediaUpdateRequest({text: configBody}, configFileId).then(
-    ).catch((error) => errorCatcher(error, counter, updateConfigLoop, newDashboard, configFileId))
-}
-
 // Function to update a note file on drive
-export function updateNoteFile(note, mediaOrMeta, setNotesUpdating, synchNotes, counter){
+export function updateNoteFile(note, mediaOrMeta, setNotesUpdating, counter){
 
     // Initialise the counter of calls
     if(!counter){counter=0}
@@ -42,16 +29,13 @@ export function updateNoteFile(note, mediaOrMeta, setNotesUpdating, synchNotes, 
         if(!resp.result.files.length){
 
             // create it by calling this function again in media mode
-            createNoteFile(note).then(() => {
+            createNoteFile(note).then((resp) => {
 
                 if(mediaOrMeta!=='meta'){
-                    updateNoteFile(note, 'media', setNotesUpdating, synchNotes)
+                    updateNoteFile(note, 'media', setNotesUpdating)
                 }
                 else{
                     setNotesUpdating((prev) => prev-1)
-                    if(synchNotes){
-                        synchNotes()
-                    }
                 }
 
             }).catch((error) => 
@@ -61,8 +45,7 @@ export function updateNoteFile(note, mediaOrMeta, setNotesUpdating, synchNotes, 
                     updateNoteFile, 
                     note, 
                     mediaOrMeta, 
-                    setNotesUpdating,
-                    synchNotes
+                    setNotesUpdating
                 )
             )
         }
@@ -92,9 +75,6 @@ export function updateNoteFile(note, mediaOrMeta, setNotesUpdating, synchNotes, 
                 else{
                     console.log('updated')
                     setNotesUpdating((prev) => prev-1)
-                    if(synchNotes){
-                        synchNotes()
-                    }
                 }
 
             }).catch((error) => 
@@ -104,8 +84,7 @@ export function updateNoteFile(note, mediaOrMeta, setNotesUpdating, synchNotes, 
                     updateNoteFile, 
                     note, 
                     mediaOrMeta, 
-                    setNotesUpdating,
-                    synchNotes
+                    setNotesUpdating
                 )
             )
         }
@@ -116,57 +95,13 @@ export function updateNoteFile(note, mediaOrMeta, setNotesUpdating, synchNotes, 
             updateNoteFile, 
             note, 
             mediaOrMeta, 
-            setNotesUpdating,
-            synchNotes
+            setNotesUpdating
         )
     )
 }
 
-// function to create an empty config file
-export function createConfigFile(newDashboard, counter){
-    if(!counter){counter=0}
-    const configMetadata = {}
-    createNoteFile({id: '___config'}, configMetadata).then((newResp) => {
-        updateConfigLoop(newDashboard, newResp.result.id)
-    }).catch((error) => errorCatcher(error, counter, createConfigFile, newDashboard))
-}
-
-// Function to update the config file on drive
-export function updateConfigFile(newDashboard, counter){
-
-    if(newDashboard.checkedAgainstDrive){
-        console.log('updateconfig')
-        if(!counter){counter=0}
-
-        window.gapi.client.drive.files.list({
-            fields: 'files(id)',
-            q:"name='___config' " +
-            "and mimeType='application/json' " +
-            "and trashed=false and '" + 
-            shareDriveFolderId + "' in parents"
-        }).then((resp)=>{
-
-            console.log(resp.result.files.length)
-            // if it does not exist, create it and then call updateConfigLoop
-            if(!resp.result.files.length){
-                createConfigFile(newDashboard)
-            }
-
-            // otherwise call updateConfigLoop directly
-            else{ 
-                updateConfigLoop(newDashboard, resp.result.files[0].id)
-            }
-        }).catch((error) => errorCatcher(error, counter, updateConfigFile, newDashboard))
-    }
-
-    // if the getAllNotes is not done yet config cannot update
-    else{
-        console.log('blocked')
-    }
-}
-
 // Removes a notes file from drive
-export function removeNoteFile(note, setNotesUpdating, synchNotes, counter){
+export function removeNoteFile(note, setNotesUpdating, counter){
     if(!counter){counter=0}
 
     // if it exists, try to remove
@@ -176,9 +111,6 @@ export function removeNoteFile(note, setNotesUpdating, synchNotes, counter){
                 'fileId': resp.result.files[0].id
             }).then(function() { 
                 setNotesUpdating((prev) => prev-1)
-                if(synchNotes){
-                    synchNotes()
-                }
 
             }).catch((error) => 
                 errorCatcher(
@@ -186,16 +118,12 @@ export function removeNoteFile(note, setNotesUpdating, synchNotes, counter){
                     counter, 
                     removeNoteFile, 
                     note,  
-                    setNotesUpdating,
-                    synchNotes
+                    setNotesUpdating
                 )
             )
         }
         else{
             setNotesUpdating((prev) => prev-1)
-            if(synchNotes){
-                synchNotes()
-            }
         }
     }).catch((error) => 
         errorCatcher(
@@ -203,8 +131,7 @@ export function removeNoteFile(note, setNotesUpdating, synchNotes, counter){
             counter, 
             removeNoteFile, 
             note, 
-            setNotesUpdating,
-            synchNotes
+            setNotesUpdating
         )
     )
 }
@@ -265,7 +192,7 @@ export function checkDriveFolder(setDriveFolderId, counter){
             }).catch((error) => errorCatcher(error, counter, checkDriveFolder, setDriveFolderId))
         }
         else{
-            if(resp.result.files[0].id!==shareDriveFolderId){
+            if(resp.result.files[0].id!==driveVariables.folderId){
                 setDriveFolderId(resp.result.files[0].id)
             }
         }

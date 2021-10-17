@@ -12,11 +12,11 @@ Uses lazy loading since the components that it contains are big
 import { useState, useEffect, Suspense} from 'react';
 import React from 'react'
 import Dexie from 'dexie'
-import { createThumbnail, getNewNote, moveNoteInsideArea} from "../helpers/DashboardUtils";
+import { createThumbnail, getNewNote, detachFromPosition} from "../helpers/DashboardUtils";
 import { exportThreadGivenProps, checkDriveFolder} from '../helpers/BackupHelper';
 import { getAllNotes } from '../helpers/DownloadHelper';
 import { backupNote } from '../helpers/RequestsMakers';
-import { getSearchFromProps, getLinksFromProps, getWorkspace } from '../helpers/DashboardPacker';
+import { getSearchFromProps, getLinksFromProps, getWorkspace, restoreLinks } from '../helpers/DashboardPacker';
 import { dragManager } from '../helpers/DragManager';
 import { closeAndSaveWorkspace, collectionToThread, linkThreadNotes, noteSelector, threadToCollection } from '../helpers/NotesManupulation';
 import { noteDeleter } from '../helpers/NoteDeleter';
@@ -41,15 +41,14 @@ export const TEXTLIMIT = 1048576
 export const PREVIEWLIMIT = 200
 
 // Define some shared variables that will be accessible from all components
-export var driveBackupAuthorised = false
-export var shareDriveFolderId = ''
+export const driveVariables = {authorisation: false, folderId: ''}
 
 // Initialise the local indexedDB that will contain the notes
 export const db = new Dexie('notes-db')
 db.version(1).stores({
     notes: 
         'id, text, preview, branches, roots, thread, collection' + 
-        ', pinned, color, colorPreview, attachedImg, version'
+        ', pinned, color, colorPreview, attachedImg, version, leftLink, rightLink'
 })
 
 // Dashboard component, 
@@ -70,8 +69,7 @@ const Dashboard = ({
 	const [dashboard, setDashboard] = useState(
         {
             notes: new Map(), 
-            notesOrder: [],
-            notesEverDeleted: {},
+            firstNoteId: '',
             workspaceIds: [],
             selectedNoteId: null,
             openedCollectionId: null,
@@ -109,28 +107,21 @@ const Dashboard = ({
     const [notesUpdating, setNotesUpdating] = useState(0)
 
     // Effect called only when the component is first loaded
-    // Retrieves the notes, notesOrder and everDeletedNotes from the db
+    // Retrieves the notes from the db
     useEffect(() => {
         const newDashboard = {...dashboard}
         db.notes.toArray().then(function(resp){
             resp.forEach((note) => {
-                console.log(note)
                 newDashboard.notes.set(note.id, note)
                 createThumbnail(note)
             })
 
-            const notesOrder = JSON.parse(window.localStorage.getItem('notes-order'))
-            const notesEverDeleted = JSON.parse(window.localStorage.getItem('notes-ever-deleted'))
+            for(const [, note] of newDashboard.notes){
+                if(!note.leftLink){
+                    newDashboard.firstNoteId = note.id
+                }
+            }
 
-            if(notesOrder){
-                newDashboard.notesOrder = notesOrder
-            }
-            else{
-                newDashboard.notesOrder = [...newDashboard.notes.keys()]
-            }
-            if(notesEverDeleted){
-                newDashboard.notesEverDeleted = notesEverDeleted
-            }
             packDashboard(newDashboard)
         })
 
@@ -145,28 +136,26 @@ const Dashboard = ({
     // Refreshed the Links area of the dashboard
     useEffect(() => {
         const newDashboard = {...dashboard}
-        getLinks(newDashboard)
-        setDashboard(newDashboard)
+        packDashboard(newDashboard, false, false, true)
     // eslint-disable-next-line
-	}, [rootsOrBranches]);
+	}, [rootsOrBranches])
 
     // Effect that is called every time the searchProps change
     // Refreshed the Search area of the dashboard
     useEffect(() => {
         const newDashboard = {...dashboard}
-        getSearch(newDashboard)
-        setDashboard(newDashboard)
+        packDashboard(newDashboard, true)
     // eslint-disable-next-line
-	}, [searchProps]);
+	}, [searchProps])
 
     // Effect that kicks in when either GAPIloaded
     // or currentUser change
     // Accesses the user's Drive and checks for the existence of
     // a thinkythreads folder
     useEffect(() => {
-        driveBackupAuthorised = false
+        driveVariables.authorisation = false
         if(GAPIloaded && currentUser){
-            driveBackupAuthorised = true
+            driveVariables.authorisation = true
             checkDriveFolder(setDriveFolderId);
         }
     // eslint-disable-next-line
@@ -175,7 +164,7 @@ const Dashboard = ({
 
     // Once the folder is found or created, this effect retrieves all notes from drive
     useEffect(() => {
-        shareDriveFolderId = driveFolderId
+        driveVariables.folderId = driveFolderId
         if(GAPIloaded && currentUser && driveFolderId){
             synchNotes()
         }
@@ -183,7 +172,6 @@ const Dashboard = ({
     },[driveFolderId, GAPIloaded, currentUser])
 
     useEffect(() => {
-        console.log(dashboard.selectedNoteId)
         if(!dashboard.selectedNoteId && currentPage==='editor'){
             setCurrentPage('notes')
         }
@@ -209,26 +197,95 @@ const Dashboard = ({
     // takes the note itself and a metaOrMedia
     // flag that controls whether there should be a partial or full backup
     // eg: links, colour, pinned, etc (meta) or/and main body text (media)
-    const backup = async (note, metaOrMedia, synchNotes) => {
-        backupNote(note, metaOrMedia, setNotesUpdating, synchNotes)
+    const backup = async (note, metaOrMedia) => {
+        backupNote(note, metaOrMedia, setNotesUpdating)
     }
 
     // Utils function used to refresh the whole dashboard and not just individual areas
-    const packDashboard = async (newDashboard) => {
-        getSearch(newDashboard)
-        getLinks(newDashboard)
-        getWorkspace(newDashboard)
+    const packDashboard = (newDashboard, sFlag, wFlag, lFlag) => {
+
+        if(!checkLinksSanity(newDashboard)){
+            restoreLinks(newDashboard, backup)
+        }
+
+        const allFalse = !sFlag && !wFlag && !lFlag
+        if(allFalse || sFlag){ 
+            getSearchFromProps(newDashboard, searchProps)
+        }
+        if(allFalse || wFlag){
+            getWorkspace(newDashboard)
+        }
+        if(allFalse || lFlag){
+            getLinksFromProps(newDashboard, rootsOrBranches, setNotesUpdating)
+        }
         setDashboard(newDashboard)
     }
 
-    // Change the notes appearing on the Search area based on the current search props
-    const getSearch = async (newDashboard) => {
-        getSearchFromProps(newDashboard, searchProps)
-	}
+    const checkLinksSanity = (newDashboard) => {
 
-    // Change the notes appearing in the Links area based on the rootsOrBranches flag
-    const getLinks = async (newDashboard) => {
-        getLinksFromProps(newDashboard, rootsOrBranches, setNotesUpdating)
+        // if there is more than one note
+        if(newDashboard.notes.size > 1){
+
+            var prevNote = newDashboard.notes.get(newDashboard.firstNoteId)
+            var currNote = null
+            var nextNote = null
+
+            // if the first note has links
+            if(prevNote && !prevNote.leftLink){
+
+                if(prevNote.rightLink){
+                    currNote = newDashboard.notes.get(prevNote.rightLink)
+
+                    // for each note, check that it has links and that it is connected to the neighbours
+                    for(let i=1; i<newDashboard.notes.size-1; i++){
+
+                        if(currNote && currNote.rightLink){
+
+                            nextNote = newDashboard.notes.get(currNote.rightLink)
+                            if(nextNote){
+                                if(!(
+                                    currNote.rightLink && 
+                                    currNote.leftLink &&
+                                    prevNote.rightLink &&
+                                    nextNote.leftLink &&
+                                    currNote.leftLink===prevNote.id &&
+                                    currNote.rightLink===nextNote.id
+                                )){
+                                    console.log('sequence disconnected at: ', {...prevNote}, {...currNote}, {...nextNote})
+                                    return false
+                                }
+
+                                // move the head ahead
+                                prevNote = currNote
+                                currNote = nextNote
+                            }
+                            else{
+                                console.log('the successor does not exist')
+                                return false
+                            }
+                        }
+                        else{
+                            console.log('an element doesnt have a successor or the current element does not exist')
+                            return false
+                        }
+                    }
+
+                    if(!(currNote.leftLink && !currNote.rightLink)){
+                        console.log('last note has a right link')
+                        return false
+                    }
+                }
+                else{
+                    console.log('first note has no right link')
+                    return false
+                }
+            }
+            else {
+                console.log('first note problem: ', prevNote)
+                return false
+            }
+        }
+        return true
     }
 
     // Add a new note to the notes hashmap and put it first in the Search Order
@@ -237,15 +294,17 @@ const Dashboard = ({
         const newDashboard = {...dashboard}
         const newNote = getNewNote()
 
-        // Putting the note first in the order
-        newDashboard.notesOrder = [newNote.id, ...newDashboard.notesOrder]
-
-        // Backing up the notes order locally
-        window.localStorage.setItem('notes-order', JSON.stringify(newDashboard.notesOrder))
-
         // Adding the new note to the HashMap and selecting it
         newDashboard.notes.set(newNote.id, newNote)
         newDashboard.selectedNoteId = newNote.id
+
+        const oldFirstNote = newDashboard.notes.get(newDashboard.firstNoteId)
+        // Making it first note and linking it
+        if(oldFirstNote){
+            newNote.rightLink = newDashboard.firstNoteId
+            oldFirstNote.leftLink = newNote.id
+        }
+        newDashboard.firstNoteId = newNote.id
 
         // If the note is added when a collection is open, add it to that collection 
         // And backup the meta of the note that contains the collection
@@ -257,7 +316,10 @@ const Dashboard = ({
 
         // Backup the new note and the notes order
         db.notes.put(newNote)
-        backup(newNote, 'meta', () => synchNotes({...newDashboard}))
+        backup(newNote, 'meta')
+        if(oldFirstNote){
+            backup(oldFirstNote, 'meta')
+        }
 
         // Update the dashboard and open the editor component
 		packDashboard(newDashboard)
@@ -275,14 +337,14 @@ const Dashboard = ({
         }
 
         // Backup and update the dashboard such that it contains the updated note
-        newDashboard.notes.set(newSelectedNote.id, newSelectedNote);
+        newDashboard.notes.set(newSelectedNote.id, newSelectedNote)
         newDashboard.selectedNoteId = newSelectedNote.id
 
         if(moveToEndFlag){
             moveToTheEnd(newSelectedNote, newDashboard)
         }
         backup(newSelectedNote, 'both')
-        packDashboard(newDashboard);
+        packDashboard(newDashboard)
     }
 
     // Delete a note by calling the note deleter function
@@ -302,8 +364,7 @@ const Dashboard = ({
             mergeMode, 
             setMergeMode,
             setNotesUpdating,
-            packDashboard,
-            synchNotes
+            packDashboard
         )
 
         // If the mergeMode was true, set it to false
@@ -317,12 +378,10 @@ const Dashboard = ({
     const handleOnDragEnd = async (result) => {
         dragManager(
             dashboard, 
-            setDashboard, 
             mergeMode, 
             threadOrCollection, 
             setThreadOrCollection,
             rootsOrBranches, 
-            searchProps, 
             setNotesUpdating,
             packDashboard,
             result
@@ -341,8 +400,7 @@ const Dashboard = ({
             if(threadOrCollection){
                 const newDashboard = {...dashboard}
                 newDashboard.workspaceIds = [...new Set([...newDashboard.workspaceIds])]
-                getWorkspace(newDashboard)
-                setDashboard(newDashboard)
+                packDashboard(newDashboard)
                 setThreadOrCollection(false)
             }
             else{
@@ -359,8 +417,7 @@ const Dashboard = ({
             mergeMode, 
             setMergeMode, 
             dashboard, 
-            setDashboard, 
-            getLinks, 
+            packDashboard, 
             mergeNotes
         )
     }   
@@ -406,7 +463,7 @@ const Dashboard = ({
 
         // applies a filter that checks if the current note is either in a thread or 
         // collection of any other note
-        newDashboard.workspaceIds = dashboard.notesOrder.filter(
+        newDashboard.workspaceIds = [...dashboard.notes.keys()].filter(
             (id) => 
                 dashboard.notes.get(id).thread.includes(dashboard.selectedNoteId) ||
                 dashboard.notes.get(id).collection.includes(dashboard.selectedNoteId)
@@ -427,7 +484,7 @@ const Dashboard = ({
     const openEditor = async () => {
         db.notes.get(dashboard.selectedNoteId).then((dbNote) => {
             dashboard.notes.set(dashboard.selectedNoteId, dbNote)
-            setCurrentPage('editor');
+            setCurrentPage('editor')
         })
     }
     
@@ -435,8 +492,7 @@ const Dashboard = ({
     const closeCollection = async () => {
         const newDashboard = {...dashboard}
         newDashboard.openedCollectionId = null
-        getSearch(newDashboard)
-        setDashboard(newDashboard)
+        packDashboard(newDashboard, true)
     }
 
     // swap between thread or collection
@@ -470,14 +526,27 @@ const Dashboard = ({
             performUpdate = true
             newDashboard = {...dashboard}
         }
-        newDashboard.notesOrder = moveNoteInsideArea(
-            newDashboard.notesOrder,
-            newDashboard.notesOrder.findIndex(id => id===note.id),
-            newDashboard.notesOrder.length-1
-        )
-        if(performUpdate){
-            getSearchFromProps(newDashboard, searchProps)
-            setDashboard(newDashboard)
+
+        // find the last note
+        var lastNote = null
+        for(const [, note] of newDashboard.notes){
+            if(!note.rightLink){
+                lastNote = note
+            }
+        }
+
+        if(lastNote){
+            // remove the note from its current position
+            detachFromPosition(newDashboard, note)
+
+            // attach it at the end
+            lastNote.rightLink = note.id
+            note.leftLink = lastNote.id
+            delete note.rightLink
+
+            if(performUpdate){
+                packDashboard(newDashboard, true)
+            }
         }
     }
 

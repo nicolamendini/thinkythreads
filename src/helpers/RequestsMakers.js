@@ -7,7 +7,7 @@ Generally they create request that are then executed by other
 functions, define the requests bodies
 */
 
-import { shareDriveFolderId, db , driveBackupAuthorised} from "../components/Dashboard"
+import { db , driveVariables} from "../components/Dashboard"
 import { createThumbnail } from "./DashboardUtils"
 import { updateNoteFile, removeNoteFile } from "./BackupHelper"
 
@@ -40,9 +40,12 @@ export function getMetadata(note){
             color: note.color,
             colorPreview: note.colorPreview,
             attachedImg: note.attachedImg,
+            leftLink: note.leftLink,
+            rightLink: note.rightLink
         }),
         appProperties: {
-            version: note.version
+            version: note.version,
+            deleted: note.deleted
         }
     }
 }
@@ -60,13 +63,13 @@ export function getMetaUpdateRequest(note, id){
 }
 
 // Returns a request to create a file starting from a note
-// the file is created inside the folder given by shareDriveFolderId
+// the file is created inside the folder given by drive Folder Id
 export function createNoteFile(note, metadata){
     if(!metadata){metadata = getMetadata(note)}
     metadata.mimeType = 'application/json'
     metadata.name = note.id
     metadata.fields = 'id'
-    metadata.parents = [shareDriveFolderId]
+    metadata.parents = [driveVariables.folderId]
     return window.gapi.client.drive.files.create({
             resource: metadata
         }
@@ -79,7 +82,7 @@ export function fileExistenceCheck(note){
     return window.gapi.client.drive.files.list({
         q:"name='"+ note.id +
         "' and mimeType='application/json' and trashed=false and '"+ 
-        shareDriveFolderId + "' in parents",
+        driveVariables.folderId + "' in parents",
     })
 }
 
@@ -116,7 +119,7 @@ export function errorCatcher(error, counter, targetFunction, ...args){
 // Function called to backup a note both locally and on drive
 // takes the note, a metaOrMedia flag that controls the kind of update
 // and the setNotesUpdating Function used to keep track of the active updates
-export function backupNote(note, metaOrMedia, setNotesUpdating, synchNotes){
+export function backupNote(note, metaOrMedia, setNotesUpdating){
 
     // Increment the notes version and make a copy of it that will be backed up
     note.version = parseInt(note.version) + 1
@@ -128,9 +131,9 @@ export function backupNote(note, metaOrMedia, setNotesUpdating, synchNotes){
     createThumbnail(note)
 
     // Perform the backup on drive as well if it is possible
-    if(driveBackupAuthorised){
+    if(driveVariables.authorisation){
         setNotesUpdating((prev) => prev+1)
-        updateNoteFile(noteCopy, metaOrMedia, setNotesUpdating, synchNotes)
+        updateNoteFile(noteCopy, metaOrMedia, setNotesUpdating)
     }
 
     // Perform the backup locally on indexedDB and store the text only when it is needed
