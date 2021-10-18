@@ -20,7 +20,10 @@ import {
 export function updateNoteFile(note, mediaOrMeta, setNotesUpdating, counter){
 
     // Initialise the counter of calls
-    if(!counter){counter=0}
+    if(!counter){
+        setNotesUpdating((prev) => prev+1)
+        counter=0
+    }
 
     // Try to access the file
     fileExistenceCheck(note).then((resp)=>{
@@ -29,7 +32,7 @@ export function updateNoteFile(note, mediaOrMeta, setNotesUpdating, counter){
         if(!resp.result.files.length){
 
             // create it by calling this function again in media mode
-            createNoteFile(note).then((resp) => {
+            createNoteFile(note).then(() => {
 
                 if(mediaOrMeta!=='meta'){
                     updateNoteFile(note, 'media', setNotesUpdating)
@@ -65,9 +68,10 @@ export function updateNoteFile(note, mediaOrMeta, setNotesUpdating, counter){
             else if(mediaOrMeta==='meta'){
                 requestFunction = getMetaUpdateRequest
             }
-            requestFunction(note, fileId).then(function(resp) {
+            requestFunction(note, fileId).then(function() {
                 // if the request is both, update meta as well after updating media
                 if(mediaOrMeta==='both'){
+                    setNotesUpdating((prev) => prev-1)
                     updateNoteFile(note, 'meta', setNotesUpdating)
                 }
 
@@ -102,7 +106,10 @@ export function updateNoteFile(note, mediaOrMeta, setNotesUpdating, counter){
 
 // Removes a notes file from drive
 export function removeNoteFile(note, setNotesUpdating, counter){
-    if(!counter){counter=0}
+    if(!counter){
+        setNotesUpdating((prev) => prev+1)
+        counter=0
+    }
 
     // if it exists, try to remove
     fileExistenceCheck(note).then(function(resp){

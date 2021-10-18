@@ -205,7 +205,7 @@ const Dashboard = ({
     const packDashboard = (newDashboard, sFlag, wFlag, lFlag) => {
 
         if(!checkLinksSanity(newDashboard)){
-            restoreLinks(newDashboard, backup)
+            restoreLinks(newDashboard, setNotesUpdating)
         }
 
         const allFalse = !sFlag && !wFlag && !lFlag

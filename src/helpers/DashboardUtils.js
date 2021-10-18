@@ -96,8 +96,13 @@ export function truncString (string, n){
 
 // Gets a caption from a notes preview
 export function getCaption(targetNote){
-    const newPreview = targetNote.preview.replace('<br/>', '<br>')
-    return truncString(newPreview.split('<br>')[0].replace(/<[^>]*>?/gm, ''), 100)
+    if(targetNote){
+        const newPreview = targetNote.preview.replace('<br/>', '<br>')
+        return truncString(newPreview.split('<br>')[0].replace(/<[^>]*>?/gm, ''), 100)
+    }
+    else{
+        return ''
+    }
 }
 
 // Check if the note defined by idx has any conflict with any other note
@@ -241,6 +246,20 @@ export function arraysEqual(array1, array2){
         }
     }
     return areDifferent
+}
+
+export function sanitiseForRemoval(newDashboard, removingId){
+    // sanitise the dashboard
+    if(newDashboard.openedWorkspaceId===removingId){
+        newDashboard.openedWorkspaceId = null;
+    }
+    if(newDashboard.openedCollectionId===removingId){
+        newDashboard.openedCollectionId = null;
+    }
+    if(newDashboard.selectedNoteId===removingId){
+        newDashboard.selectedNoteId = null;
+    }
+    newDashboard.workspaceIds = newDashboard.workspaceIds.filter(id => id!==removingId)
 }
 
 

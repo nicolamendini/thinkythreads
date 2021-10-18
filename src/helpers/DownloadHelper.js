@@ -7,7 +7,7 @@ Contains functions that help the retrieval of notes on GDrive
 */
 
 import { driveVariables, db } from "../components/Dashboard";
-import { createThumbnail } from "./DashboardUtils";
+import { createThumbnail, sanitiseForRemoval } from "./DashboardUtils";
 import { getMediaRequestById, errorCatcher, sendUpdateRequest } from "./RequestsMakers";
 
 // Function to create a new note from a drive file response
@@ -32,6 +32,10 @@ export function setNoteFromResp(
 
     // add it to the dashboard and backup locally
     newDashboard.notes.set(newNote.id, newNote)
+    if(!newNote.leftLink){
+        newDashboard.firstNoteId = newNote.id
+        console.log('added first note', newNote.id)
+    }
     db.notes.put(newNote).then(
 
         // check if it needs a thumbnail and create it
@@ -56,6 +60,7 @@ export function setNoteFromResp(
 
         // otherwise if all the files have been processed, update the notes on drive
         else{
+            console.log('chiamato qui 2')
             updateDriveNotes(
                 newDashboard, 
                 notesOnDrive, 
@@ -160,30 +165,34 @@ export function setNotesPageFromResp(
             if(removingNote){
                 newDashboard.notes.delete(noteId)
                 db.notes.delete(noteId)
+                sanitiseForRemoval(newDashboard, noteId)
+                console.log('deleted first note')
             }
             finishedProcesses.count +=1
         }
     }
 
-    // if there are other pages, try with the next one
-    if(metaResp.result.nextPageToken){
-        getNotesPage(
-            newDashboard, 
-            notesOnDrive, 
-            setNotesUpdating, 
-            packDashboard, 
-            metaResp.result.nextPageToken
-        )
-    }
+    if(finishedProcesses.count === metaResp.result.files.length){
+        // if there are other pages, try with the next one
+        if(metaResp.result.nextPageToken){
+            getNotesPage(
+                newDashboard, 
+                notesOnDrive, 
+                setNotesUpdating, 
+                packDashboard, 
+                metaResp.result.nextPageToken
+            )
+        }
 
-    // otherwise update the notes on drive because they might be outdated
-    else if(finishedProcesses.count === metaResp.result.files.length){
-        updateDriveNotes(
-            newDashboard, 
-            notesOnDrive, 
-            setNotesUpdating, 
-            packDashboard
-        )
+        // otherwise update the notes on drive because they might be outdated
+        else{
+            updateDriveNotes(
+                newDashboard, 
+                notesOnDrive, 
+                setNotesUpdating, 
+                packDashboard
+            )
+        }
     }
 }
 
@@ -260,9 +269,6 @@ export function updateDriveNotes(
     for(const [key, note] of newDashboard.notes){
 
         const sampleVersion = notesOnDrive[key]
-
-        console.log(sampleVersion, note.version)
-
         // for each of the notes that need to be updated, send a request
         if(!sampleVersion || sampleVersion<note.version){
             updatesCounter+=1
@@ -275,5 +281,6 @@ export function updateDriveNotes(
     }
 
     newDashboard.checkedAgainstDrive = true
+    console.log('setting dashboard')
     packDashboard(newDashboard)
 }

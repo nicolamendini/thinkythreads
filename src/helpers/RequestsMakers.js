@@ -103,7 +103,7 @@ export function errorCatcher(error, counter, targetFunction, ...args){
     if((error.result && error.result.error.code===-1 && counter<2) || counter<4){
         setTimeout(() => {
             targetFunction(...args, counter)
-        }, 1000);
+        }, 1000)
     }
     else{
 
@@ -132,7 +132,6 @@ export function backupNote(note, metaOrMedia, setNotesUpdating){
 
     // Perform the backup on drive as well if it is possible
     if(driveVariables.authorisation){
-        setNotesUpdating((prev) => prev+1)
         updateNoteFile(noteCopy, metaOrMedia, setNotesUpdating)
     }
 
@@ -153,7 +152,6 @@ export function backupNote(note, metaOrMedia, setNotesUpdating){
 export function sendUpdateRequest(key, updatesCounter, setNotesUpdating){
     db.notes.get(key).then((dbNote) => 
         setTimeout(() => {
-            setNotesUpdating((prev) => prev+1)
             updateNoteFile(dbNote, 'both', setNotesUpdating)
         }, (200 * updatesCounter))
     )

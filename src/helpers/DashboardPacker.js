@@ -23,54 +23,60 @@ export function getSearchFromProps(newDashboard, searchProps){
         key = note.rightLink
         note = newDashboard.notes.get(key)
 
-        insertingNote = []
+        if(note){
 
-        // if the text matched with the text on the searchBar insert it
-        if(note.preview.replace( /(<([^>]+)>)/ig, '').toLowerCase().includes(searchProps.searchText)){
+            insertingNote = []
 
-            insertingNote=[note]
+            // if the text matched with the text on the searchBar insert it
+            if(note.preview.replace( /(<([^>]+)>)/ig, '').toLowerCase().includes(searchProps.searchText)){
 
-            if(searchProps.colorFilter!=='#ededed' && searchProps.colorFilter!==note.colorPreview){
-                insertingNote=[]
-            }
+                insertingNote=[note]
 
-            // if the thread filter and the collections filters are on but the note has none, remove it
-            if(insertingNote.length && searchProps.collectionFilter && searchProps.threadFilter){
-                if(!note.thread.length && !note.collection.length){
+                if(searchProps.colorFilter!=='#ededed' && searchProps.colorFilter!==note.colorPreview){
                     insertingNote=[]
                 }
-            }
 
-            // if the thread filter is on but the note has none, remove it from the insertion
-            else if(insertingNote.length && searchProps.threadFilter){
-                if(!note.thread.length){
-                    insertingNote=[]
+                // if the thread filter and the collections filters are on but the note has none, remove it
+                if(insertingNote.length && searchProps.collectionFilter && searchProps.threadFilter){
+                    if(!note.thread.length && !note.collection.length){
+                        insertingNote=[]
+                    }
                 }
-            }
 
-            // if the collection filter is on but the note has none, remove it from the insertion
-            else if(insertingNote.length && searchProps.collectionFilter){
-                if(!note.collection.length){
-                    insertingNote=[]
+                // if the thread filter is on but the note has none, remove it from the insertion
+                else if(insertingNote.length && searchProps.threadFilter){
+                    if(!note.thread.length){
+                        insertingNote=[]
+                    }
                 }
-            }
 
-            // If a collection is opened add a new constraint
-            if(insertingNote.length && newDashboard.openedCollectionId){
-                if(!newDashboard.notes.get(newDashboard.openedCollectionId).collection.includes(note.id)){
-                    insertingNote=[]
+                // if the collection filter is on but the note has none, remove it from the insertion
+                else if(insertingNote.length && searchProps.collectionFilter){
+                    if(!note.collection.length){
+                        insertingNote=[]
+                    }
                 }
-            }
 
-            // if the note is pinned, put at the beginning, if not, at the end
-            if(insertingNote.length){
-                if(note.pinned){
-                    newSearch = [copyNote(insertingNote[0]), ...newSearch]
+                // If a collection is opened add a new constraint
+                if(insertingNote.length && newDashboard.openedCollectionId){
+                    if(!newDashboard.notes.get(newDashboard.openedCollectionId).collection.includes(note.id)){
+                        insertingNote=[]
+                    }
                 }
-                else{
-                    newSearch = [...newSearch, copyNote(insertingNote[0])]
+
+                // if the note is pinned, put at the beginning, if not, at the end
+                if(insertingNote.length){
+                    if(note.pinned){
+                        newSearch = [copyNote(insertingNote[0]), ...newSearch]
+                    }
+                    else{
+                        newSearch = [...newSearch, copyNote(insertingNote[0])]
+                    }
                 }
             }
+        }
+        else{
+            console.log('exceeded')
         }
     }
 
@@ -185,20 +191,25 @@ export function errorAlert(message, id, newDashboard){
     )
 }
 
-export function restoreLinks(newDashboard, backup){
-    var prevNote = {id: null, rightLink: null}
+export function restoreLinks(newDashboard, setNotesUpdating){
+    console.log('restoring')
+    var prevNote = {id: null, leftLink: null}
 
     for(const [, note] of newDashboard.notes){
         
-        note.leftLink = prevNote.id
-        prevNote.rightLink = note.id
+        note.rightLink = prevNote.id
+        prevNote.leftLink = note.id
         prevNote = note
     }
 
-    prevNote.rightLink = null
-
+    prevNote.leftLink = null
     newDashboard.firstNoteId = prevNote.id
+
+    var updatesCounter = 0
     for(const [, note] of newDashboard.notes){
-        backup(note, 'meta')
+        updatesCounter+=1
+        setTimeout(() => {
+            backupNote(note, 'meta', setNotesUpdating)
+        }, (200 * updatesCounter))
     }
 }

@@ -7,7 +7,7 @@ Deletes a note and resolves potential conflicts in the process
 */
 
 import { db, driveVariables } from "../components/Dashboard";
-import { checkConflicts, detachFromPosition, removeElementAt } from "./DashboardUtils";
+import { checkConflicts, detachFromPosition, removeElementAt, sanitiseForRemoval } from "./DashboardUtils";
 import { forceRemove } from "./NotesManupulation";
 import { backupNote } from "./RequestsMakers";
 import { deleteConflictAlert } from "./Messages";
@@ -54,17 +54,7 @@ export function noteDeleter(
 
             }
 
-            // sanitise the dashboard
-            if(newDashboard.openedWorkspaceId===removingId){
-                newDashboard.openedWorkspaceId = null;
-            }
-            if(newDashboard.openedCollectionId===removingId){
-                newDashboard.openedCollectionId = null;
-            }
-            if(newDashboard.selectedNoteId===removingId){
-                newDashboard.selectedNoteId = null;
-            }
-            newDashboard.workspaceIds = newDashboard.workspaceIds.filter(id => id!==removingId)
+            sanitiseForRemoval(newDashboard, removingId)
         }
 
         // if it was called by merge mode, assume it is already sanitised previously and end merge mode
@@ -74,7 +64,6 @@ export function noteDeleter(
 
         // if possible, backup the removal and update the .config file on drive
         if(driveVariables.authorisation){
-            setNotesUpdating((prev) => prev+1)
             updateNoteFile(noteToRemove, 'meta', setNotesUpdating)
         }
 
