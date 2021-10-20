@@ -108,14 +108,14 @@ export function dragManager(
 
             // otherwise just expand the note so that the workspace now contains its thread or collection
             else{
+                newDashboard.prevSelectedNoteId = newDashboard.selectedNoteId
+                newDashboard.selectedNoteId = targetNote.id
                 if(targetNote.thread.length){
-                    newDashboard.selectedNoteId = targetNote.id
                     openInWorkspace(true, newDashboard, setNotesUpdating, threadOrCollection)
                     setThreadOrCollection(true)
                     
                 }
                 else if(targetNote.collection.length){
-                    newDashboard.selectedNoteId = targetNote.id
                     openInWorkspace(false, newDashboard, setNotesUpdating, threadOrCollection)
                     setThreadOrCollection(false)
                 }
@@ -157,6 +157,7 @@ export function dragManager(
                             (note) => backupNote(note, 'meta', setNotesUpdating)
                         )
                     }
+                    newDashboard.prevSelectedNoteId = newDashboard.selectedNoteId
                     newDashboard.selectedNoteId = sourceNote.id
                     packDashboard(newDashboard, true, false, true)
                 }
@@ -181,6 +182,7 @@ export function dragManager(
             const newDashboard = {...dashboard}
             newDashboard.workspaceIds = removeElementAt(newDashboard.workspaceIds, result.source.index)
             if(result.source.index>0 && threadOrCollection){
+                newDashboard.prevSelectedNoteId = newDashboard.selectedNoteId
                 newDashboard.selectedNoteId = newDashboard.workspaceIds[result.source.index-1];
                 getLinksFromProps(newDashboard, rootsOrBranches, setNotesUpdating)
             }
@@ -191,6 +193,7 @@ export function dragManager(
         else if(result.destination.droppableId==='workspace-area'){
             const newDashboard = {...dashboard}
             newDashboard.workspaceIds = moveNoteInsideArea(newDashboard.workspaceIds, result.source.index, result.destination.index)
+            newDashboard.prevSelectedNoteId = newDashboard.selectedNoteId
             newDashboard.selectedNoteId = newDashboard.workspaceIds[result.destination.index]
             packDashboard(newDashboard, false, true, true)
         }

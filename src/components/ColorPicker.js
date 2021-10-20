@@ -15,17 +15,24 @@ import Popup from "reactjs-popup"
 // Utils function needed to set the color through a switch
 // Takes the chosen color, the current selected note and 
 // A function to set the state of the editor
-const setColor = (color, selectedNote, setBackColor, setHasChanged, setSearchProps) => {
+const setColor = (
+    color, 
+    selectedNote, 
+    setBackColor, 
+    setHasChanged, 
+    setSearchProps, 
+    searchCleanerCheck
+) => {
 
     // Only used if the picker is in the dashboard
     if(setSearchProps){
         setSearchProps(
-            (searchProps) => ({
-                searchText: searchProps.searchText, 
-                threadFilter: searchProps.threadFilter, 
-                collectionFilter: searchProps.collectionFilter,
-                colorFilter: color.hex
-            })
+            (searchProps) => {
+                const newSearchProps = {...searchProps}
+                newSearchProps.colorFilter = color.hex
+                searchCleanerCheck(newSearchProps)
+                return newSearchProps
+            }
         )
         return 
     }
@@ -72,13 +79,17 @@ const ColorPicker = ({
     setBackColor,
     setHasChanged,
     searchProps,
-    setSearchProps
+    setSearchProps,
+    searchCleanerCheck
 }) => {
 
     return (
         <Popup
             trigger={
-                <div className='tools-btn' style={{color : searchProps ? searchProps.colorFilter : undefined, fontSize: '19px'}}>
+                <div 
+                className='tools-btn' 
+                style={{color : searchProps ? searchProps.colorFilter : undefined, fontSize: '19px'}
+                }>
                     {searchProps ? '⬤' :
                         <BsDropletHalf
                             size='1.6em'
@@ -92,7 +103,16 @@ const ColorPicker = ({
         >
             <div className='picker'>
                 <GithubPicker 
-                    onChange={(color)=> setColor(color, selectedNote, setBackColor, setHasChanged, setSearchProps)}
+                    onChange={(color)=> 
+                        setColor(
+                            color, 
+                            selectedNote, 
+                            setBackColor, 
+                            setHasChanged, 
+                            setSearchProps, 
+                            searchCleanerCheck
+                        )
+                    }
                     colors={['#B80000', '#DB3E00', '#FCCB00', '#008B02', '#006B76', '#1273DE', '#5300EB', '#EDEDED']}
                     triangle='hide'
                 />

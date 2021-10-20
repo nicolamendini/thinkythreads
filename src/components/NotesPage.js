@@ -33,7 +33,8 @@ const NotesPage = ({
     setRootsOrBranches,
     searchProps,
     setSearchProps,
-    synchNotes
+    synchNotes,
+    editorMode
 }) => {
 
     return(
@@ -54,6 +55,7 @@ const NotesPage = ({
                 closeAndSave={closeAndSave}
                 searchProps={searchProps}
                 setSearchProps={setSearchProps}
+                editorMode={editorMode}
             />
 
             <Footer 

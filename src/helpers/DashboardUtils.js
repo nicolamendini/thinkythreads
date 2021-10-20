@@ -32,11 +32,11 @@ export function moveNoteInsideArea(area, originalIndex, targetIndex) {
 }
 
 // function to move notes inside the graph
-export function moveNoteInsideGraph(newDashboard, sourceNoteId, targetNoteId, dir, backupMeta){
+export function moveNoteInsideGraph(newDashboard, sourceNoteId, targetNoteId, dir, backupMeta, blockUpdate){
     const sourceNote = newDashboard.notes.get(sourceNoteId)
     const targetNote = newDashboard.notes.get(targetNoteId)
     detachFromPosition(newDashboard, sourceNote, backupMeta)
-    attachToPosition(newDashboard, sourceNote, targetNote, dir, backupMeta)
+    attachToPosition(newDashboard, sourceNote, targetNote, dir, backupMeta, blockUpdate)
 }
 
 export function detachFromPosition(newDashboard, note, backupMeta){
@@ -56,7 +56,7 @@ export function detachFromPosition(newDashboard, note, backupMeta){
     }
 }
 
-export function attachToPosition(newDashboard, sourceNote, noteAtTargetPos, dir, backupMeta){
+export function attachToPosition(newDashboard, sourceNote, noteAtTargetPos, dir, backupMeta, blockUpdate){
     const noteAtLeft = newDashboard.notes.get(noteAtTargetPos.leftLink)
     const noteAtRight = newDashboard.notes.get(noteAtTargetPos.rightLink)
 
@@ -85,7 +85,9 @@ export function attachToPosition(newDashboard, sourceNote, noteAtTargetPos, dir,
             sourceNote.rightLink = null
         }
     }
-    backupMeta(sourceNote)
+    if(!blockUpdate){
+        backupMeta(sourceNote)
+    }
     backupMeta(noteAtTargetPos)
 }
 
@@ -97,7 +99,7 @@ export function truncString (string, n){
 // Gets a caption from a notes preview
 export function getCaption(targetNote){
     if(targetNote){
-        const newPreview = targetNote.preview.replace('<br/>', '<br>')
+        const newPreview = targetNote.preview.replace('<br/>', '<br>').replace('<p></p><p><br></p>', '')
         return truncString(newPreview.split('<br>')[0].replace(/<[^>]*>?/gm, ''), 100)
     }
     else{
@@ -251,13 +253,26 @@ export function arraysEqual(array1, array2){
 export function sanitiseForRemoval(newDashboard, removingId){
     // sanitise the dashboard
     if(newDashboard.openedWorkspaceId===removingId){
-        newDashboard.openedWorkspaceId = null;
+        newDashboard.openedWorkspaceId = null
     }
     if(newDashboard.openedCollectionId===removingId){
-        newDashboard.openedCollectionId = null;
+        newDashboard.openedCollectionId = null
     }
     if(newDashboard.selectedNoteId===removingId){
-        newDashboard.selectedNoteId = null;
+        newDashboard.selectedNoteId = null
+    }
+    if(newDashboard.prevSelectedNoteId===removingId){
+        newDashboard.prevSelectedNoteId = null
+    }
+    if(newDashboard.firstNoteId===removingId){
+        const removingNote = newDashboard.notes.get(removingId)
+        if(removingNote && removingNote.rightLink){
+            const noteAtRight = newDashboard.notes.get(removingNote.rightLink)
+            if(noteAtRight){
+                newDashboard.firstNoteId = noteAtRight.id
+                noteAtRight.leftLink = null
+            }
+        }
     }
     newDashboard.workspaceIds = newDashboard.workspaceIds.filter(id => id!==removingId)
 }

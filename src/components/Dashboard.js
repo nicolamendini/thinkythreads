@@ -12,11 +12,11 @@ Uses lazy loading since the components that it contains are big
 import { useState, useEffect, Suspense} from 'react';
 import React from 'react'
 import Dexie from 'dexie'
-import { createThumbnail, getNewNote, detachFromPosition} from "../helpers/DashboardUtils";
+import { createThumbnail, getNewNote, moveNoteInsideGraph} from "../helpers/DashboardUtils";
 import { exportThreadGivenProps, checkDriveFolder} from '../helpers/BackupHelper';
 import { getAllNotes } from '../helpers/DownloadHelper';
 import { backupNote } from '../helpers/RequestsMakers';
-import { getSearchFromProps, getLinksFromProps, getWorkspace, restoreLinks } from '../helpers/DashboardPacker';
+import { getSearchFromProps, getLinksFromProps, getWorkspace, restoreLinks, checkLinksSanity, currOrPrevNoteDecice } from '../helpers/DashboardPacker';
 import { dragManager } from '../helpers/DragManager';
 import { closeAndSaveWorkspace, collectionToThread, linkThreadNotes, noteSelector, threadToCollection } from '../helpers/NotesManupulation';
 import { noteDeleter } from '../helpers/NoteDeleter';
@@ -51,6 +51,8 @@ db.version(1).stores({
         ', pinned, color, colorPreview, attachedImg, version, leftLink, rightLink'
 })
 
+export const editorMode = {selection: 'curr'}
+
 // Dashboard component, 
 // takes the Google sign in and out functions
 // a GAPIloaded flag to know when the GoogleAPI script has been loaded
@@ -72,6 +74,7 @@ const Dashboard = ({
             firstNoteId: '',
             workspaceIds: [],
             selectedNoteId: null,
+            prevSelectedNoteId: null,
             openedCollectionId: null,
             openedWorkspaceId: null,
             search: [],
@@ -204,6 +207,8 @@ const Dashboard = ({
     // Utils function used to refresh the whole dashboard and not just individual areas
     const packDashboard = (newDashboard, sFlag, wFlag, lFlag) => {
 
+        console.log('packing')
+
         if(!checkLinksSanity(newDashboard)){
             restoreLinks(newDashboard, setNotesUpdating)
         }
@@ -221,73 +226,6 @@ const Dashboard = ({
         setDashboard(newDashboard)
     }
 
-    const checkLinksSanity = (newDashboard) => {
-
-        // if there is more than one note
-        if(newDashboard.notes.size > 1){
-
-            var prevNote = newDashboard.notes.get(newDashboard.firstNoteId)
-            var currNote = null
-            var nextNote = null
-
-            // if the first note has links
-            if(prevNote && !prevNote.leftLink){
-
-                if(prevNote.rightLink){
-                    currNote = newDashboard.notes.get(prevNote.rightLink)
-
-                    // for each note, check that it has links and that it is connected to the neighbours
-                    for(let i=1; i<newDashboard.notes.size-1; i++){
-
-                        if(currNote && currNote.rightLink){
-
-                            nextNote = newDashboard.notes.get(currNote.rightLink)
-                            if(nextNote){
-                                if(!(
-                                    currNote.rightLink && 
-                                    currNote.leftLink &&
-                                    prevNote.rightLink &&
-                                    nextNote.leftLink &&
-                                    currNote.leftLink===prevNote.id &&
-                                    currNote.rightLink===nextNote.id
-                                )){
-                                    console.log('sequence disconnected at: ', {...prevNote}, {...currNote}, {...nextNote})
-                                    return false
-                                }
-
-                                // move the head ahead
-                                prevNote = currNote
-                                currNote = nextNote
-                            }
-                            else{
-                                console.log('the successor does not exist')
-                                return false
-                            }
-                        }
-                        else{
-                            console.log('an element doesnt have a successor or the current element does not exist')
-                            return false
-                        }
-                    }
-
-                    if(!(currNote.leftLink && !currNote.rightLink)){
-                        console.log('last note has a right link')
-                        return false
-                    }
-                }
-                else{
-                    console.log('first note has no right link')
-                    return false
-                }
-            }
-            else {
-                console.log('first note problem: ', prevNote)
-                return false
-            }
-        }
-        return true
-    }
-
     // Add a new note to the notes hashmap and put it first in the Search Order
 	const addNote = async () => {
 
@@ -296,6 +234,7 @@ const Dashboard = ({
 
         // Adding the new note to the HashMap and selecting it
         newDashboard.notes.set(newNote.id, newNote)
+        newDashboard.prevSelectedNoteId = newDashboard.selectedNoteId
         newDashboard.selectedNoteId = newNote.id
 
         const oldFirstNote = newDashboard.notes.get(newDashboard.firstNoteId)
@@ -324,26 +263,23 @@ const Dashboard = ({
         // Update the dashboard and open the editor component
 		packDashboard(newDashboard)
         setCurrentPage('editor')
+        editorMode.selection = 'prev'
 	}
 
     // Update a note after the editor is closed
-    const updateNote = async (newSelectedNote, action, moveToEndFlag) => {
+    const updateNote = async (newSelectedNote) => {
 
         // If the action selected from the editor was to get all the occurences,
         // open them in the workspace
         const newDashboard = {...dashboard}
-        if(action==='get-occurrences'){
-            openOccurrences(newDashboard)
-        }
 
         // Backup and update the dashboard such that it contains the updated note
         newDashboard.notes.set(newSelectedNote.id, newSelectedNote)
+
         newDashboard.selectedNoteId = newSelectedNote.id
 
-        if(moveToEndFlag){
-            moveToTheEnd(newSelectedNote, newDashboard)
-        }
         backup(newSelectedNote, 'both')
+        currOrPrevNoteDecice(newDashboard)
         packDashboard(newDashboard)
     }
 
@@ -457,31 +393,32 @@ const Dashboard = ({
     }
 
     // Function that opens the occurences of a note among all the other notes
-    const openOccurrences = async (newDashboard) => {
+    const openOccurrences = () => {
+        
 
-        closeAndSave(true, newDashboard);
+        closeAndSave(true, dashboard)
 
         // applies a filter that checks if the current note is either in a thread or 
         // collection of any other note
-        newDashboard.workspaceIds = [...dashboard.notes.keys()].filter(
+        dashboard.workspaceIds = [...dashboard.notes.keys()].filter(
             (id) => 
                 dashboard.notes.get(id).thread.includes(dashboard.selectedNoteId) ||
                 dashboard.notes.get(id).collection.includes(dashboard.selectedNoteId)
         )
 
         // Set workspace mode to false (collection mode)
-        setThreadOrCollection(false);
+        setThreadOrCollection(false)
     }
 
     // Utils function that exports the thread as PDF or to print
-    const exportThread = async () => {
+    const exportThread = () => {
         exportThreadGivenProps(dashboard)
     }
 
     // Utils function that opens the editor by first retrieving the 
     // note from the local indexedDB because the text is not stored 
     // on the RAM for efficiency 
-    const openEditor = async () => {
+    const openEditor = () => {
         db.notes.get(dashboard.selectedNoteId).then((dbNote) => {
             dashboard.notes.set(dashboard.selectedNoteId, dbNote)
             setCurrentPage('editor')
@@ -489,7 +426,7 @@ const Dashboard = ({
     }
     
     // Function that closes the opened collection of the Search area
-    const closeCollection = async () => {
+    const closeCollection = () => {
         const newDashboard = {...dashboard}
         newDashboard.openedCollectionId = null
         packDashboard(newDashboard, true)
@@ -519,35 +456,28 @@ const Dashboard = ({
     }
 
     // Function to move a note all the way to the end of the search
-    const moveToTheEnd = (note, newDashboard) => {
-
-        var performUpdate = false
-        if(!newDashboard){
-            performUpdate = true
-            newDashboard = {...dashboard}
-        }
+    const moveToTheEnd = () => {
 
         // find the last note
         var lastNote = null
-        for(const [, note] of newDashboard.notes){
+        for(const [, note] of dashboard.notes){
             if(!note.rightLink){
                 lastNote = note
             }
         }
 
-        if(lastNote){
-            // remove the note from its current position
-            detachFromPosition(newDashboard, note)
-
-            // attach it at the end
-            lastNote.rightLink = note.id
-            note.leftLink = lastNote.id
-            delete note.rightLink
-
-            if(performUpdate){
-                packDashboard(newDashboard, true)
-            }
+        if(lastNote.id===dashboard.selectedNoteId){
+            return
         }
+
+        moveNoteInsideGraph(
+            dashboard, 
+            dashboard.selectedNoteId, 
+            lastNote.id, 
+            false, 
+            (note) => backupNote(note, 'meta', setNotesUpdating),
+            true
+        )
     }
 
 	return (
@@ -595,6 +525,8 @@ const Dashboard = ({
                         exportThread={exportThread}
                         threadCollectionSwap={threadCollectionSwap}
                         moveToTheEnd={moveToTheEnd}
+                        openOccurrences={openOccurrences}
+                        packDashboard={packDashboard}
                     />
                 </Suspense>
             }

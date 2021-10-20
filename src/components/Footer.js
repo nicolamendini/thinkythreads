@@ -48,12 +48,11 @@ const Footer = ({
     }
     return(
         <div className='page-footer'
-            style={{
-                borderTop: darkMode ? '1px solid #2a2a2a' : '#dddddd',
-                backgroundColor: darkMode ? '#1e1e1e' : undefined,
-                background: darkMode ? undefined : 'linear-gradient(#eeeeee, white)',
-                boxShadow: darkMode ? undefined : '0 0 3px #bbbbbb'
-            }}
+            style={darkMode ? 
+                {borderTop: '1px solid #2a2a2a', backgroundColor: '#1b1b1b'} 
+                : 
+                {borderTop: '#dddddd', background: 'linear-gradient(#eeeeee, white)', boxShadow: '0 0 3px #bbbbbb'}
+            }
         >
             {darkMode ?
                 <VscSettingsGear

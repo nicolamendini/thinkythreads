@@ -7,10 +7,12 @@ Search Area that includes the searchBar, the Search Label
 and the notes list containing the results of the search
 */
 
-import React from 'react';
+import React, { useState } from 'react';
 import SearchBar from './SearchBar';
 import SearchLabel from './SearchLabel';
 import NotesList from './NotesList';
+
+export var searchState = {searchEmpty:true, firstSlice:true}
 
 const SearchArea = ({ 
     closeCollection, 
@@ -34,6 +36,8 @@ const SearchArea = ({
         draggableInfo.sourceArea!=='search-area' ||
         !draggableInfo.note.collection.length
 
+    const [cleanFilters, setCleanFilters] = useState({areSlicesScrolled: false, areFiltersOn: false, goClean: false})
+
     return(
         <div>
             <SearchBar 
@@ -41,6 +45,8 @@ const SearchArea = ({
                 searchProps={searchProps}
                 isDropDisabled={isDropDisabled}
                 darkMode={darkMode}
+                cleanFilters={cleanFilters}
+                setCleanFilters={setCleanFilters}
             />
 
             <div>
@@ -62,6 +68,8 @@ const SearchArea = ({
                     threadOrCollection={threadOrCollection}
                     openEditor={openEditor}
                     rootsOrBranches={rootsOrBranches}
+                    cleanFilters={cleanFilters}
+                    setCleanFilters={setCleanFilters}
                 />
             </div> 
         </div>

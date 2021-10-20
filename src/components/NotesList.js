@@ -18,7 +18,28 @@ import React from 'react'
 
 // Max size of a row of notes, it is necessary to press the arrow
 // button to access further notes
-const SLICESIZE = 12;
+const SLICESIZE = 12
+export const scrollTarget = {beginning: false}
+
+// Function used to change slice based on which arrow button has been pressed
+const align = (dir, currentSlice, setCurrentSlice, notes, areaName) => {
+
+	// Before changing slice, set up the autoscroll
+	// Initialise a prop based on whether the button was next or prev
+	const prop = dir===-1 ? {inline:'start'} : {inline:'end'}
+	var focusPos = currentSlice*SLICESIZE+SLICESIZE-1
+
+	// If overflows, go back to last note of the sequence
+	if(focusPos>notes.length-1){
+		focusPos=notes.length-1
+	}
+
+	// scroll into the last note of the previous slice to give the idea of continuity 
+	// between slices
+	document.getElementById(notes[focusPos].ui_id).scrollIntoView(prop);
+	setCurrentSlice(currentSlice+dir)
+	window.sessionStorage.setItem('current-slice-'+areaName, currentSlice+dir)
+}
 
 const NotesList = ({
 	notes,
@@ -33,13 +54,16 @@ const NotesList = ({
 	workspaceFlag, 
 	rootsOrBranches,
 	isDropDisabled,
-	draggableInfo
+	draggableInfo,
+	cleanFilters,
+	setCleanFilters
 }) => {
 
+	const retrievedSlice = window.sessionStorage.getItem('current-slice-'+areaName)
 	// State that defines the slice the user is at
 	const [currentSlice, setCurrentSlice] = useState(
-		window.sessionStorage.getItem('current-slice-'+areaName) ? 
-		parseInt(window.sessionStorage.getItem('current-slice-'+areaName)) :
+		retrievedSlice ? 
+		parseInt(retrievedSlice) :
 		0
 	)
 	// State to hide the NotesList until the scroll is performed, used to avoid flickering
@@ -71,25 +95,34 @@ const NotesList = ({
 	// eslint-disable-next-line
 	}, [notes])
 
-	// Function used to change slice based on which arrow button has been pressed
-	const align = (dir) => {
-
-		// Before changing slice, set up the autoscroll
-		// Initialise a prop based on whether the button was next or prev
-		const prop = dir===-1 ? {inline:'start'} : {inline:'end'}
-		var focusPos = currentSlice*SLICESIZE+SLICESIZE-1
-
-		// If overflows, go back to last note of the sequence
-		if(focusPos>notes.length-1){
-			focusPos=notes.length-1
+	useEffect(() => {
+		if(areaName==='search-area' && cleanFilters.goClean && currentSlice > 0){
+			setCurrentSlice(0)
+			window.sessionStorage.setItem('current-slice-'+areaName, 0)
 		}
+	// eslint-disable-next-line
+	}, [cleanFilters])
 
-		// scroll into the last note of the previous slice to give the idea of continuity 
-		// between slices
-		document.getElementById(notes[focusPos].ui_id).scrollIntoView(prop);
-		setCurrentSlice(currentSlice+dir)
-		window.sessionStorage.setItem('current-slice-'+areaName, currentSlice+dir)
-	}
+	useEffect(() => {
+		if(areaName==='search-area'){
+			const newCleanFilters = {...cleanFilters}
+			if(currentSlice > 0){
+				newCleanFilters.areSlicesScrolled = true
+			}
+			else{
+				newCleanFilters.areSlicesScrolled = false
+			}
+			if(scrollTarget.beginning){
+				const addButtonElement = document.getElementById('plus')
+				if(addButtonElement){
+					addButtonElement.scrollIntoView()
+				}
+				scrollTarget.beginning = false
+			}
+			setCleanFilters(newCleanFilters)
+		}
+	// eslint-disable-next-line
+	}, [currentSlice])
 
 	const slicedNotes = notes.slice(currentSlice*SLICESIZE, (currentSlice+1)*SLICESIZE+SLICESIZE)
 
@@ -117,14 +150,14 @@ const NotesList = ({
 									darkMode ?
 										<BsChevronLeft 
 											className='tools-btn arrow-btn'
-											onClick={() => align(-1)}
+											onClick={() => align(-1, currentSlice, setCurrentSlice, notes, areaName)}
 											size='2.5em'
 											color='#666666'
 										/>
 									:
 										<FcPrevious 
 											className='tools-btn arrow-btn'
-											onClick={() => align(-1)}
+											onClick={() => align(-1, currentSlice, setCurrentSlice, notes, areaName)}
 											size='2.5em'
 										/>
 								: null}
@@ -150,12 +183,14 @@ const NotesList = ({
 										size='2.25em'
 										color='#555555'
 										style={{transform: 'scale(0.8)'}}
+										id='plus'
 									/>
 									:
 									<FcPlus
 										className='tools-btn arrow-btn add-btn'
 										onClick={() => handleAddNote()}
 										size='2.25em'
+										id='plus'
 									/>
 									)
 								}
@@ -186,14 +221,14 @@ const NotesList = ({
 									darkMode ?
 										<BsChevronRight 
 											className='tools-btn arrow-btn'
-											onClick={() => align(1)}
+											onClick={() => align(1, currentSlice, setCurrentSlice, notes, areaName)}
 											size='2.5em'
 											color='#666666'
 										/>
 									:
 										<FcNext 
 											className='tools-btn arrow-btn'
-											onClick={() => align(1)}
+											onClick={() => align(1, currentSlice, setCurrentSlice, notes, areaName)}
 											size='2.5em'
 										/>
 								: null}

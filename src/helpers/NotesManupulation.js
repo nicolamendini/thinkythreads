@@ -18,7 +18,8 @@ export function addToWorkspace(newDashboard, element, position){
         //alreadyInAlert();
     }
     else{
-        newDashboard.workspaceIds = addElementAt(newDashboard.workspaceIds, position, element);
+        newDashboard.workspaceIds = addElementAt(newDashboard.workspaceIds, position, element)
+        newDashboard.prevSelectedNoteId = newDashboard.selectedNoteId
         newDashboard.selectedNoteId = element
     }
 }
@@ -165,10 +166,11 @@ export function wrapWorkspace(newDashboard, targetNoteId, setNotesUpdating, thre
 
             // if collection mode, add to the collection of the note and set color to blue
             else{
-                targetNote.collection = newDashboard.workspaceIds;
+                targetNote.collection = newDashboard.workspaceIds
             }
 
             // set the wrapping note as the selectedNote
+            newDashboard.prevSelectedNoteId = newDashboard.selectedNoteId
             newDashboard.selectedNoteId = targetNoteId
 
             // open the note in the workspace and backup it
@@ -260,10 +262,12 @@ export function noteSelector(noteToSelect, mergeMode, setMergeMode, dashboard, p
     // If the mergeMode is not on, select a new note and update the links
     if(!mergeMode){
         if(!dashboard.selectedNoteId || dashboard.selectedNoteId!==noteToSelect.id){
-            // this is done to make the update efective immediately and mitigate wrong renders
-            dashboard.selectedNoteId=noteToSelect.id
+            
             const newDashboard = {...dashboard}
+            newDashboard.prevSelectedNoteId = newDashboard.selectedNoteId
             newDashboard.selectedNoteId = noteToSelect.id
+            // this is done to make the update efective immediately and mitigate wrong renders
+            dashboard.selectedNoteId = noteToSelect.id
             packDashboard(newDashboard, false, false, true)
         } 
     }

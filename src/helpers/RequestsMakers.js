@@ -54,7 +54,6 @@ export function getMetadata(note){
 // similar to the Media one except this passes the metadata
 // object in the body
 export function getMetaUpdateRequest(note, id){
-
     return window.gapi.client.request({
         path: 'drive/v3/files/' + id,
         method: 'PATCH',

@@ -14,6 +14,7 @@ import ColorPicker from './ColorPicker';
 import OptionsPopup from './OptionsPopup';
 import { createThumbnail, setPreview } from '../helpers/DashboardUtils';
 import React from 'react'
+import { currOrPrevNoteDecice } from '../helpers/DashboardPacker';
 
 // Editor footer component
 // takes setCurrentPage to go back to the notes page when editing is finished
@@ -31,7 +32,10 @@ const EditorFooter = ({
     exportThread,
     setBackColor,
     threadCollectionSwap,
-    moveToTheEnd
+    moveToTheEnd,
+    dashboard,
+    openOccurrences,
+    packDashboard
 }) => {
 
     // State that defines whether the note is pinned, used to show the 
@@ -51,15 +55,16 @@ const EditorFooter = ({
     }
 
     // Function to save and exit the note when the back arrow is pressed
-    const saveAndExit = (action, moveToEndFlag) => {
+    const saveAndExit = (doUpdate, packIt) => {
 
-        if(selectedNote.text===editorState && !hasChanged && editorState!==''){
+        if(selectedNote.text===editorState && !hasChanged && editorState!=='' && !doUpdate){
             setCurrentPage('notes')
             createThumbnail(selectedNote)
-            if(moveToEndFlag){
-                moveToTheEnd(selectedNote)
+            currOrPrevNoteDecice(dashboard)
+            if(packIt){
+                packDashboard({...dashboard}, false, true)
             }
-            return false
+            return
         }
 
         // Set the note text to be the editor state and compute the preview
@@ -75,23 +80,21 @@ const EditorFooter = ({
         !selectedNote.branches.length &&
         !selectedNote.attachedImg
         ){
-            deleteNote(selectedNote.id);
-            setCurrentPage('notes');
-            return false
+            deleteNote(selectedNote.id)
+            setCurrentPage('notes')
         }
 
         // Otherwise save it and go back to the notes page
         else{
-            updateNote(selectedNote, action, moveToEndFlag);
-            setCurrentPage('notes');
-            return true;
+            updateNote(selectedNote)
+            setCurrentPage('notes')
         }
     }
 
     // Function called when the delete button is pressed
     const callDelete = () => {
         if(window.confirm('Are you sure you want to delete the note?')){
-            deleteNote(selectedNote.id); 
+            deleteNote(selectedNote.id)
             setCurrentPage('notes')
         }
     }
@@ -143,6 +146,8 @@ const EditorFooter = ({
                     saveAndExit={saveAndExit}
                     exportThread={exportThread}
                     threadCollectionSwap={threadCollectionSwap}
+                    openOccurrences={openOccurrences}
+                    moveToTheEnd={moveToTheEnd}
                 />          
 
             </div>

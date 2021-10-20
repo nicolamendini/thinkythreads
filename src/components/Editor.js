@@ -143,18 +143,18 @@ const NoteEditor = ({
     darkMode,
     exportThread,
     threadCollectionSwap,
-    moveToTheEnd
-
+    moveToTheEnd,
+    openOccurrences,
+    packDashboard
 }) => {
 
     const selectedNote = dashboard.notes.get(dashboard.selectedNoteId)
-
     // State of the editor, contains the html of the text that is being inserted by the user
     const [editorState, setEditorState] = useState(selectedNote.text ? selectedNote.text : '');
     // State that stores the background color of a note
     const [backColor, setBackColor] = useState({color: selectedNote.color, colorPreview: selectedNote.colorPreview})
     // Reference to the Quill object so that it is possible to access its methods
-    const editorRef = useRef(null);
+    const editorRef = useRef(null)
 
     return (
             <div 
@@ -197,6 +197,9 @@ const NoteEditor = ({
                     setBackColor={setBackColor}
                     threadCollectionSwap={threadCollectionSwap}
                     moveToTheEnd={moveToTheEnd}
+                    dashboard={dashboard}
+                    openOccurrences={openOccurrences}
+                    packDashboard={packDashboard}
                     />
             </div>
         );

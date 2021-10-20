@@ -189,6 +189,7 @@ export function noteMerger(
             }
 
             // select noteC, backup, delete noteB and update the dashboard
+            newDashboard.prevSelectedNoteId = newDashboard.selectedNoteId
             newDashboard.selectedNoteId = noteC.id;
             backupNote(noteC, 'both', setNotesUpdating)
             deleteNote(noteB.id, false, newDashboard)

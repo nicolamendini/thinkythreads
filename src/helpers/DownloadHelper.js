@@ -7,6 +7,7 @@ Contains functions that help the retrieval of notes on GDrive
 */
 
 import { driveVariables, db } from "../components/Dashboard";
+import { removeNoteFile } from "./BackupHelper";
 import { createThumbnail, sanitiseForRemoval } from "./DashboardUtils";
 import { getMediaRequestById, errorCatcher, sendUpdateRequest } from "./RequestsMakers";
 
@@ -27,20 +28,26 @@ export function setNoteFromResp(
 
     // create the note object and add the text field and version
     const newNote = JSON.parse(metaResp.result.files[currIdx].description)
-    newNote.text = mediaResp.body;
-    newNote.version = parseInt(metaResp.result.files[currIdx].appProperties.version)
-
-    // add it to the dashboard and backup locally
-    newDashboard.notes.set(newNote.id, newNote)
-    if(!newNote.leftLink){
-        newDashboard.firstNoteId = newNote.id
-        console.log('added first note', newNote.id)
+    newNote.text = mediaResp.body
+    if(!newNote.text){
+        removeNoteFile(metaResp.result.files[currIdx].id, setNotesUpdating)
     }
-    db.notes.put(newNote).then(
+    else{
+        newNote.version = parseInt(metaResp.result.files[currIdx].appProperties.version)
 
-        // check if it needs a thumbnail and create it
-        createThumbnail(newNote)
-    )
+        // add it to the dashboard and backup locally
+        newDashboard.notes.set(newNote.id, newNote)
+        if(!newNote.leftLink){
+            newDashboard.firstNoteId = newNote.id
+            console.log('added first note', newNote.id)
+        }
+        db.notes.put(newNote).then(
+
+            // check if it needs a thumbnail and create it
+            createThumbnail(newNote)
+        )
+    }
+
     finishedProcesses.count += 1
     setNotesUpdating((prev) => prev-1)
 
@@ -166,7 +173,7 @@ export function setNotesPageFromResp(
                 newDashboard.notes.delete(noteId)
                 db.notes.delete(noteId)
                 sanitiseForRemoval(newDashboard, noteId)
-                console.log('deleted first note')
+                console.log('deleted first note', noteId)
             }
             finishedProcesses.count +=1
         }

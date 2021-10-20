@@ -252,7 +252,7 @@ input:focus{
 
 .search-filter {
 	font-size: 24px;
-	margin-right: 20px;
+	margin-right: 16px;
 }
 
 .merge-mode {
@@ -368,7 +368,10 @@ li h2{
 }
 
 .ql-clipboard{
-	position: fixed;
+	position: fixed !important;
+   	opacity: 0 !important;
+   	left: 50% !important;
+   	top: 50% !important;
 }
 
 

@@ -11,6 +11,7 @@ Based of a rootsOrBranches flag
 import React from 'react';
 import NotesList from './NotesList';
 import { getCaption } from '../helpers/DashboardUtils';
+import { editorMode } from './Dashboard';
 
 // LinksArea component,
 // takes the dashboard to get the notes from,
@@ -23,13 +24,21 @@ const LinksArea = ({
     threadOrCollection, 
     openEditor, 
     rootsOrBranches,
-    draggableInfo,
-    selectNote
+    draggableInfo
 }) => { 
 
     const isDropDisabled = 
         draggableInfo.sourceArea==='workspace-area' ||
         (draggableInfo.note && draggableInfo.note.id===dashboard.selectedNoteId)
+
+    const openEditorForLinks = (note) => {
+        if(!mergeMode){
+            editorMode.selection = 'prev'
+            dashboard.prevSelectedNoteId = dashboard.selectedNoteId
+            dashboard.selectedNoteId = note.id
+            openEditor()
+        }
+    }
 
     return (
         <div>
@@ -47,7 +56,7 @@ const LinksArea = ({
                 selectedNote={dashboard.notes.get(dashboard.selectedNoteId)}
                 mergeMode={mergeMode}
                 threadOrCollection={threadOrCollection}
-                openEditor={!mergeMode ? (note) => {selectNote(note); openEditor()} : () => {}}
+                openEditor={openEditorForLinks}
                 rootsOrBranches={rootsOrBranches}
                 isDropDisabled={isDropDisabled}
             />

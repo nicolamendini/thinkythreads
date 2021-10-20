@@ -6,6 +6,7 @@ DashboardPacker functions
 Update the functions based on the new states of the dashboard
 */
 
+import { editorMode } from "../components/Dashboard"
 import { copyNote } from "./DashboardUtils"
 import { backupNote } from "./RequestsMakers"
 
@@ -31,6 +32,10 @@ export function getSearchFromProps(newDashboard, searchProps){
             if(note.preview.replace( /(<([^>]+)>)/ig, '').toLowerCase().includes(searchProps.searchText)){
 
                 insertingNote=[note]
+
+                if(searchProps.imgFilter && !note.attachedImg){
+                    insertingNote=[]
+                }
 
                 if(searchProps.colorFilter!=='#ededed' && searchProps.colorFilter!==note.colorPreview){
                     insertingNote=[]
@@ -211,5 +216,82 @@ export function restoreLinks(newDashboard, setNotesUpdating){
         setTimeout(() => {
             backupNote(note, 'meta', setNotesUpdating)
         }, (200 * updatesCounter))
+    }
+}
+
+export function checkLinksSanity(newDashboard){
+
+    // if there is more than one note
+    if(newDashboard.notes.size > 1){
+
+        var prevNote = newDashboard.notes.get(newDashboard.firstNoteId)
+        var currNote = null
+        var nextNote = null
+
+        // if the first note has links
+        if(prevNote && !prevNote.leftLink){
+
+            if(prevNote.rightLink){
+                currNote = newDashboard.notes.get(prevNote.rightLink)
+
+                // for each note, check that it has links and that it is connected to the neighbours
+                for(let i=1; i<newDashboard.notes.size-1; i++){
+
+                    if(currNote && currNote.rightLink){
+
+                        nextNote = newDashboard.notes.get(currNote.rightLink)
+                        if(nextNote){
+                            if(!(
+                                currNote.rightLink && 
+                                currNote.leftLink &&
+                                prevNote.rightLink &&
+                                nextNote.leftLink &&
+                                currNote.leftLink===prevNote.id &&
+                                currNote.rightLink===nextNote.id
+                            )){
+                                console.log('sequence disconnected at: ', {...prevNote}, {...currNote}, {...nextNote})
+                                return false
+                            }
+
+                            // move the head ahead
+                            prevNote = currNote
+                            currNote = nextNote
+                        }
+                        else{
+                            console.log('the successor does not exist')
+                            return false
+                        }
+                    }
+                    else{
+                        console.log('an element doesnt have a successor or the current element does not exist')
+                        return false
+                    }
+                }
+
+                if(!(currNote.leftLink && !currNote.rightLink)){
+                    console.log('last note has a right link')
+                    return false
+                }
+            }
+            else{
+                console.log('first note has no right link')
+                return false
+            }
+        }
+        else {
+            console.log('first note problem: ', prevNote)
+            return false
+        }
+    }
+    return true
+}
+
+export function currOrPrevNoteDecice(newDashboard){
+    if(editorMode.selection==='prev'){
+        const previousSelectedNote = newDashboard.notes.get(newDashboard.prevSelectedNoteId)
+        if(previousSelectedNote){
+            newDashboard.selectedNoteId = previousSelectedNote.id
+        }
+        editorMode.selection = 'curr'
     }
 }

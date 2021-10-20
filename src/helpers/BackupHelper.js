@@ -36,6 +36,7 @@ export function updateNoteFile(note, mediaOrMeta, setNotesUpdating, counter){
 
                 if(mediaOrMeta!=='meta'){
                     updateNoteFile(note, 'media', setNotesUpdating)
+                    setNotesUpdating((prev) => prev-1)
                 }
                 else{
                     setNotesUpdating((prev) => prev-1)
@@ -104,45 +105,6 @@ export function updateNoteFile(note, mediaOrMeta, setNotesUpdating, counter){
     )
 }
 
-// Removes a notes file from drive
-export function removeNoteFile(note, setNotesUpdating, counter){
-    if(!counter){
-        setNotesUpdating((prev) => prev+1)
-        counter=0
-    }
-
-    // if it exists, try to remove
-    fileExistenceCheck(note).then(function(resp){
-        if(resp.result.files.length){
-            window.gapi.client.drive.files.delete({
-                'fileId': resp.result.files[0].id
-            }).then(function() { 
-                setNotesUpdating((prev) => prev-1)
-
-            }).catch((error) => 
-                errorCatcher(
-                    error, 
-                    counter, 
-                    removeNoteFile, 
-                    note,  
-                    setNotesUpdating
-                )
-            )
-        }
-        else{
-            setNotesUpdating((prev) => prev-1)
-        }
-    }).catch((error) => 
-        errorCatcher(
-            error, 
-            counter, 
-            removeNoteFile, 
-            note, 
-            setNotesUpdating
-        )
-    )
-}
-
 // Function to export a thread as a PDF or print
 export function exportThreadGivenProps(dashboard){
 
@@ -204,4 +166,26 @@ export function checkDriveFolder(setDriveFolderId, counter){
             }
         }
     }).catch((error) => errorCatcher(error, counter, checkDriveFolder, setDriveFolderId))
+}
+
+// Removes a notes file from drive
+export function removeNoteFile(fileId, setNotesUpdating, counter){
+    if(!counter){counter=0}
+
+    setNotesUpdating((prev) => prev+1)
+    window.gapi.client.drive.files.delete({
+        'fileId': fileId
+    }).then(function() { 
+
+        setNotesUpdating((prev) => prev-1)
+
+    }).catch((error) => 
+        errorCatcher(
+            error, 
+            counter, 
+            removeNoteFile, 
+            fileId,  
+            setNotesUpdating,
+        )
+    )
 }

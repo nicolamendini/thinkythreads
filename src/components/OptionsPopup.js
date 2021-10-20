@@ -17,7 +17,9 @@ const OptionsPopup = ({
     setOpen,
     saveAndExit,
     exportThread,
-    threadCollectionSwap
+    threadCollectionSwap,
+    openOccurrences,
+    moveToTheEnd
 }) => {
 
     return (
@@ -39,14 +41,14 @@ const OptionsPopup = ({
 
                     <button 
                         className='popup-btn tools-btn'
-                        onClick={() => saveAndExit('get-occurrences')}
+                        onClick={() => {openOccurrences(); saveAndExit(false, true)}}
                     >
                         Show Threads or Collections that contain this Note
                     </button>
 
                     <button 
                         className='popup-btn tools-btn'
-                        onClick={() => saveAndExit('get-occurrences', true)}
+                        onClick={() => {moveToTheEnd(); saveAndExit(true)}}
                     >
                         Save and move at the end of the Search
                     </button>
