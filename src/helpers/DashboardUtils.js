@@ -141,7 +141,7 @@ export function copyNote (note) {
 // replaces the text with the image so that it can be used as a preview
 // just an efficiency trick
 export function createThumbnail(note){
-    if(note.attachedImg.length){
+    if(note.attachedImg && note.attachedImg.length){
         const [imgStart, imgEnd, isFirst] = note.attachedImg
         if(isFirst && note.text.length > imgEnd-imgStart){
             note.text = note.text.substring(imgStart, imgEnd).split('"')[0]

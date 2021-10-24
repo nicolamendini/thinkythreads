@@ -30,7 +30,7 @@ const Note = ({
 	mergeMode,
 	openEditor,
 	rootsOrBranches,
-	threadOrCollection
+	triggerRerender
 
 }) => {
 
@@ -60,7 +60,7 @@ const Note = ({
 						{...provided.dragHandleProps}
 						onClick={()=> {handleNotePress(note)}}
 						onDoubleClick={()=> openEditor(note)}
-						style={
+						style={ 
 							!(mergeMode && selectedNote.id===note.id) ? (
 								!darkMode && note.color!=='#ffffff' ? 
 									(selectedNote && selectedNote.id===note.id ? 
@@ -73,6 +73,7 @@ const Note = ({
 							}
 						>
 							{snapshot.isDropAnimating}
+							{selectedNote && selectedNote.id===note.id && triggerRerender}
 							<div>
 								{note.pinned && areaName==='search-area' &&
 									<RiPushpin2Fill size='10px' className='header-icon'/>

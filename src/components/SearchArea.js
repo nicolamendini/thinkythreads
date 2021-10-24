@@ -26,7 +26,8 @@ const SearchArea = ({
     rootsOrBranches,
     searchProps,
     setSearchProps,
-    draggableInfo
+    draggableInfo,
+    triggerRerender
 }) => {
 
     // Dropping here is disabled unless the note comes from the 
@@ -70,6 +71,7 @@ const SearchArea = ({
                     rootsOrBranches={rootsOrBranches}
                     cleanFilters={cleanFilters}
                     setCleanFilters={setCleanFilters}
+                    triggerRerender={triggerRerender}
                 />
             </div> 
         </div>

@@ -11,6 +11,7 @@
     "dexie": "^3.0.3",
     "gh-pages": "^3.2.3",
     "katex": "^0.13.18",
+    "mousetrap": "^1.6.5",
     "quill-image-compress": "^1.2.15",
     "react": "^17.0.2",
     "react-beautiful-dnd": "^13.1.0",

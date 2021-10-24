@@ -12,6 +12,9 @@ import { GithubPicker } from "react-color"
 import { BsDropletHalf } from "react-icons/bs"
 import Popup from "reactjs-popup"
 
+export const vividCols = ['#b80000', '#db3e00', '#fccb00', '#008b02', '#006b76', '#1273de', '#5300eb', '#ededed']
+export const pastelCols = ['#EB9694', '#FAD0C3', '#FEF3BD', '#C1E1C5', '#BEDADC', '#C4DEF6', '#d4c4fb', '#ffffff']
+
 // Utils function needed to set the color through a switch
 // Takes the chosen color, the current selected note and 
 // A function to set the state of the editor
@@ -41,29 +44,29 @@ const setColor = (
     selectedNote.colorPreview = color.hex;
 
     switch(color.hex) {
-        case '#b80000':
-            selectedNote.color = '#EB9694'
+        case vividCols[0]:
+            selectedNote.color = pastelCols[0]
             break;
-        case '#db3e00':
-            selectedNote.color = '#FAD0C3'
+        case vividCols[1]:
+            selectedNote.color = pastelCols[1]
             break;
-        case '#fccb00':
-            selectedNote.color = '#FEF3BD'
+        case vividCols[2]:
+            selectedNote.color = pastelCols[2]
             break;
-        case '#008b02':
-            selectedNote.color = '#C1E1C5'
+        case vividCols[3]:
+            selectedNote.color = pastelCols[3]
             break;
-        case '#006b76':
-            selectedNote.color = '#BEDADC'
+        case vividCols[4]:
+            selectedNote.color = pastelCols[4]
             break;
-        case '#1273de':
-            selectedNote.color = '#C4DEF6'
+        case vividCols[5]:
+            selectedNote.color = pastelCols[5]
             break;
-        case '#5300eb':
-            selectedNote.color = '#d4c4fb'
+        case vividCols[6]:
+            selectedNote.color = pastelCols[6]
             break;
-        case '#ededed':
-            selectedNote.color = '#ffffff'
+        case vividCols[7]:
+            selectedNote.color = pastelCols[7]
             break;
         default:
             break

@@ -7,7 +7,7 @@ Initialises the Quill rich text editor
 with its own toolbar and defines the action of the footer bar
 */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import ReactQuill, {Quill} from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import {useState, useRef} from "react"
@@ -16,6 +16,7 @@ import ImageCompress from 'quill-image-compress';
 import ImageResize from '@taoqf/quill-image-resize-module'
 import { TEXTLIMIT } from './Dashboard';
 import { charLimit } from '../helpers/Messages';
+import { setPreview } from '../helpers/DashboardUtils';
 
 // Register the imageCompressor and resizer
 Quill.register("modules/imageCompressor", ImageCompress);
@@ -136,6 +137,7 @@ const handleChange = (value, delta, editorRef, setEditorState) => {
 // to actualise the update, a deleteNote function to delete the note if the 
 // note is empty, the darkMode flad and the export thread function
 const NoteEditor = ({ 
+    currentPage,
     setCurrentPage, 
     dashboard, 
     updateNote, 
@@ -143,18 +145,43 @@ const NoteEditor = ({
     darkMode,
     exportThread,
     threadCollectionSwap,
-    moveToTheEnd,
+    moveToTheExtremity,
     openOccurrences,
-    packDashboard
+    packDashboard,
+    setDelayedNoteUpdate
 }) => {
 
     const selectedNote = dashboard.notes.get(dashboard.selectedNoteId)
+    var initialState = ''
+    var initialColor = {color: '', colorPreview: ''}
+
+    if(selectedNote && selectedNote.text){
+        initialState = selectedNote.text 
+        initialColor.color = selectedNote.color
+        initialColor.colorPreview = selectedNote.colorPreview
+    }
+
     // State of the editor, contains the html of the text that is being inserted by the user
-    const [editorState, setEditorState] = useState(selectedNote.text ? selectedNote.text : '');
+    const [editorState, setEditorState] = useState(initialState)
     // State that stores the background color of a note
-    const [backColor, setBackColor] = useState({color: selectedNote.color, colorPreview: selectedNote.colorPreview})
+    const [backColor, setBackColor] = useState(initialColor)
+    const [backupState, setBackupState] = useState(true)
     // Reference to the Quill object so that it is possible to access its methods
     const editorRef = useRef(null)
+
+    useEffect(() => {
+        if(selectedNote && selectedNote.text !== editorState){
+            setBackupState(false)
+            setDelayedNoteUpdate({
+                note: selectedNote, 
+                delay: 5000, 
+                metaOrMedia: 'media', 
+                callbackFunction: () => setBackupState(true),
+                beforeFunction: () => {selectedNote.text = editorState; setPreview(selectedNote)}
+            })
+        }
+    // eslint-disable-next-line
+    }, [editorState])
 
     return (
             <div 
@@ -186,6 +213,10 @@ const NoteEditor = ({
                     />
                 </div>
 
+                <div className='saved-changes'>
+                    {!backupState ? 'Unsaved changes...' : 'All changes have been saved'}
+                </div>
+
                 <EditorFooter 
                     setCurrentPage={setCurrentPage} 
                     selectedNote={selectedNote}
@@ -196,13 +227,14 @@ const NoteEditor = ({
                     exportThread={exportThread}
                     setBackColor={setBackColor}
                     threadCollectionSwap={threadCollectionSwap}
-                    moveToTheEnd={moveToTheEnd}
+                    moveToTheExtremity={moveToTheExtremity}
                     dashboard={dashboard}
                     openOccurrences={openOccurrences}
                     packDashboard={packDashboard}
+                    editorRef={editorRef}
                     />
             </div>
         );
       }
 
-export default NoteEditor;
+export default NoteEditor

@@ -12,6 +12,7 @@ import GoogleButton from 'react-google-button';
 import Info from './Info'
 import {IoIosArrowRoundBack} from 'react-icons/io'
 
+
 const Settings = ({ setCurrentPage, signInFunction, signOutFunction, loadedUser, GAPIloaded}) => {
         return (
             <div className='settings-page'>
@@ -24,7 +25,7 @@ const Settings = ({ setCurrentPage, signInFunction, signOutFunction, loadedUser,
                         />
                     </div>
 
-                    THINKYTHREADS BETA
+                    THINKYTHREADS BETA v1.0
 
                     { GAPIloaded && (!loadedUser ?
 
@@ -45,7 +46,7 @@ const Settings = ({ setCurrentPage, signInFunction, signOutFunction, loadedUser,
                 <Info />
 
             </div>
-        );
+        )
       }
 
-export default Settings;
+export default Settings

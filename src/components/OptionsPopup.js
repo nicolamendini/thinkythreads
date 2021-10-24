@@ -19,7 +19,7 @@ const OptionsPopup = ({
     exportThread,
     threadCollectionSwap,
     openOccurrences,
-    moveToTheEnd
+    moveToTheExtremity
 }) => {
 
     return (
@@ -48,9 +48,16 @@ const OptionsPopup = ({
 
                     <button 
                         className='popup-btn tools-btn'
-                        onClick={() => {moveToTheEnd(); saveAndExit(true)}}
+                        onClick={() => {moveToTheExtremity(true); saveAndExit(true)}}
                     >
-                        Save and move at the end of the Search
+                        Save and move to the end of the Search
+                    </button>
+
+                    <button 
+                        className='popup-btn tools-btn'
+                        onClick={() => {moveToTheExtremity(); saveAndExit(true)}}
+                    >
+                        Save and move to the beginning of the Search
                     </button>
 
                     {selectedNote.thread.length ?

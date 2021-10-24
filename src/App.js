@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Dashboard from "./components/Dashboard";
+require('dotenv').config()
 
 var SCOPE = 'https://www.googleapis.com/auth/drive.file';
 var discoveryUrl = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest';
@@ -53,8 +54,8 @@ export default class App extends Component {
   initClient = async () => {
     try{
       window.gapi.client.init({
-          'apiKey': "AIzaSyDmfaKWGbmsMVLYu1nu83egzWI30vgyD-0",
-          'clientId': "455375017729-n44ea0ohjt7hb6jpi5ks56ej89cppv93.apps.googleusercontent.com",
+          'apiKey': process.env.REACT_APP_API_KEY,
+          'clientId': process.env.REACT_APP_CLIENT_ID,
           'scope': SCOPE,
           'discoveryDocs': [discoveryUrl]
         }).then(() => {

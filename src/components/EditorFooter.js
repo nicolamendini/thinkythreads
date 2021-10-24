@@ -16,6 +16,8 @@ import { createThumbnail, setPreview } from '../helpers/DashboardUtils';
 import React from 'react'
 import { currOrPrevNoteDecice } from '../helpers/DashboardPacker';
 
+const Mousetrap = require('mousetrap')
+
 // Editor footer component
 // takes setCurrentPage to go back to the notes page when editing is finished
 // the selected note, two functions to update or delete the note
@@ -32,18 +34,24 @@ const EditorFooter = ({
     exportThread,
     setBackColor,
     threadCollectionSwap,
-    moveToTheEnd,
+    moveToTheExtremity,
     dashboard,
     openOccurrences,
-    packDashboard
+    packDashboard,
+    editorRef
 }) => {
+
+    var initialPinned = ''
+    if(selectedNote){
+        initialPinned = selectedNote.pinned
+    }
 
     // State that defines whether the note is pinned, used to show the 
     // change in the pin icon
-    const [isPinned, setIsPinned] = useState(selectedNote.pinned)
+    const [isPinned, setIsPinned] = useState(initialPinned)
     // State to define whether the popup options have been opened through the
     // three dots button
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(false)
     // Check if the editing note has changed
     const [hasChanged, setHasChanged] = useState(false)
 
@@ -56,7 +64,6 @@ const EditorFooter = ({
 
     // Function to save and exit the note when the back arrow is pressed
     const saveAndExit = (doUpdate, packIt) => {
-
         if(selectedNote.text===editorState && !hasChanged && editorState!=='' && !doUpdate){
             setCurrentPage('notes')
             createThumbnail(selectedNote)
@@ -99,6 +106,30 @@ const EditorFooter = ({
         }
     }
 
+    
+    Mousetrap.bind(['ctrl+s', 'meta+s'], function(e) {
+        if (e.preventDefault) {
+            e.preventDefault()
+        } else {
+            // internet explorer
+            e.returnValue = false;
+        }
+        editorState.replace(/<[^>]*>?/gm, '') && saveAndExit()
+    })
+
+    if(editorRef && editorRef.current && editorRef.current.editor){
+        const prevBinding = editorRef.current.editor.keyboard.bindings[83]
+        if(prevBinding){
+            prevBinding.pop()
+        }
+        editorRef.current.editor.keyboard.addBinding({
+            key: 's',
+            shortKey: true,
+            handler: () => editorState.replace(/<[^>]*>?/gm, '') && saveAndExit()
+            }
+        )
+    }
+
     return(
 
         <div>
@@ -137,7 +168,7 @@ const EditorFooter = ({
                     className='tools-btn'
                     onClick={() => callDelete()}
                     size='1.65em'
-                />         
+                />
 
                 <OptionsPopup 
                     selectedNote={selectedNote}
@@ -147,7 +178,7 @@ const EditorFooter = ({
                     exportThread={exportThread}
                     threadCollectionSwap={threadCollectionSwap}
                     openOccurrences={openOccurrences}
-                    moveToTheEnd={moveToTheEnd}
+                    moveToTheExtremity={moveToTheExtremity}
                 />          
 
             </div>

@@ -144,6 +144,76 @@ const Info = () => {
 
             </ol>
 
+            <h1>Keyboard Shortcuts</h1>
+            <table>
+                <tbody>
+                    <tr>
+                        <td><b>KEYS</b></td>
+                        <td><b>ACTION</b></td>
+                    </tr>
+                    <tr>
+                        <td>left arrow</td>
+                        <td>select note to the left</td>
+                    </tr>
+                    <tr>
+                        <td>right arrow</td>
+                        <td>select note to the right</td>
+                    </tr>
+                    <tr>
+                        <td>shift + left arrow</td>
+                        <td>move the selected note all the way till the beginning of the search</td>
+                    </tr>
+                    <tr>
+                        <td>shift + right arrow</td>
+                        <td>move the selected note all the way till the end of the search</td>
+                    </tr>
+                    <tr>
+                        <td>down arrow</td>
+                        <td>add the selected note to the workspace</td>
+                    </tr>
+                    <tr>
+                        <td>up arrow</td>
+                        <td>remove the selected note from the workspace</td>
+                    </tr>
+                    <tr>
+                        <td>p</td>
+                        <td>pin/unpin the selected note</td>
+                    </tr>
+                    <tr>
+                        <td>d</td>
+                        <td>delete the selected note</td>
+                    </tr>
+                    <tr>
+                        <td>a</td>
+                        <td>add a new note and open the editor</td>
+                    </tr>
+                    <tr>
+                        <td>1-8</td>
+                        <td>change color of a note</td>
+                    </tr>
+                    <tr>
+                        <td>spacebar</td>
+                        <td>open the thread/collection contained in a note or wrap an unsaved thread</td>
+                    </tr>
+                    <tr>
+                        <td>enter</td>
+                        <td>open the selected note in the editor</td>
+                    </tr>
+                    <tr>
+                        <td>ctrl/cmd + s (from dashboard)</td>
+                        <td>close the current workspace and save it, if it was wrapped</td>
+                    </tr>
+                    <tr>
+                        <td>ctrl/cmd + s (from editor)</td>
+                        <td>save the current note and quit the editor</td>
+                    </tr>
+                    <tr>
+                        <td>ctrl/cmd + ?</td>
+                        <td>see in what other notes the selected note occurs</td>
+                    </tr>
+                </tbody>
+            </table>
+
         </div>
     )
 }

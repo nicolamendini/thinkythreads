@@ -34,7 +34,8 @@ const NotesPage = ({
     searchProps,
     setSearchProps,
     synchNotes,
-    editorMode
+    editorMode,
+    triggerRerender
 }) => {
 
     return(
@@ -56,6 +57,7 @@ const NotesPage = ({
                 searchProps={searchProps}
                 setSearchProps={setSearchProps}
                 editorMode={editorMode}
+                triggerRerender={triggerRerender}
             />
 
             <Footer 

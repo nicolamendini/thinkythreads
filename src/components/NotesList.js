@@ -15,12 +15,11 @@ import { BsChevronRight, BsChevronLeft } from 'react-icons/bs';
 import { BsPlusSquare } from 'react-icons/bs'
 import Wrapper from './Wrapper';
 import React from 'react'
+import { SHAREDMEX, SLICESIZE } from './Dashboard';
 
 // Max size of a row of notes, it is necessary to press the arrow
 // button to access further notes
-const SLICESIZE = 12
 export const scrollTarget = {beginning: false}
-
 // Function used to change slice based on which arrow button has been pressed
 const align = (dir, currentSlice, setCurrentSlice, notes, areaName) => {
 
@@ -39,6 +38,9 @@ const align = (dir, currentSlice, setCurrentSlice, notes, areaName) => {
 	document.getElementById(notes[focusPos].ui_id).scrollIntoView(prop);
 	setCurrentSlice(currentSlice+dir)
 	window.sessionStorage.setItem('current-slice-'+areaName, currentSlice+dir)
+	if(areaName==='search-area'){
+		SHAREDMEX.currentSearchSlice = currentSlice+dir
+	}
 }
 
 const NotesList = ({
@@ -56,7 +58,8 @@ const NotesList = ({
 	isDropDisabled,
 	draggableInfo,
 	cleanFilters,
-	setCleanFilters
+	setCleanFilters,
+	triggerRerender
 }) => {
 
 	const retrievedSlice = window.sessionStorage.getItem('current-slice-'+areaName)
@@ -69,11 +72,7 @@ const NotesList = ({
 	// State to hide the NotesList until the scroll is performed, used to avoid flickering
 	const [isVisible, setIsVisible] = useState(false)
 
-	// Effect to set back the scroll once exiting the editor
-	useEffect(() => {
-		const slicedNotes = notes.slice(currentSlice*SLICESIZE, (currentSlice+1)*SLICESIZE+SLICESIZE)
-		var scrollSucceded=false
-
+	const tryFocusOnNote = (slicedNotes) => {
 		// If there is a selectedNote to scroll to, do it
 		if(selectedNote){
 			const focusPos = slicedNotes.find(note => note.id === selectedNote.id)
@@ -81,24 +80,44 @@ const NotesList = ({
 				const targetElement = document.getElementById(focusPos.ui_id)
 				if(targetElement){
 					targetElement.scrollIntoView({inline: 'center'})
-					scrollSucceded=true
+					return true
 				}
 			}
 		}
+	}
 
-		// Otherwise, some search is performed but there are no notesin the current slices, go to slice 0
-		if(!slicedNotes.length && currentSlice!==0 && !scrollSucceded && areaName==='search-area'){
+	// Effect to set back the scroll once exiting the editor
+	useEffect(() => {
+		const slicedNotes = notes.slice(currentSlice*SLICESIZE, (currentSlice+1)*SLICESIZE+SLICESIZE)
+		var scrollSucceded = tryFocusOnNote(slicedNotes)
+
+		// Otherwise, if some search is performed but there are no notes in the current slices, go to slice 0
+		if(!slicedNotes.length && currentSlice!==0 && !scrollSucceded){
 			setCurrentSlice(0)
 			window.sessionStorage.setItem('current-slice-'+areaName, 0)
+			if(areaName === 'search-area'){
+				SHAREDMEX.currentSearchSlice = 0
+			}
 		}
 		setIsVisible(true)
 	// eslint-disable-next-line
 	}, [notes])
 
 	useEffect(() => {
+		if(SHAREDMEX.usingScrollKeys){
+			const slicedNotes = notes.slice(currentSlice*SLICESIZE, (currentSlice+1)*SLICESIZE+SLICESIZE)
+			tryFocusOnNote(slicedNotes)
+			SHAREDMEX.usingScrollKeys = false
+			setIsVisible(true)
+		}
+	// eslint-disable-next-line
+	},[selectedNote])
+
+	useEffect(() => {
 		if(areaName==='search-area' && cleanFilters.goClean && currentSlice > 0){
 			setCurrentSlice(0)
 			window.sessionStorage.setItem('current-slice-'+areaName, 0)
+			SHAREDMEX.currentSearchSlice = 0
 		}
 	// eslint-disable-next-line
 	}, [cleanFilters])
@@ -151,14 +170,14 @@ const NotesList = ({
 										<BsChevronLeft 
 											className='tools-btn arrow-btn'
 											onClick={() => align(-1, currentSlice, setCurrentSlice, notes, areaName)}
-											size='2.5em'
+											size='2em'
 											color='#666666'
 										/>
 									:
 										<FcPrevious 
 											className='tools-btn arrow-btn'
 											onClick={() => align(-1, currentSlice, setCurrentSlice, notes, areaName)}
-											size='2.5em'
+											size='2em'
 										/>
 								: null}
 							</div>
@@ -209,7 +228,7 @@ const NotesList = ({
 									mergeMode={mergeMode}
 									openEditor={openEditor}
 									rootsOrBranches={rootsOrBranches}
-									threadOrCollection={threadOrCollection}
+									triggerRerender={triggerRerender}
 								/>
 							))}
 
@@ -222,14 +241,14 @@ const NotesList = ({
 										<BsChevronRight 
 											className='tools-btn arrow-btn'
 											onClick={() => align(1, currentSlice, setCurrentSlice, notes, areaName)}
-											size='2.5em'
+											size='2em'
 											color='#666666'
 										/>
 									:
 										<FcNext 
 											className='tools-btn arrow-btn'
 											onClick={() => align(1, currentSlice, setCurrentSlice, notes, areaName)}
-											size='2.5em'
+											size='2em'
 										/>
 								: null}
 							</div>

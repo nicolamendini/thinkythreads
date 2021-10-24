@@ -7,10 +7,10 @@ Function to manipulate and change Note objects
 eg: add/remove links or edit threads 
 */
 
-import { LINKSLIMIT } from "../components/Dashboard";
+import { LINKSLIMIT, WORKSPACELIMIT} from '../components/Dashboard'
 import { backupNote } from "./RequestsMakers";
 import { addElementAt, arraysEqual, getCaption, removeElementAt } from "./DashboardUtils";
-import { alreadyIn, mergeBothCardsOccupied } from "./Messages";
+import { alreadyIn, mergeBothCardsOccupied, workspaceLimitReached } from "./Messages";
 
 // Function to add a note to a thread if the element is not the opened thread itself
 export function addToWorkspace(newDashboard, element, position){
@@ -160,7 +160,7 @@ export function wrapWorkspace(newDashboard, targetNoteId, setNotesUpdating, thre
 
             // if thread mode, add to the thread of the note and set color to yellow
             if(threadOrCollection){
-                targetNote.thread = newDashboard.workspaceIds;
+                targetNote.thread = newDashboard.workspaceIds
                 linkThreadNotes(newDashboard, targetNote.thread, setNotesUpdating)
             }
 
@@ -188,7 +188,7 @@ export function wrapWorkspace(newDashboard, targetNoteId, setNotesUpdating, thre
 export function openInWorkspace(workspaceMode, newDashboard, setNotesUpdating, threadOrCollection){
 
     // close and save the workspace that is already opened
-    closeAndSaveWorkspace(true, newDashboard, setNotesUpdating, threadOrCollection);
+    closeAndSaveWorkspace(true, newDashboard, setNotesUpdating, threadOrCollection)
 
     // retrieve the note we want to open
     const selectedNote = newDashboard.notes.get(newDashboard.selectedNoteId)
@@ -204,7 +204,7 @@ export function openInWorkspace(workspaceMode, newDashboard, setNotesUpdating, t
     }
 
     // set the openedWorkspaceId as the id of the note we want to open
-    newDashboard.openedWorkspaceId = newDashboard.selectedNoteId;
+    newDashboard.openedWorkspaceId = newDashboard.selectedNoteId
 }
 
 // Function to close and save an active workspace
@@ -304,4 +304,76 @@ export function threadToCollection(note){
 export function collectionToThread(note){
     note.thread = note.collection
     note.collection = []
+}
+
+export function manageWrapper(newDashboard, targetNote, threadOrCollection, setThreadOrCollection, setNotesUpdating){
+
+    // if the current workspace has notes, wrap them with the target note
+    if(newDashboard.workspaceIds.length>0 && !newDashboard.openedWorkspaceId){
+        wrapWorkspace(newDashboard, targetNote.id, setNotesUpdating, threadOrCollection )
+    }
+
+    // otherwise just expand the note so that the workspace now contains its thread or collection
+    else{
+        newDashboard.prevSelectedNoteId = newDashboard.selectedNoteId
+        newDashboard.selectedNoteId = targetNote.id
+        if(targetNote.thread.length){
+            openInWorkspace(true, newDashboard, setNotesUpdating, threadOrCollection)
+            setThreadOrCollection(true)
+            
+        }
+        else if(targetNote.collection.length){
+            openInWorkspace(false, newDashboard, setNotesUpdating, threadOrCollection)
+            setThreadOrCollection(false)
+        }
+        else{
+            openInWorkspace(threadOrCollection, newDashboard, setNotesUpdating, threadOrCollection)
+        }
+    }
+}
+
+export function workspaceAdder(dashboard, threadOrCollection, targetId, packDashboard, destination){
+
+    if(!destination){
+        destination = dashboard.workspaceIds.length
+    }
+
+    // check that the workspace does not break the limits
+    if(dashboard.workspaceIds.length > WORKSPACELIMIT){
+        alert(workspaceLimitReached)
+    }
+
+    // else if we are in thread mode, add to the thread and update the dashboard
+    else if(threadOrCollection){
+        const newDashboard = {...dashboard}
+        addToWorkspace(newDashboard, targetId, destination)
+        packDashboard(newDashboard, false, true, true)
+    }
+
+    // else if we are in collectionMode, check that the notes collection is not 
+    // already opened in dashboard and that the note is not already in, then add it
+    // to the collection and update the dashboard
+    else{
+        if(!dashboard.openedWorkspaceId ||
+            dashboard.openedWorkspaceId!==targetId
+        ){
+            if(!dashboard.workspaceIds.includes(targetId)){
+                const newDashboard = {...dashboard}
+                newDashboard.workspaceIds.push(targetId)
+                packDashboard(newDashboard, false, true)
+            }
+        }
+        else{
+            //alreadyInAlert();
+        }
+    }
+}
+
+export function workspaceRemover(newDashboard, threadOrCollection, packDashboard, indexToRem){
+    newDashboard.workspaceIds = removeElementAt(newDashboard.workspaceIds, indexToRem)
+    if(indexToRem>0 && threadOrCollection){
+        newDashboard.prevSelectedNoteId = newDashboard.selectedNoteId
+        newDashboard.selectedNoteId = newDashboard.workspaceIds[indexToRem-1];
+    }
+    packDashboard(newDashboard, false, true, true)
 }

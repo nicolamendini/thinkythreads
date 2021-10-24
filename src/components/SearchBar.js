@@ -83,16 +83,16 @@ const SearchBar = ({
 					
 						<VscChromeClose 
 						size='1.6em'
-						className='tools-btn'
+						className='tools-btn search-icons'
 						onClick={() => cleanSearch(cleanFilters, setCleanFilters, setSearchProps)}
 						color={darkMode ? '#666666' : '#464646'}
-						style={{padding: '3px 2px 3px 3px'}}
+						style={{paddingTop: '3px', transform:'scale(0.8)'}}
 						/>
 
 						:
 
 						darkMode ?
-							<BiSearchAlt className='search-icons' size='2em' style={{transform: 'scale(0.8)'}}/>
+							<BiSearchAlt className='search-icons' size='2em' />
 						:
 							<FcSearch className='search-icons' size='2em' />
 					}

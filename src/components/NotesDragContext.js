@@ -62,7 +62,8 @@ const NoteDragContext = ({
     rootsOrBranches,
     closeAndSave,
     searchProps,
-    setSearchProps
+    setSearchProps,
+    triggerRerender
 }) => {
 
     const [draggableInfo, setDraggableInfo] = useState({
@@ -90,6 +91,7 @@ const NoteDragContext = ({
                 searchProps={searchProps}
                 setSearchProps={setSearchProps}
                 draggableInfo={draggableInfo}
+                triggerRerender={triggerRerender}
             />                 
 
             
@@ -103,6 +105,7 @@ const NoteDragContext = ({
                 rootsOrBranches={rootsOrBranches}
                 closeAndSave={closeAndSave}
                 draggableInfo={draggableInfo}
+                triggerRerender={triggerRerender}
             />
 
             <LinksArea 
@@ -113,6 +116,7 @@ const NoteDragContext = ({
                 openEditor={openEditor}
                 rootsOrBranches={rootsOrBranches}
                 draggableInfo={draggableInfo}
+                triggerRerender={triggerRerender}
             />
 
         </DragDropContext>

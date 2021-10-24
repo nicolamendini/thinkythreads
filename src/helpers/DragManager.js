@@ -7,10 +7,9 @@ Manages all the drag gestures between notes
 */
 
 import { WORKSPACELIMIT } from "../components/Dashboard";
-import { getLinksFromProps } from "./DashboardPacker";
-import { addToWorkspace, addToBranches, removeFromBranches, wrapWorkspace, openInWorkspace } from "./NotesManupulation";
+import { addToWorkspace, addToBranches, removeFromBranches, manageWrapper, workspaceAdder, workspaceRemover } from "./NotesManupulation";
 import { backupNote } from "./RequestsMakers";
-import { moveNoteInsideGraph, moveNoteInsideArea, removeElementAt } from "./DashboardUtils";
+import { moveNoteInsideGraph, moveNoteInsideArea } from "./DashboardUtils";
 import { alertMergeMode, workspaceLimitReached } from "./Messages";
 
 // Manage the dragging and dropping rules
@@ -39,37 +38,9 @@ export function dragManager(
 
         // if it goes to the workspace
         if(result.destination.droppableId==='workspace-area'){
-
-            // check that the workspace does not break the limits
-            const targetId = dashboard.search[result.source.index].id;
-            if(dashboard.workspaceIds.length > WORKSPACELIMIT){
-                alert(workspaceLimitReached)
-            }
-
-            // else if we are in thread mode, add to the thread and update the dashboard
-            else if(threadOrCollection){
-                const newDashboard = {...dashboard}
-                addToWorkspace(newDashboard, targetId, result.destination.index);
-                packDashboard(newDashboard, false, true, true)
-            }
-
-            // else if we are in collectionMode, check that the notes collection is not 
-            // already opened in dashboard and that the note is not already in, then add it
-            // to the collection and update the dashboard
-            else{
-                if(!dashboard.openedWorkspaceId ||
-                    dashboard.openedWorkspaceId!==targetId
-                ){
-                    if(!dashboard.workspaceIds.includes(targetId)){
-                        const newDashboard = {...dashboard}
-                        newDashboard.workspaceIds.push(targetId);
-                        packDashboard(newDashboard, false, true)
-                    }
-                }
-                else{
-                    //alreadyInAlert();
-                }
-            }
+            const targetId = dashboard.search[result.source.index].id
+            const destination = result.destination.index
+            workspaceAdder(dashboard, threadOrCollection, targetId, packDashboard, destination)
         }
 
         // if the destination was the links area aka branches area
@@ -100,26 +71,7 @@ export function dragManager(
         else if(result.destination.droppableId==='wrapper-area'){
             const newDashboard = {...dashboard}
             const targetNote = dashboard.search[result.source.index]
-
-            // if the current workspace has notes, wrap them with the target note
-            if(dashboard.workspaceIds.length>0){
-                wrapWorkspace(newDashboard, targetNote.id, setNotesUpdating, threadOrCollection );
-            }
-
-            // otherwise just expand the note so that the workspace now contains its thread or collection
-            else{
-                newDashboard.prevSelectedNoteId = newDashboard.selectedNoteId
-                newDashboard.selectedNoteId = targetNote.id
-                if(targetNote.thread.length){
-                    openInWorkspace(true, newDashboard, setNotesUpdating, threadOrCollection)
-                    setThreadOrCollection(true)
-                    
-                }
-                else if(targetNote.collection.length){
-                    openInWorkspace(false, newDashboard, setNotesUpdating, threadOrCollection)
-                    setThreadOrCollection(false)
-                }
-            }
+            manageWrapper(newDashboard, targetNote, threadOrCollection, setThreadOrCollection, setNotesUpdating)
             packDashboard(newDashboard)
         }
 
@@ -128,7 +80,7 @@ export function dragManager(
             if(result.source.index!==result.destination.index){
                 const sourceNote = dashboard.search[result.source.index]
                 const targetNote = dashboard.search[result.destination.index]
-                const dir = result.source.index > result.destination.index
+                var dir = result.source.index > result.destination.index
                 // only if not trying to move between pinned notes
                 if(
                 !(
@@ -140,23 +92,15 @@ export function dragManager(
                     // reorder the notes
                     const newDashboard = {...dashboard}
                     if(sourceNote.pinned){
-                        moveNoteInsideGraph(
-                            newDashboard, 
-                            targetNote.id, 
-                            sourceNote.id, 
-                            dir, 
-                            (note) => backupNote(note, 'meta', setNotesUpdating)
-                        )
+                        dir = !dir
                     }
-                    else{
-                        moveNoteInsideGraph(
-                            newDashboard, 
-                            sourceNote.id, 
-                            targetNote.id, 
-                            dir, 
-                            (note) => backupNote(note, 'meta', setNotesUpdating)
-                        )
-                    }
+                    moveNoteInsideGraph(
+                        newDashboard, 
+                        sourceNote.id, 
+                        targetNote.id, 
+                        dir, 
+                        (note) => backupNote(note, 'meta', setNotesUpdating)
+                    )
                     newDashboard.prevSelectedNoteId = newDashboard.selectedNoteId
                     newDashboard.selectedNoteId = sourceNote.id
                     packDashboard(newDashboard, true, false, true)
@@ -180,13 +124,8 @@ export function dragManager(
         // select the dragging note and update the dashboard
         if(result.destination.droppableId==='search-area'){
             const newDashboard = {...dashboard}
-            newDashboard.workspaceIds = removeElementAt(newDashboard.workspaceIds, result.source.index)
-            if(result.source.index>0 && threadOrCollection){
-                newDashboard.prevSelectedNoteId = newDashboard.selectedNoteId
-                newDashboard.selectedNoteId = newDashboard.workspaceIds[result.source.index-1];
-                getLinksFromProps(newDashboard, rootsOrBranches, setNotesUpdating)
-            }
-            packDashboard(newDashboard, false, true)
+            const indexToRem = result.source.index
+            workspaceRemover(newDashboard, threadOrCollection, packDashboard, indexToRem)
         }
 
         // if the destination is the workspace area itself, just reorder the thread or collection and update

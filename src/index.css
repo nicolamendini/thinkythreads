@@ -8,7 +8,7 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 	-ms-touch-action: none;
 	touch-action: none;
-	overflow: hidden;
+	-webkit-overflow-scrolling: touch;
 }
 
 
@@ -53,6 +53,7 @@ code {
 	position: fixed;
 	max-width: 100vw;
 	min-width: 100vw;
+	overflow: hidden;
 }
 
 textarea:focus {
@@ -242,6 +243,10 @@ input:focus{
 	min-height: 50px;
 }
 
+.search-icons{
+	width: 30px
+}
+
 .vertical-text{
 	display: flex;
 	align-items: center;
@@ -347,6 +352,8 @@ li h2{
 
 .info{
 	padding: 8vw;
+	
+
 }
 
 .info ul{
@@ -381,7 +388,7 @@ li h2{
 }
 
 .quill > .ql-container > .ql-editor{
-	padding-top: 62px;
+	padding-top: 70px;
 	padding-bottom: 120px;
 }
 
@@ -457,4 +464,12 @@ content: counter(list-2, lower-roman) '. ';
 }
 .note ol li.ql-indent-2 {
 counter-reset: list-3 list-4 list-5 list-6 list-7 list-8 list-9;
+}
+
+.saved-changes{
+	position: absolute;
+	bottom: 9%;
+	right: 5%;
+	color:rgb(88, 88, 88);
+	font-size: 11px
 }

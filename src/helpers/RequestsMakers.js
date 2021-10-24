@@ -99,7 +99,7 @@ export function getMediaRequestById(fileId){
 export function errorCatcher(error, counter, targetFunction, ...args){
     console.error(error)
     counter+=1
-    if((error.result && error.result.error.code===-1 && counter<2) || counter<4){
+    if(counter<5){
         setTimeout(() => {
             targetFunction(...args, counter)
         }, 1000)
@@ -109,7 +109,7 @@ export function errorCatcher(error, counter, targetFunction, ...args){
         // If the function to call again is update and max calls have been attempted, 
         //subtract one from the counter because the backup will be interrupted
         if(targetFunction===updateNoteFile || targetFunction===removeNoteFile){
-            const setNotesUpdating=args[2]
+            const setNotesUpdating = args[2]
             setNotesUpdating((prev) => prev-1)
         }
     }

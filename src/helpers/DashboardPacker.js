@@ -6,7 +6,7 @@ DashboardPacker functions
 Update the functions based on the new states of the dashboard
 */
 
-import { editorMode } from "../components/Dashboard"
+import { SHAREDMEX } from "../components/Dashboard"
 import { copyNote } from "./DashboardUtils"
 import { backupNote } from "./RequestsMakers"
 
@@ -37,7 +37,7 @@ export function getSearchFromProps(newDashboard, searchProps){
                     insertingNote=[]
                 }
 
-                if(searchProps.colorFilter!=='#ededed' && searchProps.colorFilter!==note.colorPreview){
+                if(insertingNote.length && searchProps.colorFilter!=='#ededed' && searchProps.colorFilter!==note.colorPreview){
                     insertingNote=[]
                 }
 
@@ -287,11 +287,11 @@ export function checkLinksSanity(newDashboard){
 }
 
 export function currOrPrevNoteDecice(newDashboard){
-    if(editorMode.selection==='prev'){
+    if(SHAREDMEX.editorModeSelection==='prev'){
         const previousSelectedNote = newDashboard.notes.get(newDashboard.prevSelectedNoteId)
         if(previousSelectedNote){
             newDashboard.selectedNoteId = previousSelectedNote.id
         }
-        editorMode.selection = 'curr'
+        SHAREDMEX.editorModeSelection = 'curr'
     }
 }

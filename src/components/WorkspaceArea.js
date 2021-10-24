@@ -19,7 +19,8 @@ const WorkspaceArea = ({
     openEditor, 
     rootsOrBranches,
     closeAndSave,
-    draggableInfo
+    draggableInfo,
+    triggerRerender
 }) => { 
 
     return (
@@ -44,6 +45,7 @@ const WorkspaceArea = ({
                 workspaceFlag={!dashboard.openedWorkspaceId}
                 rootsOrBranches={rootsOrBranches}
                 draggableInfo={draggableInfo}
+                triggerRerender={triggerRerender}
             />
 
         </div>
