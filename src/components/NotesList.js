@@ -49,7 +49,7 @@ const tryFocusOnNote = (selectedNote, slicedNotes) => {
 		if(focusPos){
 			const targetElement = document.getElementById(focusPos.ui_id)
 			if(targetElement){
-				targetElement.scrollIntoView({inline: 'center'})
+				targetElement.scrollIntoView({block: 'nearest'})
 				return true
 			}
 		}

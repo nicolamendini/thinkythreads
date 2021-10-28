@@ -31,7 +31,7 @@ const Settings = ({ setCurrentPage, signInFunction, signOutFunction, loadedUser,
                     />
                 </div>
 
-                THINKYTHREADS BETA v1.0
+                THINKYTHREADS BETA v1.0.1
 
                 { GAPIloaded && (!loadedUser ?
 
