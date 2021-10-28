@@ -1,6 +1,6 @@
 /*
 Author: Nicola Mendini
-Date: 13/09/2021
+Date: 11/2021
 ThinkyThreads Project
 InfoPage component
 Shows information about the usage of the app

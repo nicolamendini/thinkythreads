@@ -1,6 +1,6 @@
 /*
 Author: Nicola Mendini
-Date: 13/09/2021
+Date: 11/2021
 ThinkyThreads Project
 EditorFooter component
 Defines the buttons of the footer and calls the respective functions
@@ -15,6 +15,12 @@ import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import Loader from "react-loader-spinner";
 import { driveNotConnected, mergeModeOn } from '../helpers/Messages';
 import React from 'react'
+import { toast } from 'react-toastify';
+import { SHAREDMEX } from './Dashboard';
+
+const notifyMerge = () => SHAREDMEX.toasts && toast(mergeModeOn);
+const notifyDrive = () => SHAREDMEX.toasts && toast(driveNotConnected);
+const notifySynch = () => SHAREDMEX.toasts && toast('Synchronising your notes...')
 
 // Footer component
 // takes the threadOrCollection state and a function to change it,
@@ -133,7 +139,15 @@ const Footer = ({
                     <FcParallelTasks
                         onClick={() =>
                             setRootsOrBranches(
-                                (previous) => !previous
+                                (previous) => {
+                                    SHAREDMEX.toasts && toast(
+                                        previous ?
+                                            'The Branches Mode is on, now you will see the effectual links between notes' 
+                                            : 
+                                            'The Roots Mode is on, now you will see the causal links between notes' 
+                                        )
+                                    return !previous
+                                }
                             )
                         }
                         size='2.3em'
@@ -150,7 +164,7 @@ const Footer = ({
                                     (previous) => !previous
                                 )
                                 if(!mergeMode){
-                                    alert(mergeModeOn)
+                                    notifyMerge()
                                 }
                             }
                         }
@@ -165,7 +179,7 @@ const Footer = ({
                                     (previous) => !previous
                                 )
                                 if(!mergeMode){
-                                    alert(mergeModeOn)
+                                    notifyMerge()
                                 }
                             }
                         }
@@ -211,27 +225,27 @@ const Footer = ({
                         <VscCheck
                             size='2em'
                             className='tools-btn'
-                            onClick={()=>synchNotes()}
+                            onClick={()=>{ notifySynch(); synchNotes()}}
                             style={{transform: 'scaleY(0.85)'}}
                         />
                     :
                         <FcCheckmark
                             size='2.3em'
                             className='tools-btn'
-                            onClick={()=>synchNotes()}
+                            onClick={()=>{notifySynch(); synchNotes()}}
                         />
             ) :
 
             darkMode ?
                 <AiOutlineStop
                     size='1.8em'
-                    onClick={()=>alert(driveNotConnected)}
+                    onClick={()=>notifyDrive()}
                     style={{transform: 'scaleX(-1)'}}
                 />
             :
                 <FcCancel
                     size='2.3em'
-                    onClick={()=>alert(driveNotConnected)}
+                    onClick={()=>notifyDrive()}
                 />
             }
 

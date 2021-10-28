@@ -1,6 +1,6 @@
 /*
 Author: Nicola Mendini
-Date: 13/09/2021
+Date: 11/2021
 ThinkyThreads Project
 SearchLabel component
 Gives information about the current state of the search

@@ -1,6 +1,6 @@
 /*
 Author: Nicola Mendini
-Date: 13/09/2021
+Date: 11/2021
 ThinkyThreads Project
 NotesManipulation functions
 Function to manipulate and change Note objects
@@ -11,6 +11,11 @@ import { LINKSLIMIT, WORKSPACELIMIT} from '../components/Dashboard'
 import { backupNote } from "./RequestsMakers";
 import { addElementAt, arraysEqual, getCaption, removeElementAt } from "./DashboardUtils";
 import { alreadyIn, mergeBothCardsOccupied, workspaceLimitReached } from "./Messages";
+import { toast } from 'react-toastify';
+
+const notifyAlreadyIn = () => toast(alreadyIn)
+const notifyNotesAlreadyOccupied = () => toast(mergeBothCardsOccupied)
+const notifyWorkspaceLimit = () => toast(workspaceLimitReached)
 
 // Function to add a note to a thread if the element is not the opened thread itself
 export function addToWorkspace(newDashboard, element, position){
@@ -55,7 +60,7 @@ export function removeFromBranches (newDashboard, noteFrom, noteToDel) {
     for(const [, note] of newDashboard.notes){
         for(let n=1; n<note.thread.length; n++){
             if(note.thread[n-1]===noteFrom.id && note.thread[n]===noteToDel.id){
-                alert('The link you are tying to delete is used in the Thread : ' + getCaption(note) + '... \nPlease restructure this Thread it if you desire to proceed.')
+                toast('The link you are tying to delete is used in the Thread : ' + getCaption(note) + '... \nPlease restructure this Thread it if you desire to proceed.')
                 return false
             }
         }
@@ -178,7 +183,7 @@ export function wrapWorkspace(newDashboard, targetNoteId, setNotesUpdating, thre
             backupNote(targetNote, 'meta', setNotesUpdating)
         }
         else{
-            alert(alreadyIn);
+            notifyAlreadyIn();
         }
     }
 }
@@ -188,7 +193,7 @@ export function wrapWorkspace(newDashboard, targetNoteId, setNotesUpdating, thre
 export function openInWorkspace(workspaceMode, newDashboard, setNotesUpdating, threadOrCollection){
 
     // close and save the workspace that is already opened
-    closeAndSaveWorkspace(true, newDashboard, setNotesUpdating, threadOrCollection)
+    closeAndSaveWorkspace(newDashboard, setNotesUpdating, threadOrCollection)
 
     // retrieve the note we want to open
     const selectedNote = newDashboard.notes.get(newDashboard.selectedNoteId)
@@ -208,19 +213,9 @@ export function openInWorkspace(workspaceMode, newDashboard, setNotesUpdating, t
 }
 
 // Function to close and save an active workspace
-export function closeAndSaveWorkspace(leaveOpen, newDashboard, setNotesUpdating, threadOrCollection){
+export function closeAndSaveWorkspace(newDashboard, setNotesUpdating, threadOrCollection){
 
-    // If the workspace is not empty and unsaved, as for confirmation before closing it
-    if(!newDashboard.openedWorkspaceId && 
-    newDashboard.workspaceIds.length && 
-    !leaveOpen &&
-    !window.confirm('You have an ' + (threadOrCollection ? 'unsaved thread' : 'unsaved collection') + ', do you wish to delete it and clean the Workspace?')
-    ){
-        return
-    }
-
-    // otherwise if there is an openedWorkspaceId, save the thread or collection in there
-    else if(newDashboard.openedWorkspaceId){
+    if(newDashboard.openedWorkspaceId){
         const targetNote = newDashboard.notes.get(newDashboard.openedWorkspaceId)
         // flag to check if any changes occurred and therefore if there needs to be backup
         var anyChangesFlag=false
@@ -279,7 +274,7 @@ export function noteSelector(noteToSelect, mergeMode, setMergeMode, dashboard, p
             (noteToSelect.thread.length && dashboard.notes.get(dashboard.selectedNoteId).collection.length) ||
             (dashboard.notes.get(dashboard.selectedNoteId).thread.length && noteToSelect.collection.length)
             ){
-                alert(mergeBothCardsOccupied)
+                notifyNotesAlreadyOccupied()
             }
 
             else{
@@ -306,6 +301,7 @@ export function collectionToThread(note){
     note.collection = []
 }
 
+// Function to manage the wrapper's functionality
 export function manageWrapper(newDashboard, targetNote, threadOrCollection, setThreadOrCollection, setNotesUpdating){
 
     // if the current workspace has notes, wrap them with the target note
@@ -332,6 +328,7 @@ export function manageWrapper(newDashboard, targetNote, threadOrCollection, setT
     }
 }
 
+// Function to add a note to the workspace
 export function workspaceAdder(dashboard, threadOrCollection, targetId, packDashboard, destination){
 
     if(!destination){
@@ -340,7 +337,7 @@ export function workspaceAdder(dashboard, threadOrCollection, targetId, packDash
 
     // check that the workspace does not break the limits
     if(dashboard.workspaceIds.length > WORKSPACELIMIT){
-        alert(workspaceLimitReached)
+        notifyWorkspaceLimit()
     }
 
     // else if we are in thread mode, add to the thread and update the dashboard
@@ -369,6 +366,7 @@ export function workspaceAdder(dashboard, threadOrCollection, targetId, packDash
     }
 }
 
+// Function to remove a note from the workspace
 export function workspaceRemover(newDashboard, threadOrCollection, packDashboard, indexToRem){
     newDashboard.workspaceIds = removeElementAt(newDashboard.workspaceIds, indexToRem)
     if(indexToRem>0 && threadOrCollection){

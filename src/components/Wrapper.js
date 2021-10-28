@@ -1,6 +1,6 @@
 /*
 Author: Nicola Mendini
-Date: 13/09/2021
+Date: 11/2021
 ThinkyThreads Project
 Wrapper component
 Used to wrap an unsaved thread inside an empty note

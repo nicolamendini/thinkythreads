@@ -105,8 +105,6 @@ export default class App extends Component {
 
   render() {
 
-    console.log(localStorage.getItem('currentPage'));
-
     console.log((localStorage.getItem('currentUser')));
 
     const currentUser = this.state.currentUser!==null && this.state.currentUser!=='null'

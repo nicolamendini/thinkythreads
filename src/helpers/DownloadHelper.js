@@ -1,6 +1,6 @@
 /*
 Author: Nicola Mendini
-Date: 13/09/2021
+Date: 11/2021
 ThinkyThreads Project
 DownloadHelper functions
 Contains functions that help the retrieval of notes on GDrive
@@ -38,11 +38,16 @@ export function setNoteFromResp(
         // add it to the dashboard and backup locally
         newDashboard.notes.set(newNote.id, newNote)
         if(!newNote.leftLink){
+            const prevFirstNote = newDashboard.notes.get(newDashboard.firstNoteId)
+            if(prevFirstNote){
+                prevFirstNote.leftLink = newNote.id
+                prevFirstNote.version += 1
+                db.notes.update(prevFirstNote.id, prevFirstNote)
+            }
             newDashboard.firstNoteId = newNote.id
             console.log('added first note', newNote.id)
         }
         db.notes.put(newNote).then(
-
             // check if it needs a thumbnail and create it
             createThumbnail(newNote)
         )

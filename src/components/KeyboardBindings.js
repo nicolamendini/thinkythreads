@@ -1,3 +1,11 @@
+/*
+Author: Nicola Mendini
+Date: 11/2021
+ThinkyThreads Project
+KeyboardBindings Component
+contains all the keyboard bindings that are applied to the dashboard and their relative functions
+*/
+
 import { SLICESIZE, SHAREDMEX } from "./Dashboard"
 import { pastelCols, vividCols } from "./ColorPicker"
 import { manageWrapper, workspaceAdder, workspaceRemover } from "../helpers/NotesManupulation"
@@ -23,6 +31,8 @@ const KeyboardBindings = ({
     openOccurrences
 
 }) => {
+
+    // Function to select a new note and thus allow navigation with the left and right arrows
     const selectInDir = (dir) => {
         const selectedNoteIdx = dashboard.search.findIndex(note => note.id===dashboard.selectedNoteId)
         if(selectedNoteIdx!==-1){
@@ -46,26 +56,19 @@ const KeyboardBindings = ({
         }
     }
 
+    // Function to delete a note when pressing d
     const safeDelete = () => {
         if(dashboard.selectedNoteId){
-            if(window.confirm('Delete note?')){
+            if(window.confirm('Delete the note?')){
                 deleteNote(dashboard.selectedNoteId)
             }
         }
     }
 
-    const addNoteOverride = (e) => {
-        if (e.preventDefault) {
-            e.preventDefault()
-        } else {
-            // internet explorer
-            e.returnValue = false
-        }
-        addNote()
-    }
-
+    // Function to pin or unpin a note when pressing p, uses delayed update for efficiency
+    // otherwise it would have to refresh the dashboard immediately at each click which
+    // could be problematic if the user clicks very quickly
     const pinNoteWithKey = () => {
-
         const selectedNote = dashboard.notes.get(dashboard.selectedNoteId)
         if(selectedNote){
             const newDashboard = {...dashboard}
@@ -75,6 +78,7 @@ const KeyboardBindings = ({
         }
     }
 
+    // Function to change the color of a note with the number keys 1-8
     const changeColorWithKey = (index) => {
         const selectedNote = dashboard.notes.get(dashboard.selectedNoteId)
         const sameNoteInSearch = dashboard.search.find(note => note.id===dashboard.selectedNoteId)
@@ -95,6 +99,7 @@ const KeyboardBindings = ({
         setTriggerRerender((prev) => !prev)
     }
 
+    // Wrapper functions with spacebar
     const spacebarKeyAction = () => {
         const selectedNote = dashboard.notes.get(dashboard.selectedNoteId)
         if(selectedNote){
@@ -104,6 +109,7 @@ const KeyboardBindings = ({
         }
     }
 
+    // Function to add the selected note to the workspace
     const workspaceAddKey = () => {
         const targetId = dashboard.selectedNoteId
         if(dashboard.notes.get(targetId)){
@@ -111,6 +117,7 @@ const KeyboardBindings = ({
         }
     }
 
+    // Remove the selected note from the workspace
     const workspaceRemKey = () => {
         const newDashboard = {...dashboard}
         const selectedNote = newDashboard.notes.get(newDashboard.selectedNoteId)
@@ -122,6 +129,7 @@ const KeyboardBindings = ({
         }
     }
 
+    // Function to save the workspace with ctrl+s
     const saveWorkspaceKey = (e) => {
         if (e.preventDefault) {
             e.preventDefault()
@@ -132,12 +140,13 @@ const KeyboardBindings = ({
         closeAndSave()
     }
 
+    // Function to move a note all the way to the end or beginning of the search sequence
     const moveToExtremityWithKey = (endOrBeginning) => {
         moveToTheExtremity(endOrBeginning, true)
-        const newDashboard = {...dashboard}
-        packDashboard(newDashboard, true)
+        packDashboard({...dashboard}, true)
     }
 
+    // function to find all the occurences of a note
     const findOccurrencesKey = () => {
         openOccurrences()
         packDashboard({...dashboard}, false, true)
@@ -150,7 +159,7 @@ const KeyboardBindings = ({
     Mousetrap.bind('p', () => currentPage==='notes' && pinNoteWithKey())
     Mousetrap.bind('enter', () => currentPage==='notes' && dashboard.selectedNoteId && !mergeMode && openEditor())
     Mousetrap.bind('d', () => currentPage==='notes' && !mergeMode && safeDelete())
-    Mousetrap.bind('a', (e) => currentPage==='notes' && !mergeMode && addNoteOverride(e))
+    Mousetrap.bind('a', () => currentPage==='notes' && !mergeMode && addNote())
     Mousetrap.bind('down', () => currentPage==='notes' && !mergeMode && workspaceAddKey())
     Mousetrap.bind('up', () => currentPage==='notes' && !mergeMode && workspaceRemKey())
     Mousetrap.bind('1', () => currentPage==='notes' && changeColorWithKey(1))

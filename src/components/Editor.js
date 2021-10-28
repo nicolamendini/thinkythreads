@@ -1,6 +1,6 @@
 /*
 Author: Nicola Mendini
-Date: 13/09/2021
+Date: 11/2021
 ThinkyThreads Project
 Editor component
 Initialises the Quill rich text editor
@@ -17,6 +17,10 @@ import ImageResize from '@taoqf/quill-image-resize-module'
 import { TEXTLIMIT } from './Dashboard';
 import { charLimit } from '../helpers/Messages';
 import { setPreview } from '../helpers/DashboardUtils';
+import { toast } from 'react-toastify';
+
+const notify = () => toast(charLimit);
+
 
 // Register the imageCompressor and resizer
 Quill.register("modules/imageCompressor", ImageCompress);
@@ -126,9 +130,20 @@ const handleChange = (value, delta, editorRef, setEditorState) => {
             setEditorState(value)
         }
         else{
-            alert(charLimit)
+            notify()
         }
     } 
+}
+
+function useIsMounted() {
+    const isMounted = useRef(false);
+  
+    useEffect(() => {
+      isMounted.current = true;
+      return () => isMounted.current = false;
+    }, []);
+  
+    return isMounted;
 }
 
 // NoteEditor component definition
@@ -137,7 +152,6 @@ const handleChange = (value, delta, editorRef, setEditorState) => {
 // to actualise the update, a deleteNote function to delete the note if the 
 // note is empty, the darkMode flad and the export thread function
 const NoteEditor = ({ 
-    currentPage,
     setCurrentPage, 
     dashboard, 
     updateNote, 
@@ -169,15 +183,17 @@ const NoteEditor = ({
     // Reference to the Quill object so that it is possible to access its methods
     const editorRef = useRef(null)
 
+    const isMounted = useIsMounted();
+
     useEffect(() => {
-        if(selectedNote && selectedNote.text !== editorState){
+        if(editorState && selectedNote && selectedNote.text!==editorState){
             setBackupState(false)
             setDelayedNoteUpdate({
                 note: selectedNote, 
-                delay: 5000, 
+                delay: 2000, 
                 metaOrMedia: 'media', 
-                callbackFunction: () => setBackupState(true),
-                beforeFunction: () => {selectedNote.text = editorState; setPreview(selectedNote)}
+                callbackFunction: () => {isMounted.current && setBackupState(true)},
+                beforeFunction: () => {selectedNote.text=editorState; setPreview(selectedNote)}
             })
         }
     // eslint-disable-next-line
@@ -234,7 +250,7 @@ const NoteEditor = ({
                     editorRef={editorRef}
                     />
             </div>
-        );
+        )
       }
 
 export default NoteEditor

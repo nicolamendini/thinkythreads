@@ -1,6 +1,6 @@
 /*
 Author: Nicola Mendini
-Date: 13/09/2021
+Date: 11/2021
 ThinkyThreads Project
 Note component
 Defines the single note object and all the actions that are possible with it
@@ -12,6 +12,7 @@ import {RiPushpin2Fill} from 'react-icons/ri'
 import { FaLink, FaFolder } from 'react-icons/fa'
 import { ImTree } from 'react-icons/im'
 import { FiPaperclip } from 'react-icons/fi'
+import { SHAREDMEX } from './Dashboard';
 
 // Note component takes the note to show, 
 // the name of the area it compares in,
@@ -20,6 +21,8 @@ import { FiPaperclip } from 'react-icons/fi'
 // the darkMode, mergeMode, rootsOrBranches, threadOrCollection flags
 // the selectedNote,
 // the openEditor function to edit the note on double click
+
+
 const Note = ({ 
 	note, 
 	areaName, 
@@ -44,11 +47,11 @@ const Note = ({
 						className={
 							(mergeMode && selectedNote.id===note.id && 'note no-scrollbar merge-mode')
 							||
-							(((darkMode && selectedNote && selectedNote.id===note.id) && 
+							(((darkMode && selectedNote && selectedNote.id===note.id && !SHAREDMEX.usingScrollKeys) && 
 								'note note-dark no-scrollbar selected-note-dark') || 
 							((darkMode && (!selectedNote || selectedNote.id!==note.id)) && 
 								'note note-dark no-scrollbar') ||
-							((!darkMode && selectedNote && selectedNote.id===note.id ) &&
+							((!darkMode && selectedNote && selectedNote.id===note.id && !SHAREDMEX.usingScrollKeys) &&
 								'note note-bright no-scrollbar selected-note') ||
 							((!darkMode && (!selectedNote ||selectedNote.id!==note.id)) &&
 								'note note-bright no-scrollbar')) 
@@ -58,7 +61,7 @@ const Note = ({
 						ref={provided.innerRef} 
 						{...provided.draggableProps}
 						{...provided.dragHandleProps}
-						onClick={()=> {handleNotePress(note)}}
+						onClick={()=> handleNotePress(note)}
 						onDoubleClick={()=> openEditor(note)}
 						style={ 
 							!(mergeMode && selectedNote.id===note.id) ? (

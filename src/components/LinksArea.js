@@ -1,6 +1,6 @@
 /*
 Author: Nicola Mendini
-Date: 13/09/2021
+Date: 11/2021
 ThinkyThreads Project
 LinksArea component
 Defines the lowest row of notes of the dashboard
@@ -28,10 +28,15 @@ const LinksArea = ({
     triggerRerender
 }) => { 
 
+    // Flag to check whether a note is allowed to be dropped in the links area
     const isDropDisabled = 
         draggableInfo.sourceArea==='workspace-area' ||
         (draggableInfo.note && draggableInfo.note.id===dashboard.selectedNoteId)
 
+    // function to open the editor when a note is double clicked from the links area
+    // requires a special function to do so because it cannot undergo the usual process of 
+    // only being selected, because otherwise that selection would change the links area itself
+    // and lead to unstable navigation
     const openEditorForLinks = (note) => {
         if(!mergeMode){
             SHAREDMEX.editorModeSelection = 'prev'

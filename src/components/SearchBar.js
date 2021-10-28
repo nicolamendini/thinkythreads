@@ -1,6 +1,6 @@
 /*
 Author: Nicola Mendini
-Date: 13/09/2021
+Date: 11/2021
 ThinkyThreads Project
 SearchBar component
 */
@@ -12,58 +12,39 @@ import { BiSearchAlt } from 'react-icons/bi'
 import ColorPicker from './ColorPicker'
 import { BsPaperclip } from 'react-icons/bs'
 import { VscChromeClose } from 'react-icons/vsc'
-import { scrollTarget } from './NotesList'
+import { SHAREDMEX } from './Dashboard'
 
-const searchCleanerCheck = (newSearchProps, cleanFilters, setCleanFilters) => {
-	const newCleanFilters = {...cleanFilters}
-	if(
-		newSearchProps.threadFilter ||
-		newSearchProps.collectionFilter || 
-		newSearchProps.imgFilter ||
-		newSearchProps.colorFilter!=='#ededed' ||
-		newSearchProps.searchText
-	){
-		newCleanFilters.areFiltersOn = true
-	}
-	else{
-		newCleanFilters.areFiltersOn = false
-	}
-	setCleanFilters(newCleanFilters)
-}
-
-const cleanSearch = (cleanFilters, setCleanFilters, setSearchProps) => {
-	const newCleanFilters = {...cleanFilters}
-	newCleanFilters.goClean = true
-	newCleanFilters.areFiltersOn = false
-	const newSearchProps = {
-		searchText:'', 
-		threadFilter: false, 
-		collectionFilter: false,
-		colorFilter: '#ededed',
-		imgFilter: false
-	}
-	scrollTarget.beginning = true
-	setCleanFilters(newCleanFilters)
-	setSearchProps(newSearchProps)
-}
 
 const SearchBar = ({ 
 	setSearchProps, 
 	searchProps ,
 	isDropDisabled,
-	darkMode,
-	cleanFilters,
-	setCleanFilters
+	darkMode
 }) => {	
 
 	useEffect(() => {
-		if(cleanFilters.goClean){
-			const newCleanFilters = {...cleanFilters}
-			newCleanFilters.goClean = false
-			setCleanFilters(newCleanFilters)
+		if(searchProps.goClean && !searchProps.areSlicesScrolled){
+			const newSearchProps = {...searchProps}
+			newSearchProps.goClean = false
+			setSearchProps(newSearchProps)
 		}
 	// eslint-disable-next-line
-	}, [cleanFilters])
+	}, [searchProps])
+
+	// function to check whether any search filters are active
+	const searchCleanerCheck = () => {
+		if(
+			searchProps.threadFilter ||
+			searchProps.collectionFilter || 
+			searchProps.imgFilter ||
+			searchProps.colorFilter!=='#ededed' ||
+			searchProps.searchText ||
+			searchProps.areSlicesScrolled
+		){
+			return true
+		}
+		return false
+	}
 
 	return (
 
@@ -79,14 +60,22 @@ const SearchBar = ({
 				>
 
 					{		
-					cleanFilters.areSlicesScrolled || cleanFilters.areFiltersOn ?
+					searchCleanerCheck() ?
 					
 						<VscChromeClose 
-						size='1.6em'
-						className='tools-btn search-icons'
-						onClick={() => cleanSearch(cleanFilters, setCleanFilters, setSearchProps)}
-						color={darkMode ? '#666666' : '#464646'}
-						style={{paddingTop: '3px', transform:'scale(0.8)'}}
+							size='1.6em'
+							className='tools-btn search-icons'
+							onClick={() => setSearchProps({
+								searchText:'', 
+								threadFilter: false, 
+								collectionFilter: false,
+								colorFilter: '#ededed',
+								imgFilter: false,
+								goClean: true,
+								areSlicesScrolled: searchProps.areSlicesScrolled
+							})}
+							color={darkMode ? '#666666' : '#464646'}
+							style={{paddingTop: '3px', transform:'scale(0.8)'}}
 						/>
 
 						:
@@ -102,8 +91,8 @@ const SearchBar = ({
 						onChange={(event) => {
 							const newSearchProps = {...searchProps}
 							newSearchProps.searchText = event.target.value.toLowerCase()
-							searchCleanerCheck(newSearchProps, cleanFilters, setCleanFilters)
 							setSearchProps(newSearchProps)
+							SHAREDMEX['search-area-scroll'] = 0
 						}}
 						type='text'
 						placeholder={
@@ -121,8 +110,8 @@ const SearchBar = ({
 						onClick={() => {
 							const newSearchProps = {...searchProps}
 							newSearchProps.imgFilter = !newSearchProps.imgFilter
-							searchCleanerCheck(newSearchProps, cleanFilters, setCleanFilters)
 							setSearchProps(newSearchProps)
+							SHAREDMEX['search-area-scroll'] = 0
 						}}
 					>
 						<BsPaperclip 
@@ -137,8 +126,8 @@ const SearchBar = ({
 						onClick={() => {
 							const newSearchProps = {...searchProps}
 							newSearchProps.threadFilter = !newSearchProps.threadFilter
-							searchCleanerCheck(newSearchProps, cleanFilters, setCleanFilters)
 							setSearchProps(newSearchProps)
+							SHAREDMEX['search-area-scroll'] = 0
 						}}
 					>
 						T
@@ -150,8 +139,8 @@ const SearchBar = ({
 						onClick={() => {
 							const newSearchProps = {...searchProps}
 							newSearchProps.collectionFilter = !newSearchProps.collectionFilter
-							searchCleanerCheck(newSearchProps, cleanFilters, setCleanFilters)
 							setSearchProps(newSearchProps)
+							SHAREDMEX['search-area-scroll'] = 0
 						}}
 					>
 						C
@@ -163,10 +152,6 @@ const SearchBar = ({
 							setHasChanged={{}}
 							searchProps={searchProps}
 							setSearchProps={setSearchProps}
-							searchCleanerCheck={
-								(newSearchProps) => 
-								searchCleanerCheck(newSearchProps, cleanFilters, setCleanFilters)
-							}
 						/>
 					</span>
 

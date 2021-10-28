@@ -1,15 +1,16 @@
 /*
 Author: Nicola Mendini
-Date: 13/09/2021
+Date: 11/2021
 ThinkyThreads Project
 DashboardUtils function
 Utils functions to perform small operations
 */
 
 import { nanoid } from "nanoid";
-import { PREVIEWLIMIT } from "../components/Dashboard";
+import { db, PREVIEWLIMIT } from "../components/Dashboard";
 import Loader from 'react-loader-spinner';
 import React from 'react'
+import { SHAREDMEX } from "../components/Dashboard";
 
 const truncate = require('truncate-html')
 
@@ -251,7 +252,9 @@ export function arraysEqual(array1, array2){
 }
 
 export function sanitiseForRemoval(newDashboard, removingId){
-    // sanitise the dashboard
+    // sanitise the dashboard to prevent conflicts from the removal of the removingId note
+    const removingNote = newDashboard.notes.get(removingId)
+
     if(newDashboard.openedWorkspaceId===removingId){
         newDashboard.openedWorkspaceId = null
     }
@@ -265,16 +268,36 @@ export function sanitiseForRemoval(newDashboard, removingId){
         newDashboard.prevSelectedNoteId = null
     }
     if(newDashboard.firstNoteId===removingId){
-        const removingNote = newDashboard.notes.get(removingId)
         if(removingNote && removingNote.rightLink){
             const noteAtRight = newDashboard.notes.get(removingNote.rightLink)
             if(noteAtRight){
                 newDashboard.firstNoteId = noteAtRight.id
                 noteAtRight.leftLink = null
+                noteAtRight.version += 1
+                db.notes.update(noteAtRight.id, noteAtRight)
             }
         }
     }
+    if(removingNote && !removingNote.rightLink){
+        const newLastNote = newDashboard.notes.get(removingNote.leftLink)
+        if(newLastNote){
+            newLastNote.rightLink = null
+            newLastNote.version += 1
+            db.notes.update(newLastNote.id, newLastNote)
+        }
+    }
     newDashboard.workspaceIds = newDashboard.workspaceIds.filter(id => id!==removingId)
+}
+
+// Function to decide what note to select when the editor is closed
+export function currOrPrevNoteDecice(newDashboard){
+    if(SHAREDMEX.editorModeSelection==='prev'){
+        const previousSelectedNote = newDashboard.notes.get(newDashboard.prevSelectedNoteId)
+        if(previousSelectedNote){
+            newDashboard.selectedNoteId = previousSelectedNote.id
+        }
+        SHAREDMEX.editorModeSelection = 'curr'
+    }
 }
 
 

@@ -1,8 +1,17 @@
+/*
+Author: Nicola Mendini
+Date: 11/2021
+ThinkyThreads Project
+DashboardOperations component
+Contains the main operations on notes such as creation, update, removal, etc
+Provides links between the ui elements and bigger functions contained in the helpers
+*/
+
 import React from 'react'
 import { getNewNote, moveNoteInsideGraph} from "../helpers/DashboardUtils";
 import { exportThreadGivenProps} from '../helpers/BackupHelper';
 import { backupNote } from '../helpers/RequestsMakers';
-import { currOrPrevNoteDecice } from '../helpers/DashboardPacker';
+import { currOrPrevNoteDecice } from '../helpers/DashboardUtils';
 import { dragManager } from '../helpers/DragManager';
 import { closeAndSaveWorkspace, collectionToThread, 
     linkThreadNotes, noteSelector, threadToCollection } from '../helpers/NotesManupulation';
@@ -10,8 +19,12 @@ import { noteDeleter } from '../helpers/NoteDeleter';
 import { noteMerger } from '../helpers/NoteMerger';
 import { cleanWorkspace } from '../helpers/Messages';
 import DashboardTree from './DashboardTree';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import { db, SHAREDMEX } from './Dashboard';
+
+const notify = () => toast(cleanWorkspace);
 
 const DashboardOperations = ({
     dashboard,
@@ -146,7 +159,7 @@ const DashboardOperations = ({
     // to get rid of repeated notes for collections
     const threadOrCollectionManage = async () => {
         if(dashboard.openedWorkspaceId){
-            alert(cleanWorkspace)
+            notify()
         }
         else{
             if(threadOrCollection){
@@ -154,9 +167,13 @@ const DashboardOperations = ({
                 newDashboard.workspaceIds = [...new Set([...newDashboard.workspaceIds])]
                 packDashboard(newDashboard)
                 setThreadOrCollection(false)
+                SHAREDMEX.toasts && 
+                    toast('The Collection Mode is on, no links will be stored when you create groups of notes')
             }
             else{
                 setThreadOrCollection(true)
+                SHAREDMEX.toasts && 
+                    toast('The Thread Mode is on, links between consecutive notes will be stored')
             }
         }
     }
@@ -197,7 +214,6 @@ const DashboardOperations = ({
         }
 
         closeAndSaveWorkspace(
-            leaveOpen, 
             newDashboard, 
             setNotesUpdating, 
             threadOrCollection
@@ -245,6 +261,7 @@ const DashboardOperations = ({
     const closeCollection = () => {
         const newDashboard = {...dashboard}
         newDashboard.openedCollectionId = null
+        SHAREDMEX.resetSearchScroll = true
         packDashboard(newDashboard, true)
     }
 

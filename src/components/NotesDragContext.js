@@ -1,6 +1,6 @@
 /*
 Author: Nicola Mendini
-Date: 13/09/2021
+Date: 11/2021
 ThinkyThreads Project
 NoteDragContext component
 Defines drag and drop context by using the React Beautiful DnD package

@@ -1,6 +1,6 @@
 /*
 Author: Nicola Mendini
-Date: 13/09/2021
+Date: 11/09/2021
 ThinkyThreads Project
 EditorFooter component
 Defines the buttons of the footer and calls the respective functions
@@ -14,7 +14,8 @@ import ColorPicker from './ColorPicker';
 import OptionsPopup from './OptionsPopup';
 import { createThumbnail, setPreview } from '../helpers/DashboardUtils';
 import React from 'react'
-import { currOrPrevNoteDecice } from '../helpers/DashboardPacker';
+import { currOrPrevNoteDecice } from '../helpers/DashboardUtils';
+import { SHAREDMEX } from './Dashboard';
 
 const Mousetrap = require('mousetrap')
 
@@ -64,6 +65,7 @@ const EditorFooter = ({
 
     // Function to save and exit the note when the back arrow is pressed
     const saveAndExit = (doUpdate, packIt) => {
+        SHAREDMEX.closingEditor = true
         if(selectedNote.text===editorState && !hasChanged && editorState!=='' && !doUpdate){
             setCurrentPage('notes')
             createThumbnail(selectedNote)
@@ -100,13 +102,13 @@ const EditorFooter = ({
 
     // Function called when the delete button is pressed
     const callDelete = () => {
-        if(window.confirm('Are you sure you want to delete the note?')){
+        if(window.confirm('Delete the note?')){
             deleteNote(selectedNote.id)
             setCurrentPage('notes')
         }
     }
 
-    
+    // Binding the keyboard gesture that allows the user to save with ctrl+s
     Mousetrap.bind(['ctrl+s', 'meta+s'], function(e) {
         if (e.preventDefault) {
             e.preventDefault()
@@ -114,9 +116,11 @@ const EditorFooter = ({
             // internet explorer
             e.returnValue = false;
         }
-        editorState.replace(/<[^>]*>?/gm, '') && saveAndExit()
+        editorState.replace(/<img .*?>/gm, '0').replace(/<[^>]*>?/gm, '') && saveAndExit()
     })
 
+    // code snippet to update the binding each time the user types
+    // otherwise the note would not update with the correct editor state
     if(editorRef && editorRef.current && editorRef.current.editor){
         const prevBinding = editorRef.current.editor.keyboard.bindings[83]
         if(prevBinding){

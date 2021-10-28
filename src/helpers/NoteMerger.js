@@ -1,6 +1,6 @@
 /*
 Author: Nicola Mendini
-Date: 13/09/2021
+Date: 11/2021
 ThinkyThreads Project
 NoteMerger function
 Merges two notes objects in a meaningful way
@@ -8,12 +8,17 @@ Unifies all the links and concatenates the text
 For the user doing the same manually would make the system impractical
 */
 
+import { toast } from "react-toastify";
 import { LINKSLIMIT, WORKSPACELIMIT, TEXTLIMIT, db } from "../components/Dashboard"
 import { setPreview } from "./DashboardUtils";
 import { mergeLinksLimit, mergeTextLimit, mergeWorkspaceLimit } from "./Messages";
 import { addToBranches } from "./NotesManupulation";
 import { linkThreadNotes } from "./NotesManupulation";
 import { backupNote } from "./RequestsMakers";
+
+const notifyTextLimit = () => toast(mergeTextLimit);
+const notifyLinksLimit = () => toast(mergeLinksLimit);
+const notifyWorkspaceLimit = () => toast(mergeWorkspaceLimit);
 
 // Merges noteA and noteB
 export function noteMerger(
@@ -36,14 +41,14 @@ export function noteMerger(
 
     // check that the limits for branches and roots are met
     if(newBranches.length > LINKSLIMIT || newRoots.length > LINKSLIMIT){
-        alert(mergeLinksLimit)
+        notifyLinksLimit()
         setMergeMode(false)
         return
     }
 
     // check that the limits for thread and collections are met
     if(newCollection.length > WORKSPACELIMIT || newThread.length > WORKSPACELIMIT){
-        alert(mergeWorkspaceLimit)
+        notifyWorkspaceLimit()
         setMergeMode(false)
         return
     }
@@ -57,7 +62,7 @@ export function noteMerger(
             // check if the merged texts are still within the limits
             // if not, abort
             if(newText.length > TEXTLIMIT){
-                alert(mergeTextLimit)
+                notifyTextLimit()
                 setMergeMode(false)
                 return
             }

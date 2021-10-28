@@ -1,6 +1,6 @@
 /*
 Author: Nicola Mendini
-Date: 13/09/2021
+Date: 11/2021
 ThinkyThreads Project
 NotesList component
 Defines a general list of notes that acts as a Droppable
@@ -19,7 +19,6 @@ import { SHAREDMEX, SLICESIZE } from './Dashboard';
 
 // Max size of a row of notes, it is necessary to press the arrow
 // button to access further notes
-export const scrollTarget = {beginning: false}
 // Function used to change slice based on which arrow button has been pressed
 const align = (dir, currentSlice, setCurrentSlice, notes, areaName) => {
 
@@ -43,6 +42,20 @@ const align = (dir, currentSlice, setCurrentSlice, notes, areaName) => {
 	}
 }
 
+const tryFocusOnNote = (selectedNote, slicedNotes) => {
+	// If there is a selectedNote to scroll to, do it
+	if(selectedNote){
+		const focusPos = slicedNotes.find(note => note.id === selectedNote.id)
+		if(focusPos){
+			const targetElement = document.getElementById(focusPos.ui_id)
+			if(targetElement){
+				targetElement.scrollIntoView({inline: 'center'})
+				return true
+			}
+		}
+	}
+}
+
 const NotesList = ({
 	notes,
 	handleAddNote,
@@ -57,8 +70,8 @@ const NotesList = ({
 	rootsOrBranches,
 	isDropDisabled,
 	draggableInfo,
-	cleanFilters,
-	setCleanFilters,
+	searchProps,
+	setSearchProps,
 	triggerRerender
 }) => {
 
@@ -72,29 +85,31 @@ const NotesList = ({
 	// State to hide the NotesList until the scroll is performed, used to avoid flickering
 	const [isVisible, setIsVisible] = useState(false)
 
-	const tryFocusOnNote = (slicedNotes) => {
-		// If there is a selectedNote to scroll to, do it
-		if(selectedNote){
-			const focusPos = slicedNotes.find(note => note.id === selectedNote.id)
-			if(focusPos){
-				const targetElement = document.getElementById(focusPos.ui_id)
-				if(targetElement){
-					targetElement.scrollIntoView({inline: 'center'})
-					return true
+	// Effect to set back the scroll once exiting the editor
+	useEffect(() => {
+		if(!SHAREDMEX.usingScrollKeys){
+			if(areaName !=='search-area' && !SHAREDMEX.closingEditor){
+				tryFocusOnNote(selectedNote, slicedNotes)
+			}
+			else{
+				const holder = document.getElementById(areaName)
+				if(holder){
+					if(SHAREDMEX.resetSearchScroll){
+						holder.scrollLeft = 0
+						SHAREDMEX.resetSearchScroll = false
+					}
+					else{
+						holder.scrollLeft = SHAREDMEX[areaName+'-scroll']
+					}
 				}
 			}
 		}
-	}
-
-	// Effect to set back the scroll once exiting the editor
-	useEffect(() => {
-		const slicedNotes = notes.slice(currentSlice*SLICESIZE, (currentSlice+1)*SLICESIZE+SLICESIZE)
-		var scrollSucceded = tryFocusOnNote(slicedNotes)
-
-		// Otherwise, if some search is performed but there are no notes in the current slices, go to slice 0
-		if(!slicedNotes.length && currentSlice!==0 && !scrollSucceded){
+		
+		// Otherwise, if there are no notes in the current slices, go to slice 0
+		if(!slicedNotes.length && currentSlice!==0){
 			setCurrentSlice(0)
 			window.sessionStorage.setItem('current-slice-'+areaName, 0)
+			SHAREDMEX[areaName+'-scroll'] = 0
 			if(areaName === 'search-area'){
 				SHAREDMEX.currentSearchSlice = 0
 			}
@@ -103,45 +118,57 @@ const NotesList = ({
 	// eslint-disable-next-line
 	}, [notes])
 
+	// effect to keep the selected note at the center if the user is scrolling with the keys
 	useEffect(() => {
-		if(SHAREDMEX.usingScrollKeys){
-			const slicedNotes = notes.slice(currentSlice*SLICESIZE, (currentSlice+1)*SLICESIZE+SLICESIZE)
-			tryFocusOnNote(slicedNotes)
+		if(areaName==='search-area' && SHAREDMEX.usingScrollKeys){
+			tryFocusOnNote(selectedNote, slicedNotes)
 			SHAREDMEX.usingScrollKeys = false
 			setIsVisible(true)
 		}
 	// eslint-disable-next-line
 	},[selectedNote])
 
+	// Effect to restore the search to the first slice
 	useEffect(() => {
-		if(areaName==='search-area' && cleanFilters.goClean && currentSlice > 0){
+		if(areaName==='search-area' && searchProps.goClean && currentSlice > 0){
 			setCurrentSlice(0)
 			window.sessionStorage.setItem('current-slice-'+areaName, 0)
 			SHAREDMEX.currentSearchSlice = 0
 		}
 	// eslint-disable-next-line
-	}, [cleanFilters])
+	}, [searchProps])
 
 	useEffect(() => {
 		if(areaName==='search-area'){
-			const newCleanFilters = {...cleanFilters}
+			const newSearchProps = {...searchProps}
 			if(currentSlice > 0){
-				newCleanFilters.areSlicesScrolled = true
+				newSearchProps.areSlicesScrolled = true
 			}
 			else{
-				newCleanFilters.areSlicesScrolled = false
+				newSearchProps.areSlicesScrolled = false
 			}
-			if(scrollTarget.beginning){
-				const addButtonElement = document.getElementById('plus')
-				if(addButtonElement){
-					addButtonElement.scrollIntoView()
-				}
-				scrollTarget.beginning = false
+			if(searchProps.goClean){
+				const container = document.getElementById(areaName)
+				container.scrollLeft = 0
+				newSearchProps.goClean = false
 			}
-			setCleanFilters(newCleanFilters)
+			setSearchProps(newSearchProps)
 		}
 	// eslint-disable-next-line
 	}, [currentSlice])
+
+	useEffect(()=>{
+		if(isVisible){
+			SHAREDMEX.closingEditor = false
+		}
+	},[isVisible])
+
+	const saveScroll = () => {
+		const container = document.getElementById(areaName)
+		if(container){
+			SHAREDMEX[areaName+'-scroll'] = container.scrollLeft
+		}
+	}
 
 	const slicedNotes = notes.slice(currentSlice*SLICESIZE, (currentSlice+1)*SLICESIZE+SLICESIZE)
 
@@ -163,6 +190,7 @@ const NotesList = ({
 						{...provided.droppableProps} 
 						ref={provided.innerRef} 
 						id={areaName}
+						onScroll={() => saveScroll()}
 						>
 							<div>
 								{currentSlice>0 ?
@@ -170,14 +198,14 @@ const NotesList = ({
 										<BsChevronLeft 
 											className='tools-btn arrow-btn'
 											onClick={() => align(-1, currentSlice, setCurrentSlice, notes, areaName)}
-											size='2em'
+											size='2.5em'
 											color='#666666'
 										/>
 									:
 										<FcPrevious 
 											className='tools-btn arrow-btn'
 											onClick={() => align(-1, currentSlice, setCurrentSlice, notes, areaName)}
-											size='2em'
+											size='2.5em'
 										/>
 								: null}
 							</div>
@@ -241,14 +269,14 @@ const NotesList = ({
 										<BsChevronRight 
 											className='tools-btn arrow-btn'
 											onClick={() => align(1, currentSlice, setCurrentSlice, notes, areaName)}
-											size='2em'
+											size='2.5em'
 											color='#666666'
 										/>
 									:
 										<FcNext 
 											className='tools-btn arrow-btn'
 											onClick={() => align(1, currentSlice, setCurrentSlice, notes, areaName)}
-											size='2em'
+											size='2.5em'
 										/>
 								: null}
 							</div>

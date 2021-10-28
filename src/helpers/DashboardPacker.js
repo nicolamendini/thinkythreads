@@ -1,92 +1,98 @@
 /*
 Author: Nicola Mendini
-Date: 13/09/2021
+Date: 11/2021
 ThinkyThreads Project
 DashboardPacker functions
 Update the functions based on the new states of the dashboard
 */
 
-import { SHAREDMEX } from "../components/Dashboard"
 import { copyNote } from "./DashboardUtils"
 import { backupNote } from "./RequestsMakers"
+
+const decideForInsertion = (note, searchProps, newSearch) => {
+
+    if(note){
+        var insertingNote = []
+
+        // if the text matched with the text on the searchBar insert it
+        if(note.preview.replace( /(<([^>]+)>)/ig, '').toLowerCase().includes(searchProps.searchText)){
+
+            insertingNote=[note]
+
+            if(searchProps.imgFilter && !note.attachedImg){
+                insertingNote=[]
+            }
+
+            if(insertingNote.length && searchProps.colorFilter!=='#ededed' && searchProps.colorFilter!==note.colorPreview){
+                insertingNote=[]
+            }
+
+            // if the thread filter and the collections filters are on but the note has none, remove it
+            if(insertingNote.length && searchProps.collectionFilter && searchProps.threadFilter){
+                if(!note.thread.length && !note.collection.length){
+                    insertingNote=[]
+                }
+            }
+
+            // if the thread filter is on but the note has none, remove it from the insertion
+            else if(insertingNote.length && searchProps.threadFilter){
+                if(!note.thread.length){
+                    insertingNote=[]
+                }
+            }
+
+            // if the collection filter is on but the note has none, remove it from the insertion
+            else if(insertingNote.length && searchProps.collectionFilter){
+                if(!note.collection.length){
+                    insertingNote=[]
+                }
+            }
+
+            // if the note is pinned, put at the beginning, if not, at the end
+            if(insertingNote.length){
+                if(note.pinned){
+                    newSearch.notes = [copyNote(insertingNote[0]), ...newSearch.notes]
+                }
+                else{
+                    newSearch.notes = [...newSearch.notes, copyNote(insertingNote[0])]
+                }
+            }
+        }
+    }
+    else{
+        console.log('exceeded')
+    }
+}
 
 // Change the search as the user is typing
 export function getSearchFromProps(newDashboard, searchProps){
 
     // go through all the notes and decide whether each note should be inserted
-    var newSearch = []
-    var insertingNote = []
-    var key = null
+    const newSearch = Object.create(null)
+    newSearch.notes = []
     var note = {rightLink : newDashboard.firstNoteId}
 
-    for(let i=0; i<newDashboard.notes.size; i++){
-
-        key = note.rightLink
-        note = newDashboard.notes.get(key)
-
-        if(note){
-
-            insertingNote = []
-
-            // if the text matched with the text on the searchBar insert it
-            if(note.preview.replace( /(<([^>]+)>)/ig, '').toLowerCase().includes(searchProps.searchText)){
-
-                insertingNote=[note]
-
-                if(searchProps.imgFilter && !note.attachedImg){
-                    insertingNote=[]
-                }
-
-                if(insertingNote.length && searchProps.colorFilter!=='#ededed' && searchProps.colorFilter!==note.colorPreview){
-                    insertingNote=[]
-                }
-
-                // if the thread filter and the collections filters are on but the note has none, remove it
-                if(insertingNote.length && searchProps.collectionFilter && searchProps.threadFilter){
-                    if(!note.thread.length && !note.collection.length){
-                        insertingNote=[]
-                    }
-                }
-
-                // if the thread filter is on but the note has none, remove it from the insertion
-                else if(insertingNote.length && searchProps.threadFilter){
-                    if(!note.thread.length){
-                        insertingNote=[]
-                    }
-                }
-
-                // if the collection filter is on but the note has none, remove it from the insertion
-                else if(insertingNote.length && searchProps.collectionFilter){
-                    if(!note.collection.length){
-                        insertingNote=[]
-                    }
-                }
-
-                // If a collection is opened add a new constraint
-                if(insertingNote.length && newDashboard.openedCollectionId){
-                    if(!newDashboard.notes.get(newDashboard.openedCollectionId).collection.includes(note.id)){
-                        insertingNote=[]
-                    }
-                }
-
-                // if the note is pinned, put at the beginning, if not, at the end
-                if(insertingNote.length){
-                    if(note.pinned){
-                        newSearch = [copyNote(insertingNote[0]), ...newSearch]
-                    }
-                    else{
-                        newSearch = [...newSearch, copyNote(insertingNote[0])]
-                    }
-                }
+    // if a collection is opened
+    if(newDashboard.openedCollectionId){
+        const targetNote = newDashboard.notes.get(newDashboard.openedCollectionId)
+        if(targetNote){
+            for(const id of targetNote.collection){
+                note = newDashboard.notes.get(id)
+                decideForInsertion(note, searchProps, newSearch)
             }
         }
-        else{
-            console.log('exceeded')
+        else{console.log('collection note does not exist')}
+    }
+
+    // otherwise go through all the notes
+    else{
+        for(let i=0; i<newDashboard.notes.size; i++){
+            note = newDashboard.notes.get(note.rightLink)
+            decideForInsertion(note, searchProps, newSearch)
         }
     }
 
-    newDashboard.search = newSearch
-    // eslint-disable-next-line
+    newDashboard.search = newSearch.notes
 }
 
 // Function to pack the workspace
@@ -196,102 +202,169 @@ export function errorAlert(message, id, newDashboard){
     )
 }
 
-export function restoreLinks(newDashboard, setNotesUpdating){
-    console.log('restoring')
-    var prevNote = {id: null, leftLink: null}
-
-    for(const [, note] of newDashboard.notes){
-        
-        note.rightLink = prevNote.id
-        prevNote.leftLink = note.id
-        prevNote = note
-    }
-
-    prevNote.leftLink = null
-    newDashboard.firstNoteId = prevNote.id
-
-    var updatesCounter = 0
-    for(const [, note] of newDashboard.notes){
-        updatesCounter+=1
-        setTimeout(() => {
-            backupNote(note, 'meta', setNotesUpdating)
-        }, (200 * updatesCounter))
-    }
+const updateElement = (note, updatesCounter, backup) => {
+    updatesCounter.n += 1
+    setTimeout(() => {
+        backup(note, 'meta')
+    }, (200 * updatesCounter.n))
 }
 
-export function checkLinksSanity(newDashboard){
+export function checkLinksSanity(newDashboard, backup){
 
     // if there is more than one note
-    if(newDashboard.notes.size > 1){
+    if(newDashboard.notes.size < 2){
+        return
+    }
 
-        var prevNote = newDashboard.notes.get(newDashboard.firstNoteId)
-        var currNote = null
-        var nextNote = null
+    var lastNote = null
+    var temp = null
+    var updatesCounter = Object.create(null)
+    updatesCounter.n = 0
+    var prevNote = newDashboard.notes.get(newDashboard.firstNoteId)
+    var currNote = null
+    var noteTracker = Object.create(null)
+    var updateNextNote = false
 
-        // if the first note has links
-        if(prevNote && !prevNote.leftLink){
-
-            if(prevNote.rightLink){
-                currNote = newDashboard.notes.get(prevNote.rightLink)
-
-                // for each note, check that it has links and that it is connected to the neighbours
-                for(let i=1; i<newDashboard.notes.size-1; i++){
-
-                    if(currNote && currNote.rightLink){
-
-                        nextNote = newDashboard.notes.get(currNote.rightLink)
-                        if(nextNote){
-                            if(!(
-                                currNote.rightLink && 
-                                currNote.leftLink &&
-                                prevNote.rightLink &&
-                                nextNote.leftLink &&
-                                currNote.leftLink===prevNote.id &&
-                                currNote.rightLink===nextNote.id
-                            )){
-                                console.log('sequence disconnected at: ', {...prevNote}, {...currNote}, {...nextNote})
-                                return false
-                            }
-
-                            // move the head ahead
-                            prevNote = currNote
-                            currNote = nextNote
-                        }
-                        else{
-                            console.log('the successor does not exist')
-                            return false
-                        }
-                    }
-                    else{
-                        console.log('an element doesnt have a successor or the current element does not exist')
-                        return false
-                    }
-                }
-
-                if(!(currNote.leftLink && !currNote.rightLink)){
-                    console.log('last note has a right link')
-                    return false
-                }
+    // FIRST NOTE SANITY
+    // recover first note if it temporarily got lost of track from firstNoteId
+    if(!prevNote || prevNote.leftLink){
+        console.log('first note temporarily inexistent or has a left link')
+        // TEST PASSED
+        for(const [, note] of newDashboard.notes){
+            if(!note.leftLink){
+                newDashboard.firstNoteId = note.id
+                prevNote = note
+                console.log('better prev note found')
             }
-            else{
-                console.log('first note has no right link')
-                return false
+            if(!note.rightLink){
+                lastNote = note
+                console.log('last note found')
             }
         }
-        else {
-            console.log('first note problem: ', prevNote)
-            return false
+
+        // if there are no other good candidates to be a first node, 
+        // use the one that was already stored and  get rid of the wrong link
+        if(prevNote && prevNote.leftLink){
+            prevNote.leftLink = null
+            updateElement(prevNote, updatesCounter, backup)
+            console.log('removing wrong left link')
+        }
+
+        // trying to recover the first note going backwards
+        if(lastNote && !prevNote){
+            prevNote = lastNote
+            for(const [,] of newDashboard.notes){
+                temp = newDashboard.notes.get(prevNote.leftLink)
+                if(temp && !noteTracker[temp.id]){
+                    prevNote = temp
+                }
+                else{
+                    newDashboard.firstNoteId = prevNote.id
+                    prevNote.leftLink = null
+                    updateElement(prevNote, updatesCounter, backup)
+                    console.log('backwards recevery first note')
+                    break
+                }
+                noteTracker[prevNote.id] = true
+            }
+           noteTracker = Object.create(null)
+        }
+
+        // otherwise pick the first note in the map and go on
+        if(!prevNote){
+            for(const [, note] of newDashboard.notes){
+                prevNote = note
+                prevNote.leftLink = null
+                newDashboard.firstNoteId = prevNote.id
+                updateElement(prevNote, updatesCounter, backup)
+                console.log('last note not found, random picking a first note')
+                break
+            }
         }
     }
-    return true
-}
 
-export function currOrPrevNoteDecice(newDashboard){
-    if(SHAREDMEX.editorModeSelection==='prev'){
-        const previousSelectedNote = newDashboard.notes.get(newDashboard.prevSelectedNoteId)
-        if(previousSelectedNote){
-            newDashboard.selectedNoteId = previousSelectedNote.id
+    noteTracker[prevNote.id] = true
+
+    // ALL OTHER NOTES' SANITY
+    // for each note, check that it has links and that it is connected to the neighbours
+    for(let i=1; i<newDashboard.notes.size; i++){
+
+        // try to access the current note
+        currNote = newDashboard.notes.get(prevNote.rightLink)
+
+        // if the right link was correct
+        if(currNote){
+
+            // if there is a loop, discard the note
+            if(noteTracker[currNote]){
+                console.log('loop found: ', i)
+                currNote = null
+            }
+
+            // check that the left link of the found note is correct
+            else if(currNote.leftLink!==prevNote.id){
+                console.log('left link wrong, fixing: ', i)
+                currNote.leftLink = prevNote.id
+                updateNextNote = true
+            }
         }
-        SHAREDMEX.editorModeSelection = 'curr'
+
+        // if the current note was not found
+        if(!currNote){
+            console.log('the successor does not exist: ', i)
+
+            // try to find a match by scrolling in the opposite direction
+            for(const [, note] of newDashboard.notes){
+                if(note.leftLink===prevNote.id && !noteTracker[note.id]){
+                    console.log('found match: ', i)
+                    currNote = note
+                    prevNote.rightLink = currNote.id
+                    updateElement(prevNote, updatesCounter, backup)
+                    break
+                }
+            }
+
+            // hard recovery, try to pick the most suitable note
+            if(!currNote){
+                for(const [, note] of newDashboard.notes){
+                    // only consider them if they have not been encountered before
+                    if(!noteTracker[note.id]){
+                        // if we haven't find a replacement yet
+                        // or the replacement we've found is the last note
+                        // replace again because it's a better choice
+                        if(!currNote || !currNote.rightLink){
+                            currNote = note
+                        }
+                        // if we find a note that has a defective left link
+                        // that's the best we can aim for at this stage so use it and break
+                        if(!newDashboard.notes.get(note.leftLink)){
+                            console.log('slightly better hard choice found')
+                            currNote = note
+                            break
+                        }
+                    }
+                }
+                console.log('hard choice made: ', i)
+                prevNote.rightLink = currNote.id
+                currNote.leftLink = prevNote.id
+                updateElement(prevNote, updatesCounter, backup)
+                updateNextNote = true
+            }
+        }
+
+        // move the head ahead and eventually update
+        noteTracker[currNote.id] = true
+        prevNote = currNote
+        if(updateNextNote){
+            updateElement(prevNote, updatesCounter, backup)
+            updateNextNote = false
+        }
+    }
+
+    // at the end, check the last note
+    if(currNote.rightLink){
+        console.log('last note had a right link')
+        currNote.rightLink = null
+        updateElement(currNote, updatesCounter, backup)
     }
 }

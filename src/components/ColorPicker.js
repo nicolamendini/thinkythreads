@@ -1,6 +1,6 @@
 /*
 Author: Nicola Mendini
-Date: 13/09/2021
+Date: 11/2021
 ThinkyThreads Project
 ColorPicker component
 Implements the color picker element of the 
@@ -12,6 +12,7 @@ import { GithubPicker } from "react-color"
 import { BsDropletHalf } from "react-icons/bs"
 import Popup from "reactjs-popup"
 
+// Arrays containing the colors allowed for the notes, both for light and dark mode
 export const vividCols = ['#b80000', '#db3e00', '#fccb00', '#008b02', '#006b76', '#1273de', '#5300eb', '#ededed']
 export const pastelCols = ['#EB9694', '#FAD0C3', '#FEF3BD', '#C1E1C5', '#BEDADC', '#C4DEF6', '#d4c4fb', '#ffffff']
 
@@ -23,26 +24,27 @@ const setColor = (
     selectedNote, 
     setBackColor, 
     setHasChanged, 
-    setSearchProps, 
-    searchCleanerCheck
+    setSearchProps,
 ) => {
 
     // Only used if the picker is in the dashboard
+    // Set the color used as a filter for the notes of the search
     if(setSearchProps){
         setSearchProps(
             (searchProps) => {
                 const newSearchProps = {...searchProps}
                 newSearchProps.colorFilter = color.hex
-                searchCleanerCheck(newSearchProps)
                 return newSearchProps
             }
         )
         return 
     }
 
+    // if the color was changed, tell the editor
     setHasChanged(true)
     selectedNote.colorPreview = color.hex;
 
+    // switch case defining the corresponding vivid/pastel colors
     switch(color.hex) {
         case vividCols[0]:
             selectedNote.color = pastelCols[0]

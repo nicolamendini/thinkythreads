@@ -1,6 +1,6 @@
 /*
 Author: Nicola Mendini
-Date: 13/09/2021
+Date: 11/2021
 ThinkyThreads Project
 NoteDeleter function
 Deletes a note and resolves potential conflicts in the process
@@ -10,12 +10,11 @@ import { db, driveVariables } from "../components/Dashboard";
 import { checkConflicts, detachFromPosition, removeElementAt, sanitiseForRemoval } from "./DashboardUtils";
 import { forceRemove } from "./NotesManupulation";
 import { backupNote } from "./RequestsMakers";
-import { deleteConflictAlert } from "./Messages";
 import { updateNoteFile } from "./BackupHelper";
 
 // Delete a note given by removingId from the notes array and cascade
 // forceFlag controls whether the removal shouldbe forced without asking
-export function noteDeleter(
+export async function noteDeleter(
     removingId, 
     forceFlag, 
     newDashboard, 
@@ -89,7 +88,7 @@ export function noteDeleter(
     // if there are conflicts ask to force the removal through the 
     // forceRemove function
     else{            
-        if(forceFlag || window.confirm(deleteConflictAlert)){
+        if(forceFlag){
             forceRemove(newDashboard, removingId, setNotesUpdating);
             noteDeleter(
                 removingId, 

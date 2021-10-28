@@ -1,6 +1,6 @@
 /*
 Author: Nicola Mendini
-Date: 13/09/2021
+Date: 11/2021
 ThinkyThreads Project
 DragManager function
 Manages all the drag gestures between notes
@@ -11,6 +11,10 @@ import { addToWorkspace, addToBranches, removeFromBranches, manageWrapper, works
 import { backupNote } from "./RequestsMakers";
 import { moveNoteInsideGraph, moveNoteInsideArea } from "./DashboardUtils";
 import { alertMergeMode, workspaceLimitReached } from "./Messages";
+import { toast } from "react-toastify";
+
+const notifyMerge = () => toast(alertMergeMode)
+const notifyWorkspaceLimit = () => toast(workspaceLimitReached)
 
 // Manage the dragging and dropping rules
 // all the information that is needed is contained in the result
@@ -31,7 +35,7 @@ export function dragManager(
     if(result.destination===null){return}
 
     // if the mergeMode is on, disable the gestures
-    else if(mergeMode){alert(alertMergeMode)}
+    else if(mergeMode){notifyMerge()}
 
     // if the source of the dragging is the search 
     else if(result.source.droppableId==='search-area'){
@@ -78,32 +82,47 @@ export function dragManager(
         // if the destination is the search area itself just change the order of the notes
         else if(result.destination.droppableId==='search-area'){
             if(result.source.index!==result.destination.index){
-                const sourceNote = dashboard.search[result.source.index]
-                const targetNote = dashboard.search[result.destination.index]
-                var dir = result.source.index > result.destination.index
-                // only if not trying to move between pinned notes
-                if(
-                !(
-                    (!targetNote.pinned && sourceNote.pinned) ||
-                    (!sourceNote.pinned && targetNote.pinned)
-                )
-                ){
-                        
-                    // reorder the notes
+                if(dashboard.openedCollectionId){
                     const newDashboard = {...dashboard}
-                    if(sourceNote.pinned){
-                        dir = !dir
+                    const targetNote = newDashboard.notes.get(newDashboard.openedCollectionId)
+                    if(targetNote){
+                        targetNote.collection = moveNoteInsideArea(
+                            targetNote.collection,
+                            result.source.index,
+                            result.destination.index
+                        )
+                        packDashboard(newDashboard, true)
+                        backupNote(targetNote, 'meta', setNotesUpdating)
                     }
-                    moveNoteInsideGraph(
-                        newDashboard, 
-                        sourceNote.id, 
-                        targetNote.id, 
-                        dir, 
-                        (note) => backupNote(note, 'meta', setNotesUpdating)
+                }
+                else{
+                    const sourceNote = dashboard.search[result.source.index]
+                    const targetNote = dashboard.search[result.destination.index]
+                    var dir = result.source.index > result.destination.index
+                    // only if not trying to move between pinned notes
+                    if(
+                    !(
+                        (!targetNote.pinned && sourceNote.pinned) ||
+                        (!sourceNote.pinned && targetNote.pinned)
                     )
-                    newDashboard.prevSelectedNoteId = newDashboard.selectedNoteId
-                    newDashboard.selectedNoteId = sourceNote.id
-                    packDashboard(newDashboard, true, false, true)
+                    ){
+                            
+                        // reorder the notes
+                        const newDashboard = {...dashboard}
+                        if(sourceNote.pinned){
+                            dir = !dir
+                        }
+                        moveNoteInsideGraph(
+                            newDashboard, 
+                            sourceNote.id, 
+                            targetNote.id, 
+                            dir, 
+                            (note) => backupNote(note, 'meta', setNotesUpdating)
+                        )
+                        newDashboard.prevSelectedNoteId = newDashboard.selectedNoteId
+                        newDashboard.selectedNoteId = sourceNote.id
+                        packDashboard(newDashboard, true, false, true)
+                    }
                 }
             }
         }
@@ -170,7 +189,7 @@ export function dragManager(
         // not a case for the collections because links are only visible in thread mode
         else if(result.destination.droppableId==='workspace-area'){
             if(dashboard.workspaceIds.length > WORKSPACELIMIT){
-                alert(workspaceLimitReached)
+                notifyWorkspaceLimit()
             }
             else{
                 const newDashboard = {...dashboard}

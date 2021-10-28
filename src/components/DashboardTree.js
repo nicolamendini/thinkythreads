@@ -1,12 +1,22 @@
+/*
+Author: Nicola Mendini
+Date: 11/2021
+ThinkyThreads Project
+DashboardTree component
+Contains the main connections between the ui elements of the dashboard
+and manages the page switch. Also defines all the dependencies
+*/
+
 import KeyboardBindings from "./KeyboardBindings"
 import { Suspense } from "react"
 import { suspenseLoader } from "../helpers/DashboardUtils"
-import React from "react";
+import React from "react"
+import { ToastContainer } from "react-toastify"
 
 // Define the lazy loading
-const NoteEditor = React.lazy(() => import("./Editor"));
-const Settings = React.lazy(() => import("./Settings"));
-const NotesPage = React.lazy(() => import('./NotesPage'));
+const NoteEditor = React.lazy(() => import("./Editor"))
+const Settings = React.lazy(() => import("./Settings"))
+const NotesPage = React.lazy(() => import('./NotesPage'))
 
 
 const DashboardTree = ({
@@ -105,7 +115,6 @@ return (
 
                 <Suspense fallback={suspenseLoader}>
                     <NoteEditor 
-                        currentPage={currentPage}
                         setCurrentPage={setCurrentPage} 
                         dashboard={dashboard} 
                         updateNote={updateNote}
@@ -143,6 +152,7 @@ return (
                 </Suspense>
             }
 
+            <ToastContainer/>
         </div>
 	)
 }

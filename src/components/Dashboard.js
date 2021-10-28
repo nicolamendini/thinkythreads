@@ -1,12 +1,9 @@
 /*
 Author: Nicola Mendini
-Date: 13/09/2021
+Date: 11/2021
 ThinkyThreads Project
 Dashboard component
 Implements the dashboard, which is the main component of the project
-Puts together the NotesPage, the Editor, the Settings and the 
-iFrame used for exporting threads as PDFs later on.
-Uses lazy loading since the components that it contains are big
 */
 
 import { useState, useEffect} from 'react';
@@ -16,8 +13,7 @@ import { createThumbnail} from "../helpers/DashboardUtils";
 import { checkDriveFolder} from '../helpers/BackupHelper';
 import { getAllNotes } from '../helpers/DownloadHelper';
 import { backupNote } from '../helpers/RequestsMakers';
-import { getSearchFromProps, getLinksFromProps, getWorkspace, 
-    restoreLinks, checkLinksSanity } from '../helpers/DashboardPacker';
+import { getSearchFromProps, getLinksFromProps, getWorkspace, checkLinksSanity } from '../helpers/DashboardPacker';
 
 //importing and registering the formula compiler
 import "katex/dist/katex.min.css";
@@ -44,10 +40,18 @@ db.version(1).stores({
         ', pinned, color, colorPreview, attachedImg, version, leftLink, rightLink'
 })
 
+// object containing several useful variables that have to be shared between classes
+// editorModeSelection tells whether the editor should select the current selected note or the
+// previously selected note once it is closed, based on where the note was opened from in the dashboard
+// usingScrollKeys tells whether the user is scrolling with the keyboard
+//currentSearchSlice tells at what slice of note the search area is currently at
 export const SHAREDMEX = {
     editorModeSelection: 'curr',
     usingScrollKeys: false,
-    currentSearchSlice: window.localStorage.getItem('current-slice-search-area')
+    currentSearchSlice: window.localStorage.getItem('current-slice-search-area'),
+    closingEditor: false,
+    resetSearchScroll: false,
+    toasts: true
 }
 
 // Dashboard component, 
@@ -88,7 +92,9 @@ const Dashboard = ({
         threadFilter: false, 
         collectionFilter: false,
         colorFilter: '#ededed',
-        imgFilter: false
+        imgFilter: false,
+        goClean: false,
+        areSlicesScrolled: false
     })
 
     // State that defines whether the user wants to see Roots or Branches
@@ -106,7 +112,7 @@ const Dashboard = ({
     const [darkMode, setDarkMode] = useState(false);
     // State tha keeps the count of how many notes are updating at the moment
     const [notesUpdating, setNotesUpdating] = useState(0)
-    // Note to update but with delay for keyboard actions can be very quick
+    // Note to update but with a delay, used for several functions
     const [delayedNoteUpdate, setDelayedNoteUpdate] = useState({
         note: null, 
         delay: 0, 
@@ -114,6 +120,8 @@ const Dashboard = ({
         callbackFunction: null,
         beforeFunction: null
     })
+    // mock state used to trigger the rerendering of specific notes only inside the list of notes
+    // the alternative would be to rerender eerything but its quite expensive
     const [triggerRerender, setTriggerRerender] = useState(true)
 
     // Effect called only when the component is first loaded
@@ -126,15 +134,16 @@ const Dashboard = ({
                 createThumbnail(note)
             })
 
+            // If the note doesn't have a left link, it's because it's the first of the sequence
             for(const [, note] of newDashboard.notes){
                 if(!note.leftLink){
                     newDashboard.firstNoteId = note.id
                 }
             }
-
             packDashboard(newDashboard)
         })
 
+        // retrieve and set the dark mode as it was set by the user last
         const darkModeStored = window.localStorage.getItem('dark-mode')
         if(darkModeStored){
             setDarkMode(darkModeStored==='true')
@@ -163,6 +172,9 @@ const Dashboard = ({
     // eslint-disable-next-line
 	}, [searchProps])
 
+    // Effect that controls the delayed update of a note
+    // takes the note, a function to run before calling the backup, 
+    // and a callback to call afterwards
     useEffect(() => {
         if(delayedNoteUpdate.note){
             const delayUpdateNote = setTimeout(() => {
@@ -209,6 +221,7 @@ const Dashboard = ({
     // eslint-disable-next-line
     },[dashboard])
 
+    // Utils function to synchronise all the notes with GDRIVE
     const synchNotes = (newDashboard) => {
         if(!newDashboard){
             newDashboard = {...dashboard}
@@ -235,10 +248,9 @@ const Dashboard = ({
     // Utils function used to refresh the whole dashboard and not just individual areas
     const packDashboard = (newDashboard, sFlag, wFlag, lFlag) => {
 
-        if(!checkLinksSanity(newDashboard)){
-            restoreLinks(newDashboard, setNotesUpdating)
-        }
+        checkLinksSanity(newDashboard, backup)
 
+        // Flags that control what parts of the dashboard should be recomputed
         const allFalse = !sFlag && !wFlag && !lFlag
         if(allFalse || sFlag){ 
             getSearchFromProps(newDashboard, searchProps)
