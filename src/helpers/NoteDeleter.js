@@ -69,19 +69,16 @@ export async function noteDeleter(
         // remove the note locally and update the dashboard
         db.notes.delete(removingId)
 
-        if(noteToRemove.rightLink){
-            const noteAtRight = newDashboard.notes.get(noteToRemove.rightLink)
-            if(noteAtRight){
-                newDashboard.selectedNoteId = noteAtRight.id
+        const noteIdxInSearch = newDashboard.search.findIndex(note => note.id===removingId)
+        if(noteIdxInSearch!==-1){
+            if(newDashboard.search[noteIdxInSearch+1]){
+                newDashboard.selectedNoteId = newDashboard.search[noteIdxInSearch+1].id
+            }
+            else if(noteIdxInSearch > 0 && newDashboard.search[noteIdxInSearch-1]){
+                newDashboard.selectedNoteId = newDashboard.search[noteIdxInSearch-1].id
             }
         }
-        else if(noteToRemove.leftLink){
-            const noteAtLeft = newDashboard.notes.get(noteToRemove.leftLink)
-            if(noteAtLeft){
-                newDashboard.selectedNoteId = noteAtLeft.id
-            }
-        }
-
+        
         packDashboard(newDashboard)
     }
 

@@ -199,6 +199,14 @@ const NoteEditor = ({
     // eslint-disable-next-line
     }, [editorState])
 
+    // put the cursor on the editor
+    useEffect(() => {
+        if(editorRef && !editorState){
+            editorRef.current.editor.focus()
+        }
+    // eslint-disable-next-line
+    },[])
+
     return (
             <div 
                 className='container'
