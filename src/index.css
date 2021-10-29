@@ -415,6 +415,7 @@ li h2{
 .editor{
 	overflow-y: scroll;
 	max-height: 92vh !important;
+	font-size: 19px;
 }
 
 .ql-editor{
@@ -441,6 +442,15 @@ li h2{
 @media only screen and (max-width: 600px) {
     .color-flag{
 		height: 90px;
+	}
+	.ql-editor{
+		font-size: 12px;
+	}
+	.quill > .ql-container > .ql-editor{
+		padding-top: 80px;
+	}
+	.quill > .ql-container > .ql-editor.ql-blank::before{
+		font-size: 12px;
 	}
 }
 

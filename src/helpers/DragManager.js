@@ -6,7 +6,7 @@ DragManager function
 Manages all the drag gestures between notes
 */
 
-import { WORKSPACELIMIT } from "../components/Dashboard";
+import { SHAREDMEX, WORKSPACELIMIT } from "../components/Dashboard";
 import { addToWorkspace, addToBranches, removeFromBranches, manageWrapper, workspaceAdder, workspaceRemover } from "./NotesManupulation";
 import { backupNote } from "./RequestsMakers";
 import { moveNoteInsideGraph, moveNoteInsideArea } from "./DashboardUtils";
@@ -131,6 +131,7 @@ export function dragManager(
         else if(result.destination.droppableId==='search-bar'){
             const newDashboard = {...dashboard}
             const targetNote = dashboard.search[result.source.index]
+            SHAREDMEX.resetSearchScroll = true
             newDashboard.openedCollectionId = targetNote.id;
             packDashboard(newDashboard, true)
         }

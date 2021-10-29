@@ -6,6 +6,7 @@ DashboardPacker functions
 Update the functions based on the new states of the dashboard
 */
 
+import { db } from "../components/Dashboard"
 import { copyNote } from "./DashboardUtils"
 import { backupNote } from "./RequestsMakers"
 
@@ -87,8 +88,10 @@ export function getSearchFromProps(newDashboard, searchProps){
     // otherwise go through all the notes
     else{
         for(let i=0; i<newDashboard.notes.size; i++){
-            note = newDashboard.notes.get(note.rightLink)
-            decideForInsertion(note, searchProps, newSearch)
+            if(note){
+                note = newDashboard.notes.get(note.rightLink)
+                decideForInsertion(note, searchProps, newSearch)
+            }
         }
     }
 
@@ -204,6 +207,7 @@ export function errorAlert(message, id, newDashboard){
 
 const updateElement = (note, updatesCounter, backup) => {
     updatesCounter.n += 1
+    db.notes.update(note.id, note)
     setTimeout(() => {
         backup(note, 'meta')
     }, (200 * updatesCounter.n))
@@ -296,7 +300,7 @@ export function checkLinksSanity(newDashboard, backup){
         if(currNote){
 
             // if there is a loop, discard the note
-            if(noteTracker[currNote]){
+            if(noteTracker[currNote.id]){
                 console.log('loop found: ', i)
                 currNote = null
             }
