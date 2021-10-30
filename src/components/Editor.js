@@ -219,9 +219,9 @@ const NoteEditor = ({
             <div
                 className='color-flag'
                 style={ darkMode ? (backColor.color!=='#ffffff' ? 
-                    {backgroundImage: 'linear-gradient(20deg, #171717 90%, ' + backColor.colorPreview + ' 90%)', color: 'white'} 
+                    {backgroundImage: 'linear-gradient(20deg, #171717 90%, ' + (backColor.colorPreview || '#171717') + ' 90%)', color: 'white'} 
                     : {backgroundColor: '#171717', color: 'white'}) :
-                    {backgroundColor: backColor.color}
+                    {backgroundColor: backColor.color || '#ffffff'}
                 }
             ></div>
                 <div className="editor no-scrollbar" id="editor">
@@ -237,7 +237,7 @@ const NoteEditor = ({
                     />
                 </div>
 
-                <div className='saved-changes'>
+                <div className='saved-changes' style={{backgroundColor: darkMode ? '#171717' : 'white'}}>
                     {!backupState ? 'Unsaved changes...' : 'All changes have been saved'}
                 </div>
 

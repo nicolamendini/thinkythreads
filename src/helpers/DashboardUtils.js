@@ -100,7 +100,9 @@ export function truncString (string, n){
 // Gets a caption from a notes preview
 export function getCaption(targetNote){
     if(targetNote){
-        const newPreview = targetNote.preview.replace('<br/>', '<br>').replace('<p></p><p><br></p>', '')
+        const newPreview = targetNote.preview.replace('<br/>', '<br>')
+            .replace('<p></p><p><br></p>', '')
+            .replace('<p><strong></strong></p><p><br>', '')
         return truncString(newPreview.split('<br>')[0].replace(/<[^>]*>?/gm, ''), 100)
     }
     else{

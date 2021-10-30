@@ -409,7 +409,7 @@ li h2{
 	top: 0;
 	left: 0;
 	right: 0;
-	z-index: 11;
+	z-index: 100;
 }
 
 .editor{
@@ -485,10 +485,12 @@ counter-reset: list-3 list-4 list-5 list-6 list-7 list-8 list-9;
 
 .saved-changes{
 	position: absolute;
-	bottom: 9%;
-	right: 5%;
+	bottom: 8%;
+	padding: 4px;
+	right: 2%;
 	color:rgb(88, 88, 88);
-	font-size: 11px
+	font-size: 11px;
+	border-radius: 4px;
 }
 
 .settings-inline{
@@ -501,4 +503,5 @@ counter-reset: list-3 list-4 list-5 list-6 list-7 list-8 list-9;
 	display: flex;
 	color: rgb(99, 99, 99);
 	font-size: 15px;
+	max-width: 700px;
 }

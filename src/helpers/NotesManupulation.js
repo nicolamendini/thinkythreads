@@ -24,8 +24,6 @@ export function addToWorkspace(newDashboard, element, position){
     }
     else{
         newDashboard.workspaceIds = addElementAt(newDashboard.workspaceIds, position, element)
-        newDashboard.prevSelectedNoteId = newDashboard.selectedNoteId
-        newDashboard.selectedNoteId = element
     }
 }
 
@@ -190,26 +188,28 @@ export function wrapWorkspace(newDashboard, targetNoteId, setNotesUpdating, thre
 
 // Function to open a note in the workspace, so that the notes of the workspace 
 // belong to either the notes thread or collection
-export function openInWorkspace(workspaceMode, newDashboard, setNotesUpdating, threadOrCollection){
+export function openInWorkspace(workspaceMode, newDashboard, setNotesUpdating, threadOrCollection, targetNote){
 
     // close and save the workspace that is already opened
     closeAndSaveWorkspace(newDashboard, setNotesUpdating, threadOrCollection)
 
     // retrieve the note we want to open
-    const selectedNote = newDashboard.notes.get(newDashboard.selectedNoteId)
+    if(!targetNote){
+        targetNote = newDashboard.notes.get(newDashboard.selectedNoteId)
+    }
 
     // if it is thread mode, open the thread
     if(workspaceMode){
-        newDashboard.workspaceIds = [...selectedNote.thread]
+        newDashboard.workspaceIds = [...targetNote.thread]
     }
 
     // otherwise open the collection
     else{
-        newDashboard.workspaceIds = [...selectedNote.collection]
+        newDashboard.workspaceIds = [...targetNote.collection]
     }
 
     // set the openedWorkspaceId as the id of the note we want to open
-    newDashboard.openedWorkspaceId = newDashboard.selectedNoteId
+    newDashboard.openedWorkspaceId = targetNote.id
 }
 
 // Function to close and save an active workspace
@@ -311,15 +311,13 @@ export function manageWrapper(newDashboard, targetNote, threadOrCollection, setT
 
     // otherwise just expand the note so that the workspace now contains its thread or collection
     else{
-        newDashboard.prevSelectedNoteId = newDashboard.selectedNoteId
-        newDashboard.selectedNoteId = targetNote.id
         if(targetNote.thread.length){
-            openInWorkspace(true, newDashboard, setNotesUpdating, threadOrCollection)
+            openInWorkspace(true, newDashboard, setNotesUpdating, threadOrCollection, targetNote)
             setThreadOrCollection(true)
             
         }
         else if(targetNote.collection.length){
-            openInWorkspace(false, newDashboard, setNotesUpdating, threadOrCollection)
+            openInWorkspace(false, newDashboard, setNotesUpdating, threadOrCollection, targetNote)
             setThreadOrCollection(false)
         }
         else{
@@ -331,7 +329,7 @@ export function manageWrapper(newDashboard, targetNote, threadOrCollection, setT
 // Function to add a note to the workspace
 export function workspaceAdder(dashboard, threadOrCollection, targetId, packDashboard, destination){
 
-    if(!destination){
+    if(destination===undefined || destination===null){
         destination = dashboard.workspaceIds.length
     }
 
@@ -356,7 +354,7 @@ export function workspaceAdder(dashboard, threadOrCollection, targetId, packDash
         ){
             if(!dashboard.workspaceIds.includes(targetId)){
                 const newDashboard = {...dashboard}
-                newDashboard.workspaceIds.push(targetId)
+                newDashboard.workspaceIds = addElementAt(newDashboard.workspaceIds, destination, targetId)
                 packDashboard(newDashboard, false, true)
             }
         }

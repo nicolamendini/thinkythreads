@@ -16,7 +16,7 @@ import { updateNoteFile } from "./BackupHelper";
 // forceFlag controls whether the removal shouldbe forced without asking
 export async function noteDeleter(
     removingId, 
-    forceFlag, 
+    forceFlag,
     newDashboard, 
     mergeMode, 
     setMergeMode,
@@ -85,17 +85,15 @@ export async function noteDeleter(
     // if there are conflicts ask to force the removal through the 
     // forceRemove function
     else{            
-        if(forceFlag){
-            forceRemove(newDashboard, removingId, setNotesUpdating);
-            noteDeleter(
-                removingId, 
-                false, 
-                newDashboard,
-                mergeMode, 
-                setMergeMode,
-                setNotesUpdating,
-                packDashboard
-            )
-        }
+        forceRemove(newDashboard, removingId, setNotesUpdating);
+        noteDeleter(
+            removingId, 
+            false, 
+            newDashboard,
+            mergeMode, 
+            setMergeMode,
+            setNotesUpdating,
+            packDashboard
+        )
     }
 }
