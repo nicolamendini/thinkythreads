@@ -12,7 +12,7 @@ import { BiSearchAlt } from 'react-icons/bi'
 import ColorPicker from './ColorPicker'
 import { BsPaperclip } from 'react-icons/bs'
 import { VscChromeClose } from 'react-icons/vsc'
-import { SHAREDMEX } from './Dashboard'
+import { initSearchProps, SHAREDMEX } from './Dashboard'
 
 
 const SearchBar = ({ 
@@ -65,15 +65,13 @@ const SearchBar = ({
 						<VscChromeClose 
 							size='1.6em'
 							className='tools-btn search-icons'
-							onClick={() => setSearchProps({
-								searchText:'', 
-								threadFilter: false, 
-								collectionFilter: false,
-								colorFilter: '#ededed',
-								imgFilter: false,
-								goClean: true,
-								areSlicesScrolled: searchProps.areSlicesScrolled
-							})}
+							onClick={() => {
+									const initSearch = {...initSearchProps}
+									initSearch.areSlicesScrolled = searchProps.areSlicesScrolled
+									initSearchProps.goClean = true
+									setSearchProps(initSearch)
+								}
+							}
 							color={darkMode ? '#666666' : '#464646'}
 							style={{paddingTop: '3px', transform:'scale(0.8)'}}
 						/>

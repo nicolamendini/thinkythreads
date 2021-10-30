@@ -32,6 +32,16 @@ export const SLICESIZE = 12
 // Define some shared variables that will be accessible from all components
 export const driveVariables = {authorisation: false, folderId: ''}
 
+export const initSearchProps = {
+    searchText:'', 
+    threadFilter: false, 
+    collectionFilter: false,
+    colorFilter: '#ededed',
+    imgFilter: false,
+    goClean: false,
+    areSlicesScrolled: false
+}
+
 // Initialise the local indexedDB that will contain the notes
 export const db = new Dexie('notes-db')
 db.version(1).stores({
@@ -87,15 +97,7 @@ const Dashboard = ({
 
     // State that defines the search, in particular
     // the text in the search bar and the state of the two buttons on it
-    const [searchProps, setSearchProps] = useState({
-        searchText:'', 
-        threadFilter: false, 
-        collectionFilter: false,
-        colorFilter: '#ededed',
-        imgFilter: false,
-        goClean: false,
-        areSlicesScrolled: false
-    })
+    const [searchProps, setSearchProps] = useState({...initSearchProps})
 
     // State that defines whether the user wants to see Roots or Branches
     const [rootsOrBranches, setRootsOrBranches] = useState(false);

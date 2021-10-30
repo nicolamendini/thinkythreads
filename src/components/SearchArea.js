@@ -32,7 +32,8 @@ const SearchArea = ({
     // search area itself and has a collection within it
     // The gesture is used to expand it
     const isDropDisabled = 
-        draggableInfo.sourceArea!=='search-area' ||
+        !draggableInfo.note ||
+        !draggableInfo.note.collection ||
         !draggableInfo.note.collection.length
 
     return(

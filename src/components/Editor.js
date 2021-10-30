@@ -237,7 +237,7 @@ const NoteEditor = ({
                     />
                 </div>
 
-                <div className='saved-changes' style={{backgroundColor: darkMode ? '#171717' : 'white'}}>
+                <div className='saved-changes' style={{backgroundColor: darkMode ? '#171717' : (backColor.color || 'white')}}>
                     {!backupState ? 'Unsaved changes...' : 'All changes have been saved'}
                 </div>
 

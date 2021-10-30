@@ -149,6 +149,7 @@ const DashboardOperations = ({
             rootsOrBranches, 
             setNotesUpdating,
             packDashboard,
+            setSearchProps,
             result
         )
     }

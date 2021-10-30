@@ -39,7 +39,7 @@ const onDragStart = (start, dashboard, setDraggableInfo) => {
     else if(sourceArea==='search-area'){
         noteFound = dashboard.search[sourceIndex]
     }
-    else if(sourceArea==='links-area'){
+    else if(sourceArea==='branches-area'){
         noteFound = dashboard.links[sourceIndex]
     }
     

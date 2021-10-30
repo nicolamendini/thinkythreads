@@ -7,7 +7,7 @@ Function to manipulate and change Note objects
 eg: add/remove links or edit threads 
 */
 
-import { LINKSLIMIT, WORKSPACELIMIT} from '../components/Dashboard'
+import { initSearchProps, LINKSLIMIT, SHAREDMEX, WORKSPACELIMIT} from '../components/Dashboard'
 import { backupNote } from "./RequestsMakers";
 import { addElementAt, arraysEqual, getCaption, removeElementAt } from "./DashboardUtils";
 import { alreadyIn, mergeBothCardsOccupied, workspaceLimitReached } from "./Messages";
@@ -372,4 +372,11 @@ export function workspaceRemover(newDashboard, threadOrCollection, packDashboard
         newDashboard.selectedNoteId = newDashboard.workspaceIds[indexToRem-1];
     }
     packDashboard(newDashboard, false, true, true)
+}
+
+export function dropOnSearchBar(newDashboard, setSearchProps, packDashboard, targetNote){
+    SHAREDMEX.resetSearchScroll = true
+    newDashboard.openedCollectionId = targetNote.id
+    setSearchProps({...initSearchProps})
+    packDashboard(newDashboard, true)
 }

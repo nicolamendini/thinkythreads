@@ -6,8 +6,8 @@ DragManager function
 Manages all the drag gestures between notes
 */
 
-import { SHAREDMEX, WORKSPACELIMIT } from "../components/Dashboard";
-import { addToWorkspace, addToBranches, removeFromBranches, manageWrapper, workspaceAdder, workspaceRemover } from "./NotesManupulation";
+import { WORKSPACELIMIT } from "../components/Dashboard";
+import { addToWorkspace, addToBranches, removeFromBranches, manageWrapper, workspaceAdder, workspaceRemover, dropOnSearchBar } from "./NotesManupulation";
 import { backupNote } from "./RequestsMakers";
 import { moveNoteInsideGraph, moveNoteInsideArea } from "./DashboardUtils";
 import { alertMergeMode, workspaceLimitReached } from "./Messages";
@@ -28,6 +28,7 @@ export function dragManager(
     rootsOrBranches, 
     setNotesUpdating,
     packDashboard,
+    setSearchProps,
     result
 ){
 
@@ -131,9 +132,7 @@ export function dragManager(
         else if(result.destination.droppableId==='search-bar'){
             const newDashboard = {...dashboard}
             const targetNote = dashboard.search[result.source.index]
-            SHAREDMEX.resetSearchScroll = true
-            newDashboard.openedCollectionId = targetNote.id;
-            packDashboard(newDashboard, true)
+            dropOnSearchBar(newDashboard, setSearchProps, packDashboard, targetNote)
         }
     }
 
@@ -155,6 +154,13 @@ export function dragManager(
             newDashboard.prevSelectedNoteId = newDashboard.selectedNoteId
             newDashboard.selectedNoteId = newDashboard.workspaceIds[result.destination.index]
             packDashboard(newDashboard, false, true, true)
+        }
+
+        // if the destination is the search bar, open the collection of the dragged note
+        else if(result.destination.droppableId==='search-bar'){
+            const newDashboard = {...dashboard}
+            const targetNote = dashboard.workspace[result.source.index]
+            dropOnSearchBar(newDashboard, setSearchProps, packDashboard, targetNote)
         }
     }
 
@@ -219,6 +225,13 @@ export function dragManager(
             }
             backupNote(targetNote, 'meta', setNotesUpdating)
             packDashboard(newDashboard, false, false, true)
+        }
+
+        // if the destination is the search bar, open the collection of the dragging note in search
+        else if(result.destination.droppableId==='search-bar'){
+            const newDashboard = {...dashboard}
+            const targetNote = dashboard.links[result.source.index]
+            dropOnSearchBar(newDashboard, setSearchProps, packDashboard, targetNote)
         }
     }
 }
