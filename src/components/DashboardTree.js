@@ -81,7 +81,7 @@ return (
             />
 
             {currentPage==='notes' && 
-                <Suspense fallback={suspenseLoader}>
+                <Suspense fallback={suspenseLoader(darkMode)}>
                     <NotesPage 
                         darkMode={darkMode}
                         dashboard={dashboard}
@@ -113,7 +113,7 @@ return (
 
             {currentPage==='editor' && dashboard.selectedNoteId && 
 
-                <Suspense fallback={suspenseLoader}>
+                <Suspense fallback={suspenseLoader(darkMode)}>
                     <NoteEditor 
                         setCurrentPage={setCurrentPage} 
                         dashboard={dashboard} 
@@ -142,8 +142,9 @@ return (
 
             {currentPage==='settings' && 
 
-                <Suspense fallback={suspenseLoader}>
+                <Suspense fallback={suspenseLoader(darkMode)}>
                     <Settings 
+                        darkMode={darkMode}
                         setCurrentPage={setCurrentPage} 
                         signInFunction={signInFunction} 
                         signOutFunction={signOutFunction} 

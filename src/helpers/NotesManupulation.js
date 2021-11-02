@@ -30,7 +30,7 @@ export function addToWorkspace(newDashboard, element, position){
 // Function to add note to the branches if a note is selected and the note is not already a child
 // Also checks that the links respect the limits. Adds the noteToAdd to the branches of noteFrom
 // and does the opposite with the roots
-export function addToBranches (noteFrom, noteToAdd) {
+export function addToBranches (noteFrom, noteToAdd, destination, rootsOrBranches) {
 
     const notAlreadyInBranches = !noteFrom.branches.includes(noteToAdd.id);
     const notChildOfItself = noteFrom.id!==noteToAdd.id
@@ -44,11 +44,23 @@ export function addToBranches (noteFrom, noteToAdd) {
     notAlreadyInRoots && 
     rootsWithinLimits){
 
+        if(destination!==undefined){
+            if(rootsOrBranches){
+                noteFrom.branches.push(noteToAdd.id)
+                noteToAdd.roots = addElementAt(noteToAdd.roots, destination, noteFrom.id)
+            }
+            else{
+                noteFrom.branches = addElementAt(noteFrom.branches, destination, noteToAdd.id)
+                noteToAdd.roots.push(noteFrom.id)
+            }
+            return true
+        }
+        else{
             noteFrom.branches.push(noteToAdd.id)
             noteToAdd.roots.push(noteFrom.id)
-            return true
+        }
     }
-};
+}
 
 // Specular function to remove a note from the branches and alert for all the threads
 // that rely on that connection so that the user first has to restructure them manually
@@ -257,7 +269,11 @@ export function noteSelector(noteToSelect, mergeMode, setMergeMode, dashboard, p
     // If the mergeMode is not on, select a new note and update the links
     if(!mergeMode){
         if(!dashboard.selectedNoteId || dashboard.selectedNoteId!==noteToSelect.id){
-            
+            // removing the focus from the search bar
+            const searchBar = document.getElementById('search-bar')
+            if(searchBar){
+                searchBar.blur()
+            }
             const newDashboard = {...dashboard}
             newDashboard.prevSelectedNoteId = newDashboard.selectedNoteId
             newDashboard.selectedNoteId = noteToSelect.id

@@ -49,7 +49,17 @@ const tryFocusOnNote = (selectedNote, slicedNotes) => {
 		if(focusPos){
 			const targetElement = document.getElementById(focusPos.ui_id)
 			if(targetElement){
-				targetElement.scrollIntoView({block: 'nearest'})
+				if(!SHAREDMEX.setSearchSlice){
+					targetElement.scrollIntoView({block: 'nearest'})
+				}
+				else if(SHAREDMEX.setSearchSlice===-1){
+
+					targetElement.scrollIntoView({block: 'nearest', inline: 'start'})
+				}
+				else{
+					targetElement.scrollIntoView({block: 'nearest', inline: 'end'})
+				}
+				SHAREDMEX.setSearchSlice=0
 				return true
 			}
 		}
@@ -121,9 +131,16 @@ const NotesList = ({
 	// effect to keep the selected note at the center if the user is scrolling with the keys
 	useEffect(() => {
 		if(areaName==='search-area' && SHAREDMEX.usingScrollKeys){
-			tryFocusOnNote(selectedNote, slicedNotes)
+			if(!SHAREDMEX.setSearchSlice){
+				tryFocusOnNote(selectedNote, slicedNotes)
+				setIsVisible(true)
+			}
+			else{
+				setCurrentSlice(currentSlice+SHAREDMEX.setSearchSlice)
+				window.sessionStorage.setItem('current-slice-'+areaName, currentSlice+SHAREDMEX.setSearchSlice)
+				SHAREDMEX.currentSearchSlice = currentSlice+SHAREDMEX.setSearchSlice
+			}
 			SHAREDMEX.usingScrollKeys = false
-			setIsVisible(true)
 		}
 	// eslint-disable-next-line
 	},[selectedNote])
@@ -153,6 +170,9 @@ const NotesList = ({
 				newSearchProps.goClean = false
 			}
 			setSearchProps(newSearchProps)
+			if(SHAREDMEX.setSearchSlice){
+				tryFocusOnNote(selectedNote, slicedNotes)
+			}
 		}
 	// eslint-disable-next-line
 	}, [currentSlice])

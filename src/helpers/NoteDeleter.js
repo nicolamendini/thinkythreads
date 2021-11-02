@@ -16,7 +16,7 @@ import { updateNoteFile } from "./BackupHelper";
 // forceFlag controls whether the removal shouldbe forced without asking
 export async function noteDeleter(
     removingId, 
-    forceFlag,
+    reselect,
     newDashboard, 
     mergeMode, 
     setMergeMode,
@@ -69,13 +69,15 @@ export async function noteDeleter(
         // remove the note locally and update the dashboard
         db.notes.delete(removingId)
 
-        const noteIdxInSearch = newDashboard.search.findIndex(note => note.id===removingId)
-        if(noteIdxInSearch!==-1){
-            if(newDashboard.search[noteIdxInSearch+1]){
-                newDashboard.selectedNoteId = newDashboard.search[noteIdxInSearch+1].id
-            }
-            else if(noteIdxInSearch > 0 && newDashboard.search[noteIdxInSearch-1]){
-                newDashboard.selectedNoteId = newDashboard.search[noteIdxInSearch-1].id
+        if(reselect){
+            const noteIdxInSearch = newDashboard.search.findIndex(note => note.id===removingId)
+            if(noteIdxInSearch!==-1){
+                if(newDashboard.search[noteIdxInSearch+1]){
+                    newDashboard.selectedNoteId = newDashboard.search[noteIdxInSearch+1].id
+                }
+                else if(noteIdxInSearch > 0 && newDashboard.search[noteIdxInSearch-1]){
+                    newDashboard.selectedNoteId = newDashboard.search[noteIdxInSearch-1].id
+                }
             }
         }
         

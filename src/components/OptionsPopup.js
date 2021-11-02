@@ -41,7 +41,7 @@ const OptionsPopup = ({
 
                     <button 
                         className='popup-btn tools-btn'
-                        onClick={() => {openOccurrences(); saveAndExit(false, true)}}
+                        onClick={() => {openOccurrences(); saveAndExit()}}
                     >
                         Show Threads or Collections that contain this Note
                     </button>

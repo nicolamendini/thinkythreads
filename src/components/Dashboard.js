@@ -61,7 +61,8 @@ export const SHAREDMEX = {
     currentSearchSlice: window.localStorage.getItem('current-slice-search-area'),
     closingEditor: false,
     resetSearchScroll: false,
-    toasts: true
+    toasts: true,
+    setSearchSlice: 0
 }
 
 // Dashboard component, 
@@ -98,7 +99,6 @@ const Dashboard = ({
     // State that defines the search, in particular
     // the text in the search bar and the state of the two buttons on it
     const [searchProps, setSearchProps] = useState({...initSearchProps})
-
     // State that defines whether the user wants to see Roots or Branches
     const [rootsOrBranches, setRootsOrBranches] = useState(false);
     // State that defines the workspace mode currently on

@@ -100,6 +100,7 @@ const SearchBar = ({
 								'Type to search'
 							}
 						value={searchProps.searchText}
+						id='search-bar'
 					/>
 
 					<span 

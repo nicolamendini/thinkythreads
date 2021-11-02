@@ -14,14 +14,21 @@ import {IoIosArrowRoundBack} from 'react-icons/io'
 import { SHAREDMEX } from './Dashboard';
 import Switch from "react-switch";
 
-const Settings = ({ setCurrentPage, signInFunction, signOutFunction, loadedUser, GAPIloaded}) => {
+const Settings = ({ 
+    darkMode,
+    setCurrentPage, 
+    signInFunction, 
+    signOutFunction, 
+    loadedUser, 
+    GAPIloaded
+}) => {
 
     const toastsInit = window.localStorage.getItem('dashboard-toasts')
     const [toasts, setToasts] = useState(toastsInit==='false' ? false : true)
     SHAREDMEX.toasts = toasts
 
     return (
-        <div className='settings-page'>
+        <div className='settings-page' style={darkMode ? {backgroundColor: '#171717', color: 'white'} : {}}>
             <div className='settings-btns'>
                 <div className='settings-back'>
                     <IoIosArrowRoundBack
@@ -48,7 +55,7 @@ const Settings = ({ setCurrentPage, signInFunction, signOutFunction, loadedUser,
                 )}
 
 
-                <div className='settings-inline'>
+                <div className='settings-inline' style={darkMode ? {backgroundColor: '#101010', color: 'white'} : {}}>
                     <span style={{paddingTop:'5px'}}>Dashboard Toast Notifications</span>
                     <span>
                         <Switch onChange={

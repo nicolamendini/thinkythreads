@@ -64,15 +64,13 @@ const EditorFooter = ({
     }
 
     // Function to save and exit the note when the back arrow is pressed
-    const saveAndExit = (doUpdate, packIt) => {
+    const saveAndExit = (doUpdate) => {
         SHAREDMEX.closingEditor = true
         if(selectedNote.text===editorState && !hasChanged && editorState!=='' && !doUpdate){
             setCurrentPage('notes')
             createThumbnail(selectedNote)
             currOrPrevNoteDecice(dashboard)
-            if(packIt){
-                packDashboard({...dashboard}, false, true)
-            }
+            packDashboard({...dashboard})
             return
         }
 

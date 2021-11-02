@@ -179,7 +179,7 @@ const Footer = ({
                                     (previous) => !previous
                                 )
                                 if(!mergeMode){
-                                    notifyMerge()
+                                    SHAREDMEX.toasts && notifyMerge()
                                 }
                             }
                         }

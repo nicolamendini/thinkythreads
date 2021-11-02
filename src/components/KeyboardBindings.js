@@ -11,6 +11,11 @@ import { pastelCols, vividCols } from "./ColorPicker"
 import { manageWrapper, workspaceAdder, workspaceRemover } from "../helpers/NotesManupulation"
 
 const Mousetrap = require('mousetrap')
+const controller = Object.create(null)
+controller.enabled = true
+controller.resetTimer = 60
+controller.waitTimer = 250
+controller.timer = 60
 
 const KeyboardBindings = ({ 
 	dashboard,
@@ -33,26 +38,59 @@ const KeyboardBindings = ({
 }) => {
 
     // Function to select a new note and thus allow navigation with the left and right arrows
-    const selectInDir = (dir) => {
-        const selectedNoteIdx = dashboard.search.findIndex(note => note.id===dashboard.selectedNoteId)
-        if(selectedNoteIdx!==-1){
+    const selectInDir = (e, dir) => {
+        if (e.preventDefault) {
+            e.preventDefault()
+        } else {
+            // internet explorer
+            e.returnValue = false;
+        }
+        if(controller.enabled){
+            controller.enabled = false
+            controller.timer = controller.resetTimer
+
+            const selectedNoteIdx = dashboard.search.findIndex(note => note.id===dashboard.selectedNoteId)
             if(
-                dir==='left' && 
-                selectedNoteIdx > SHAREDMEX.currentSearchSlice*SLICESIZE
+                selectedNoteIdx!==-1 && 
+                selectedNoteIdx>=(SHAREDMEX.currentSearchSlice)*SLICESIZE &&
+                selectedNoteIdx<=(SHAREDMEX.currentSearchSlice+1)*SLICESIZE+SLICESIZE-1
             ){
-                const noteToLeft = dashboard.search[selectedNoteIdx-1]
-                selectNote(noteToLeft)
-                SHAREDMEX.usingScrollKeys = true
+                if(dir==='left'){
+                    if(selectedNoteIdx!==0){
+                        const noteToLeft = dashboard.search[selectedNoteIdx-1]
+                        selectNote(noteToLeft)
+                        SHAREDMEX.usingScrollKeys = true
+                        if(selectedNoteIdx===SHAREDMEX.currentSearchSlice*SLICESIZE){
+                            SHAREDMEX.setSearchSlice = -1
+                        }
+                        else if(selectedNoteIdx===SHAREDMEX.currentSearchSlice*SLICESIZE+1){
+                            document.getElementById('search-area').scrollLeft=0
+                            controller.timer=controller.waitTimer
+                        }
+                    }
+                    else{
+                        document.getElementById('search-area').scrollLeft=0
+                    }
+                }
+                else if(dir==='right'){
+                    if(selectedNoteIdx!==dashboard.search.length-1){
+                        const noteToRight = dashboard.search[selectedNoteIdx+1]
+                        selectNote(noteToRight)
+                        SHAREDMEX.usingScrollKeys = true
+                        if(selectedNoteIdx===(SHAREDMEX.currentSearchSlice+1)*SLICESIZE+SLICESIZE-1){
+                            SHAREDMEX.setSearchSlice = +1
+                        }
+                        else if(selectedNoteIdx===(SHAREDMEX.currentSearchSlice+1)*SLICESIZE+SLICESIZE-2){
+                            document.getElementById('search-area').scrollLeft=1000000
+                            controller.timer=controller.waitTimer
+                        }
+                    }
+                    else{
+                        document.getElementById('search-area').scrollLeft=1000000
+                    }
+                }
             }
-            else if(
-                dir==='right' && 
-                selectedNoteIdx < dashboard.search.length-1 && 
-                selectedNoteIdx < (SHAREDMEX.currentSearchSlice+1)*SLICESIZE+SLICESIZE-1
-                ){
-                const noteToRight = dashboard.search[selectedNoteIdx+1]
-                selectNote(noteToRight)
-                SHAREDMEX.usingScrollKeys = true
-            }
+            setTimeout(()=>{controller.enabled = true}, controller.timer)
         }
     }
 
@@ -60,7 +98,7 @@ const KeyboardBindings = ({
     const safeDelete = () => {
         if(dashboard.selectedNoteId){
             if(window.confirm('Delete the note?')){
-                deleteNote(dashboard.selectedNoteId)
+                deleteNote(dashboard.selectedNoteId, true)
             }
         }
     }
@@ -154,8 +192,8 @@ const KeyboardBindings = ({
 
     Mousetrap.bind('shift+left', () => currentPage==='notes' && !mergeMode && moveToExtremityWithKey(false))
     Mousetrap.bind('shift+right', () => currentPage==='notes' && !mergeMode && moveToExtremityWithKey(true))
-    Mousetrap.bind('left', () => currentPage==='notes' && !mergeMode && selectInDir('left'))
-    Mousetrap.bind('right', () => currentPage==='notes' && !mergeMode && selectInDir('right'))
+    Mousetrap.bind('left', (e) => currentPage==='notes' && !mergeMode && selectInDir(e,'left'))
+    Mousetrap.bind('right', (e) => currentPage==='notes' && !mergeMode && selectInDir(e,'right'))
     Mousetrap.bind('p', () => currentPage==='notes' && pinNoteWithKey())
     Mousetrap.bind('enter', () => currentPage==='notes' && dashboard.selectedNoteId && !mergeMode && openEditor())
     Mousetrap.bind('d', () => currentPage==='notes' && !mergeMode && safeDelete())

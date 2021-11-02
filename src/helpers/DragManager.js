@@ -56,7 +56,7 @@ export function dragManager(
             
             // if we are in branches mode add noteTo to noteFrom
             if(!rootsOrBranches){
-                if(addToBranches(noteToAdd, noteFrom)){
+                if(addToBranches(noteToAdd, noteFrom, result.destination.index, rootsOrBranches)){
                     backupNote(noteToAdd, 'meta', setNotesUpdating)
                     backupNote(noteFrom, 'meta', setNotesUpdating)
                 } 
@@ -64,7 +64,7 @@ export function dragManager(
 
             // otherwise do the opposite and add noteFrom to noteTo
             else{
-                if(addToBranches(noteFrom, noteToAdd)){
+                if(addToBranches(noteFrom, noteToAdd, result.destination.index, rootsOrBranches)){
                     backupNote(noteToAdd, 'meta', setNotesUpdating)
                     backupNote(noteFrom, 'meta', setNotesUpdating)
                 }   

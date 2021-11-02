@@ -216,23 +216,27 @@ export function setPreview(note){
 }
 
 // Tiny suspense loader component to avoid blank loading pages
-export const suspenseLoader = (
-    <div style={{
-        justifyContent: 'center', 
-        display: 'flex'
-        }}
-    >
-        <Loader
-            type="ThreeDots"
-            color="#c6c6c6"
-            height={50}
-            width={50}
-            style={{
-                marginTop: '25%'
+export const suspenseLoader = (darkMode) => {
+    return (
+        <div style={{
+            justifyContent: 'center', 
+            display: 'flex',
+            backgroundColor: darkMode ? '#171717' : 'white',
+            height: '100vh'
             }}
-        />
-    </div>
-)
+        >
+            <Loader
+                type="ThreeDots"
+                color="#c6c6c6"
+                height={50}
+                width={50}
+                style={{
+                    marginTop: '25%'
+                }}
+            />
+        </div>
+    )
+}
 
 // Utils function to see if two arrays are equal in a shallow way
 export function arraysEqual(array1, array2){

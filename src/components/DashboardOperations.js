@@ -113,7 +113,7 @@ const DashboardOperations = ({
     }
 
     // Delete a note by calling the note deleter function
-    const deleteNote = async (removingId, forceFlag, newDashboard) => {
+    const deleteNote = async (removingId, reselect, newDashboard) => {
 
         // If no newDashboard is given, use the one from the state
         // used because sometimes many operations have to happen on the same
@@ -124,7 +124,7 @@ const DashboardOperations = ({
 
         noteDeleter(
             removingId, 
-            forceFlag, 
+            reselect, 
             newDashboard, 
             mergeMode, 
             setMergeMode,
