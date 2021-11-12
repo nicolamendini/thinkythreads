@@ -23,9 +23,8 @@ const Settings = ({
     GAPIloaded
 }) => {
 
-    const toastsInit = window.localStorage.getItem('dashboard-toasts')
-    const [toasts, setToasts] = useState(toastsInit==='false' ? false : true)
-    SHAREDMEX.toasts = toasts
+    const toastsInit = SHAREDMEX.toasts
+    const [toasts, setToasts] = useState(toastsInit)
 
     return (
         <div className='settings-page' style={darkMode ? {backgroundColor: '#171717', color: 'white'} : {}}>

@@ -8,7 +8,7 @@ Provides links between the ui elements and bigger functions contained in the hel
 */
 
 import React from 'react'
-import { getNewNote, moveNoteInsideGraph} from "../helpers/DashboardUtils";
+import { addElementAt, getNewNote, moveNoteInsideGraph} from "../helpers/DashboardUtils";
 import { exportThreadGivenProps} from '../helpers/BackupHelper';
 import { backupNote } from '../helpers/RequestsMakers';
 import { currOrPrevNoteDecice } from '../helpers/DashboardUtils';
@@ -78,7 +78,7 @@ const DashboardOperations = ({
         // And backup the meta of the note that contains the collection
         if(newDashboard.openedCollectionId){
             const collectionNote = newDashboard.notes.get(newDashboard.openedCollectionId)
-            collectionNote.collection.push(newNote.id)
+            collectionNote.collection = addElementAt(collectionNote.collection, 0, newNote.id)
             backup(collectionNote, 'meta')
         }
 

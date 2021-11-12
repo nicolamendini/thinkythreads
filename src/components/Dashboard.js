@@ -61,7 +61,7 @@ export const SHAREDMEX = {
     currentSearchSlice: window.localStorage.getItem('current-slice-search-area'),
     closingEditor: false,
     resetSearchScroll: false,
-    toasts: true,
+    toasts: !(window.localStorage.getItem('dashboard-toasts')==='false'),
     setSearchSlice: 0
 }
 
