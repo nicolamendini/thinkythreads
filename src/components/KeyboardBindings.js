@@ -8,14 +8,14 @@ contains all the keyboard bindings that are applied to the dashboard and their r
 
 import { SLICESIZE, SHAREDMEX } from "./Dashboard"
 import { pastelCols, vividCols } from "./ColorPicker"
-import { manageWrapper, workspaceAdder, workspaceRemover } from "../helpers/NotesManupulation"
+import { workspaceAdder, workspaceRemover, manageWrapper } from "../helpers/DragManager"
 
 const Mousetrap = require('mousetrap')
 const controller = Object.create(null)
 controller.enabled = true
-controller.resetTimer = 60
+controller.resetTimer = 0
 controller.waitTimer = 250
-controller.timer = 60
+controller.timer = controller.resetTimer
 
 const KeyboardBindings = ({ 
 	dashboard,
@@ -58,14 +58,11 @@ const KeyboardBindings = ({
                 if(dir==='left'){
                     if(selectedNoteIdx!==0){
                         const noteToLeft = dashboard.search[selectedNoteIdx-1]
+                        setTriggerRerender((prev) => !prev)
                         selectNote(noteToLeft)
                         SHAREDMEX.usingScrollKeys = true
                         if(selectedNoteIdx===SHAREDMEX.currentSearchSlice*SLICESIZE){
                             SHAREDMEX.setSearchSlice = -1
-                        }
-                        else if(selectedNoteIdx===SHAREDMEX.currentSearchSlice*SLICESIZE+1){
-                            document.getElementById('search-area').scrollLeft=0
-                            controller.timer=controller.waitTimer
                         }
                     }
                     else{
@@ -75,14 +72,11 @@ const KeyboardBindings = ({
                 else if(dir==='right'){
                     if(selectedNoteIdx!==dashboard.search.length-1){
                         const noteToRight = dashboard.search[selectedNoteIdx+1]
+                        setTriggerRerender((prev) => !prev)
                         selectNote(noteToRight)
                         SHAREDMEX.usingScrollKeys = true
                         if(selectedNoteIdx===(SHAREDMEX.currentSearchSlice+1)*SLICESIZE+SLICESIZE-1){
                             SHAREDMEX.setSearchSlice = +1
-                        }
-                        else if(selectedNoteIdx===(SHAREDMEX.currentSearchSlice+1)*SLICESIZE+SLICESIZE-2){
-                            document.getElementById('search-area').scrollLeft=1000000
-                            controller.timer=controller.waitTimer
                         }
                     }
                     else{

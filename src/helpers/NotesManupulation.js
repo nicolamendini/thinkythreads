@@ -7,15 +7,14 @@ Function to manipulate and change Note objects
 eg: add/remove links or edit threads 
 */
 
-import { initSearchProps, LINKSLIMIT, SHAREDMEX, WORKSPACELIMIT} from '../components/Dashboard'
+import { LINKSLIMIT} from '../components/Dashboard'
 import { backupNote } from "./RequestsMakers";
 import { addElementAt, arraysEqual, getCaption, removeElementAt } from "./DashboardUtils";
-import { alreadyIn, mergeBothCardsOccupied, workspaceLimitReached } from "./Messages";
+import { alreadyIn, mergeBothCardsOccupied } from "./Messages";
 import { toast } from 'react-toastify';
 
 const notifyAlreadyIn = () => toast(alreadyIn)
 const notifyNotesAlreadyOccupied = () => toast(mergeBothCardsOccupied)
-const notifyWorkspaceLimit = () => toast(workspaceLimitReached)
 
 // Function to add a note to a thread if the element is not the opened thread itself
 export function addToWorkspace(newDashboard, element, position){
@@ -279,7 +278,7 @@ export function noteSelector(noteToSelect, mergeMode, setMergeMode, dashboard, p
             newDashboard.selectedNoteId = noteToSelect.id
             // this is done to make the update efective immediately and mitigate wrong renders
             dashboard.selectedNoteId = noteToSelect.id
-            packDashboard(newDashboard, false, false, true)
+            packDashboard(newDashboard, false, false, true, true)
         } 
     }
 
@@ -315,84 +314,4 @@ export function threadToCollection(note){
 export function collectionToThread(note){
     note.thread = note.collection
     note.collection = []
-}
-
-// Function to manage the wrapper's functionality
-export function manageWrapper(newDashboard, targetNote, threadOrCollection, setThreadOrCollection, setNotesUpdating){
-
-    // if the current workspace has notes, wrap them with the target note
-    if(newDashboard.workspaceIds.length>0 && !newDashboard.openedWorkspaceId){
-        wrapWorkspace(newDashboard, targetNote.id, setNotesUpdating, threadOrCollection )
-    }
-
-    // otherwise just expand the note so that the workspace now contains its thread or collection
-    else{
-        if(targetNote.thread.length){
-            openInWorkspace(true, newDashboard, setNotesUpdating, threadOrCollection, targetNote)
-            setThreadOrCollection(true)
-            
-        }
-        else if(targetNote.collection.length){
-            openInWorkspace(false, newDashboard, setNotesUpdating, threadOrCollection, targetNote)
-            setThreadOrCollection(false)
-        }
-        else{
-            openInWorkspace(threadOrCollection, newDashboard, setNotesUpdating, threadOrCollection)
-        }
-    }
-}
-
-// Function to add a note to the workspace
-export function workspaceAdder(dashboard, threadOrCollection, targetId, packDashboard, destination){
-
-    if(destination===undefined || destination===null){
-        destination = dashboard.workspaceIds.length
-    }
-
-    // check that the workspace does not break the limits
-    if(dashboard.workspaceIds.length > WORKSPACELIMIT){
-        notifyWorkspaceLimit()
-    }
-
-    // else if we are in thread mode, add to the thread and update the dashboard
-    else if(threadOrCollection){
-        const newDashboard = {...dashboard}
-        addToWorkspace(newDashboard, targetId, destination)
-        packDashboard(newDashboard, false, true, true)
-    }
-
-    // else if we are in collectionMode, check that the notes collection is not 
-    // already opened in dashboard and that the note is not already in, then add it
-    // to the collection and update the dashboard
-    else{
-        if(!dashboard.openedWorkspaceId ||
-            dashboard.openedWorkspaceId!==targetId
-        ){
-            if(!dashboard.workspaceIds.includes(targetId)){
-                const newDashboard = {...dashboard}
-                newDashboard.workspaceIds = addElementAt(newDashboard.workspaceIds, destination, targetId)
-                packDashboard(newDashboard, false, true)
-            }
-        }
-        else{
-            //alreadyInAlert();
-        }
-    }
-}
-
-// Function to remove a note from the workspace
-export function workspaceRemover(newDashboard, threadOrCollection, packDashboard, indexToRem){
-    newDashboard.workspaceIds = removeElementAt(newDashboard.workspaceIds, indexToRem)
-    if(indexToRem>0 && threadOrCollection){
-        newDashboard.prevSelectedNoteId = newDashboard.selectedNoteId
-        newDashboard.selectedNoteId = newDashboard.workspaceIds[indexToRem-1];
-    }
-    packDashboard(newDashboard, false, true, true)
-}
-
-export function dropOnSearchBar(newDashboard, setSearchProps, packDashboard, targetNote){
-    SHAREDMEX.resetSearchScroll = true
-    newDashboard.openedCollectionId = targetNote.id
-    setSearchProps({...initSearchProps})
-    packDashboard(newDashboard, true)
 }

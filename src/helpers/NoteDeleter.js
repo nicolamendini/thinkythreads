@@ -61,7 +61,7 @@ export async function noteDeleter(
             setMergeMode(false)
         }
 
-        // if possible, backup the removal and update the .config file on drive
+        // if possible, flag the note on drive as removed
         if(driveVariables.authorisation){
             updateNoteFile(noteToRemove, 'meta', setNotesUpdating)
         }

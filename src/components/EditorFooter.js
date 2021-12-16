@@ -8,7 +8,7 @@ Defines the buttons of the footer and calls the respective functions
 
 import { AiOutlinePushpin, AiFillPushpin }  from 'react-icons/ai'
 import { BsTrash } from 'react-icons/bs'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {IoIosArrowRoundBack} from 'react-icons/io'
 import ColorPicker from './ColorPicker';
 import OptionsPopup from './OptionsPopup';
@@ -41,6 +41,24 @@ const EditorFooter = ({
     packDashboard,
     editorRef
 }) => {
+
+    useEffect(() => {
+        // code snippet to update the binding each time the user types
+        // otherwise the note would not update with the correct editor state
+        if(editorRef && editorRef.current && editorRef.current.editor){
+            const prevBinding = editorRef.current.editor.keyboard.bindings[83]
+            if(prevBinding){
+                prevBinding.pop()
+            }
+            editorRef.current.editor.keyboard.addBinding({
+                key: 's',
+                shortKey: true,
+                handler: () => editorState.replace(/<[^>]*>?/gm, '') && saveAndExit()
+                }
+            )
+        }
+    // eslint-disable-next-line
+    }, [editorRef, editorState])
 
     var initialPinned = ''
     if(selectedNote){
@@ -116,21 +134,6 @@ const EditorFooter = ({
         }
         editorState.replace(/<img .*?>/gm, '0').replace(/<[^>]*>?/gm, '') && saveAndExit()
     })
-
-    // code snippet to update the binding each time the user types
-    // otherwise the note would not update with the correct editor state
-    if(editorRef && editorRef.current && editorRef.current.editor){
-        const prevBinding = editorRef.current.editor.keyboard.bindings[83]
-        if(prevBinding){
-            prevBinding.pop()
-        }
-        editorRef.current.editor.keyboard.addBinding({
-            key: 's',
-            shortKey: true,
-            handler: () => editorState.replace(/<[^>]*>?/gm, '') && saveAndExit()
-            }
-        )
-    }
 
     return(
 

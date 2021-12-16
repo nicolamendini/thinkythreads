@@ -117,6 +117,7 @@ const NoteDragContext = ({
                 rootsOrBranches={rootsOrBranches}
                 draggableInfo={draggableInfo}
                 triggerRerender={triggerRerender}
+                selectNote={selectNote}
             />
 
         </DragDropContext>

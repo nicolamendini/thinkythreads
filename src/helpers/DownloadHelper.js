@@ -22,7 +22,7 @@ export function setNoteFromResp(
     mediaResp, 
     currIdx, 
     setNotesUpdating, 
-    packDashboard,
+    setDashboardReady,
     finishedProcesses
 ){
 
@@ -65,7 +65,7 @@ export function setNoteFromResp(
                 newDashboard, 
                 notesOnDrive,  
                 setNotesUpdating, 
-                packDashboard, 
+                setDashboardReady, 
                 metaResp.result.nextPageToken
             )
         }
@@ -77,7 +77,7 @@ export function setNoteFromResp(
                 newDashboard, 
                 notesOnDrive, 
                 setNotesUpdating, 
-                packDashboard
+                setDashboardReady
             )
         }
     }
@@ -90,7 +90,7 @@ export function getNote(
     metaResp, 
     currIdx, 
     setNotesUpdating, 
-    packDashboard, 
+    setDashboardReady, 
     finishedProcesses,
     counter
 ){
@@ -105,7 +105,7 @@ export function getNote(
             mediaResp, 
             currIdx, 
             setNotesUpdating, 
-            packDashboard,
+            setDashboardReady,
             finishedProcesses
         )
 
@@ -118,7 +118,7 @@ export function getNote(
         metaResp, 
         currIdx,
         setNotesUpdating,
-        packDashboard,
+        setDashboardReady,
         finishedProcesses
     ))
 }
@@ -130,7 +130,7 @@ export function setNotesPageFromResp(
     notesOnDrive, 
     metaResp, 
     setNotesUpdating, 
-    packDashboard
+    setDashboardReady
 ){
 
     // keep count of the files processed for this page
@@ -160,7 +160,7 @@ export function setNotesPageFromResp(
                     metaResp, 
                     i,  
                     setNotesUpdating, 
-                    packDashboard,
+                    setDashboardReady,
                     finishedProcesses
                 )
                 setNotesUpdating((prev) => prev+1)
@@ -191,7 +191,7 @@ export function setNotesPageFromResp(
                 newDashboard, 
                 notesOnDrive, 
                 setNotesUpdating, 
-                packDashboard, 
+                setDashboardReady, 
                 metaResp.result.nextPageToken
             )
         }
@@ -202,7 +202,7 @@ export function setNotesPageFromResp(
                 newDashboard, 
                 notesOnDrive, 
                 setNotesUpdating, 
-                packDashboard
+                setDashboardReady
             )
         }
     }
@@ -213,7 +213,7 @@ export function getNotesPage(
     newDashboard, 
     notesOnDrive, 
     setNotesUpdating, 
-    packDashboard, 
+    setDashboardReady, 
     targetPageToken, 
     counter
 ){
@@ -233,7 +233,7 @@ export function getNotesPage(
             notesOnDrive, 
             metaResp, 
             setNotesUpdating, 
-            packDashboard
+            setDashboardReady
         )
         
     }).catch((error) => errorCatcher(
@@ -243,7 +243,7 @@ export function getNotesPage(
         newDashboard, 
         notesOnDrive, 
         setNotesUpdating,
-        packDashboard,
+        setDashboardReady,
         targetPageToken
     ))
 }
@@ -253,7 +253,7 @@ export function getNotesPage(
 export function getAllNotes(
     newDashboard, 
     setNotesUpdating, 
-    packDashboard, 
+    setDashboardReady, 
     counter
 ){
 
@@ -265,7 +265,7 @@ export function getAllNotes(
         newDashboard, 
         notesOnDrive,  
         setNotesUpdating, 
-        packDashboard
+        setDashboardReady
     )
 }
 
@@ -274,7 +274,7 @@ export function updateDriveNotes(
     newDashboard, 
     notesOnDrive, 
     setNotesUpdating, 
-    packDashboard
+    setDashboardReady
 ){
     var updatesCounter = 0
 
@@ -294,5 +294,5 @@ export function updateDriveNotes(
 
     newDashboard.checkedAgainstDrive = true
     console.log('setting dashboard')
-    packDashboard(newDashboard)
+    setDashboardReady(newDashboard)
 }

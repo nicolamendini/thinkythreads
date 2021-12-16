@@ -61,8 +61,9 @@ const Note = ({
 						ref={provided.innerRef} 
 						{...provided.draggableProps}
 						{...provided.dragHandleProps}
-						onClick={()=> handleNotePress(note)}
+						onClick={()=> areaName!=='branches-area' && handleNotePress(note)}
 						onDoubleClick={()=> openEditor(note)}
+						onContextMenu={(e) => {e.preventDefault(); areaName==='branches-area' && handleNotePress(note)}}
 						style={ 
 							!(mergeMode && selectedNote.id===note.id) ? (
 								!darkMode && note.color!=='#ffffff' ? 

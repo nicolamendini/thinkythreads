@@ -9,7 +9,7 @@ Implements the dashboard, which is the main component of the project
 import { useState, useEffect} from 'react';
 import React from 'react'
 import Dexie from 'dexie'
-import { createThumbnail} from "../helpers/DashboardUtils";
+import { createThumbnail, restoreDashboardState} from "../helpers/DashboardUtils";
 import { checkDriveFolder} from '../helpers/BackupHelper';
 import { getAllNotes } from '../helpers/DownloadHelper';
 import { backupNote } from '../helpers/RequestsMakers';
@@ -54,7 +54,12 @@ db.version(1).stores({
 // editorModeSelection tells whether the editor should select the current selected note or the
 // previously selected note once it is closed, based on where the note was opened from in the dashboard
 // usingScrollKeys tells whether the user is scrolling with the keyboard
-//currentSearchSlice tells at what slice of note the search area is currently at
+// currentSearchSlice tells at what slice of note the search area is currently at
+// closingEditor tells you whether the rerender is caused by the editor closing
+// resetSearchScroll tells you whether to reset the scroll of the search after cleaning the search
+// toasts tells you whether the toast setting is on
+// setSearchSlice tells you whether the change in slice is due to resetting the search or scrolling through pages
+// in particular it tells you whether you are scrolling left or right with the keys
 export const SHAREDMEX = {
     editorModeSelection: 'curr',
     usingScrollKeys: false,
@@ -114,6 +119,8 @@ const Dashboard = ({
     const [darkMode, setDarkMode] = useState(false);
     // State tha keeps the count of how many notes are updating at the moment
     const [notesUpdating, setNotesUpdating] = useState(0)
+    // State tha keeps the count of how many notes are updating at the moment
+    const [dashboardReady, setDashboardReady] = useState(false)
     // Note to update but with a delay, used for several functions
     const [delayedNoteUpdate, setDelayedNoteUpdate] = useState({
         note: null, 
@@ -223,6 +230,16 @@ const Dashboard = ({
     // eslint-disable-next-line
     },[dashboard])
 
+    useEffect(() => {
+        if(dashboardReady){
+            const newDashboard = {...dashboardReady}
+            restoreDashboardState(newDashboard, dashboard)
+            packDashboard(newDashboard)
+            setDashboardReady(false)
+        }
+    // eslint-disable-next-line
+    }, [dashboardReady, dashboard])
+
     // Utils function to synchronise all the notes with GDRIVE
     const synchNotes = (newDashboard) => {
         if(!newDashboard){
@@ -234,7 +251,7 @@ const Dashboard = ({
             getAllNotes(
                 newDashboard, 
                 setNotesUpdating, 
-                packDashboard
+                setDashboardReady
             )
         }
     }
@@ -248,9 +265,11 @@ const Dashboard = ({
     }
 
     // Utils function used to refresh the whole dashboard and not just individual areas
-    const packDashboard = (newDashboard, sFlag, wFlag, lFlag) => {
+    const packDashboard = (newDashboard, sFlag, wFlag, lFlag, disableCheck) => {
 
-        checkLinksSanity(newDashboard, backup)
+        if(!disableCheck){
+            checkLinksSanity(newDashboard, backup)
+        }
 
         // Flags that control what parts of the dashboard should be recomputed
         const allFalse = !sFlag && !wFlag && !lFlag

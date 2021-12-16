@@ -280,6 +280,7 @@ export function sanitiseForRemoval(newDashboard, removingId){
                 newDashboard.firstNoteId = noteAtRight.id
                 noteAtRight.leftLink = null
                 noteAtRight.version += 1
+                delete noteAtRight.text
                 db.notes.update(noteAtRight.id, noteAtRight)
             }
         }
@@ -289,6 +290,7 @@ export function sanitiseForRemoval(newDashboard, removingId){
         if(newLastNote){
             newLastNote.rightLink = null
             newLastNote.version += 1
+            delete newLastNote.text
             db.notes.update(newLastNote.id, newLastNote)
         }
     }
@@ -306,4 +308,22 @@ export function currOrPrevNoteDecice(newDashboard){
     }
 }
 
+export function restoreDashboardState(newDashboard, dashboard){
+    if(newDashboard.notes.get(dashboard.selectedNoteId)){
+        newDashboard.selectedNoteId = dashboard.selectedNoteId
+    }
+    if(newDashboard.notes.get(dashboard.prevSelectedNoteId)){
+        newDashboard.prevSelectedNoteId = dashboard.prevSelectedNoteId
+    }
+    if(newDashboard.notes.get(dashboard.openedCollectionId)){
+        newDashboard.openedCollectionId = dashboard.openedCollectionId
+    }
+    if(newDashboard.notes.get(dashboard.openedWorkspaceId)){
+        newDashboard.openedWorkspaceId = dashboard.openedWorkspaceId
+    }
+    newDashboard.workspaceIds = dashboard.workspaceIds.flatMap(
+        (id) => 
+            newDashboard.notes.get(id) ? [id] : []
+    )
+}
 

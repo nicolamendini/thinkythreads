@@ -211,6 +211,10 @@ const Info = () => {
                         <td>ctrl/cmd + ?</td>
                         <td>see in what other notes the selected note occurs</td>
                     </tr>
+                    <tr>
+                        <td>right click (from links area)</td>
+                        <td>select the clicked note and expand its roots/branches dependind on the mode</td>
+                    </tr>
                 </tbody>
             </table>
 

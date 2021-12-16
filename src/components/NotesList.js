@@ -49,13 +49,15 @@ const tryFocusOnNote = (selectedNote, slicedNotes) => {
 		if(focusPos){
 			const targetElement = document.getElementById(focusPos.ui_id)
 			if(targetElement){
+				// if the note is between a slice
 				if(!SHAREDMEX.setSearchSlice){
 					targetElement.scrollIntoView({block: 'nearest'})
 				}
+				// if the note is at the beginning of a slice
 				else if(SHAREDMEX.setSearchSlice===-1){
-
 					targetElement.scrollIntoView({block: 'nearest', inline: 'start'})
 				}
+				// if the note is at the end of a slice
 				else{
 					targetElement.scrollIntoView({block: 'nearest', inline: 'end'})
 				}
@@ -158,18 +160,21 @@ const NotesList = ({
 	useEffect(() => {
 		if(areaName==='search-area'){
 			const newSearchProps = {...searchProps}
+			// record whether the slices are scrolled
 			if(currentSlice > 0){
 				newSearchProps.areSlicesScrolled = true
 			}
 			else{
 				newSearchProps.areSlicesScrolled = false
 			}
+			// if you have to clean the search, do it
 			if(searchProps.goClean){
 				const container = document.getElementById(areaName)
 				container.scrollLeft = 0
 				newSearchProps.goClean = false
 			}
 			setSearchProps(newSearchProps)
+			// if the page is changing, focus on the note
 			if(SHAREDMEX.setSearchSlice){
 				tryFocusOnNote(selectedNote, slicedNotes)
 			}

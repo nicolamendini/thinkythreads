@@ -25,12 +25,12 @@ const LinksArea = ({
     openEditor, 
     rootsOrBranches,
     draggableInfo,
-    triggerRerender
+    triggerRerender,
+    selectNote
 }) => { 
 
     // Flag to check whether a note is allowed to be dropped in the links area
     const isDropDisabled = 
-        draggableInfo.sourceArea==='workspace-area' ||
         (draggableInfo.note && draggableInfo.note.id===dashboard.selectedNoteId)
 
     // function to open the editor when a note is double clicked from the links area
@@ -58,7 +58,7 @@ const LinksArea = ({
                 notes={dashboard.links}
                 areaName={'branches-area'}
                 darkMode={darkMode}
-                handleNotePress={() => {}}
+                handleNotePress={selectNote}
                 selectedNote={dashboard.notes.get(dashboard.selectedNoteId)}
                 mergeMode={mergeMode}
                 threadOrCollection={threadOrCollection}

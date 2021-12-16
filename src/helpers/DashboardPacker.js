@@ -6,7 +6,6 @@ DashboardPacker functions
 Update the functions based on the new states of the dashboard
 */
 
-import { db } from "../components/Dashboard"
 import { copyNote } from "./DashboardUtils"
 import { backupNote } from "./RequestsMakers"
 
@@ -207,7 +206,6 @@ export function errorAlert(message, id, newDashboard){
 
 const updateElement = (note, updatesCounter, backup) => {
     updatesCounter.n += 1
-    db.notes.update(note.id, note)
     setTimeout(() => {
         backup(note, 'meta')
     }, (200 * updatesCounter.n))
