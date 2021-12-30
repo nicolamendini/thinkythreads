@@ -20,7 +20,9 @@ const Settings = ({
     signInFunction, 
     signOutFunction, 
     loadedUser, 
-    GAPIloaded
+    GAPIloaded,
+    showIsolatedNotes, 
+    stats
 }) => {
 
     const toastsInit = SHAREDMEX.toasts
@@ -66,6 +68,14 @@ const Settings = ({
                             checked={toasts} 
                         />
                     </span>
+                </div>
+
+                You have {stats.numberOfNotes} notes and {stats.numberOfLinks} links.
+
+                <div className='settings-inline tools-btn' style={darkMode ? {backgroundColor: '#101010', color: 'white'} : {}} 
+                    onClick={()=>showIsolatedNotes()}
+                >
+                    <span style={{paddingTop:'5px'}}>Show Isolated Notes</span>
                 </div>
                 
             </div>

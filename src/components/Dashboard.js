@@ -20,6 +20,7 @@ import "katex/dist/katex.min.css";
 import katex from "katex";
 import DashboardOperations from './DashboardOperations';
 
+var parser = require('ua-parser-js')();
 window.katex = katex
 
 // Define the limits of the app to avoid extreme usages and crashes
@@ -67,7 +68,8 @@ export const SHAREDMEX = {
     closingEditor: false,
     resetSearchScroll: false,
     toasts: !(window.localStorage.getItem('dashboard-toasts')==='false'),
-    setSearchSlice: 0
+    setSearchSlice: 0, 
+    ios: parser.os.name==='iOS'
 }
 
 // Dashboard component, 

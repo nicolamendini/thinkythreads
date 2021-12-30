@@ -141,6 +141,14 @@ export function dragManager(
             packDashboard(newDashboard, false, true, true)
         }
 
+        // if the destination is the wrapper area
+        else if(result.destination.droppableId==='wrapper-area'){
+            const newDashboard = {...dashboard}
+            const targetNote = dashboard.workspace[result.source.index]
+            manageWrapper(newDashboard, targetNote, threadOrCollection, setThreadOrCollection, setNotesUpdating)
+            packDashboard(newDashboard)
+        }
+
         // if the destination is the search bar, open the collection of the dragged note
         else if(result.destination.droppableId==='search-bar'){
             const newDashboard = {...dashboard}
@@ -191,6 +199,14 @@ export function dragManager(
             const targetId = dashboard.links[result.source.index].id
             const destination = result.destination.index
             workspaceAdder(dashboard, threadOrCollection, targetId, packDashboard, destination)
+        }
+
+        // if the destination is the wrapper area
+        else if(result.destination.droppableId==='wrapper-area'){
+            const newDashboard = {...dashboard}
+            const targetNote = dashboard.links[result.source.index]
+            manageWrapper(newDashboard, targetNote, threadOrCollection, setThreadOrCollection, setNotesUpdating)
+            packDashboard(newDashboard)
         }
 
         // if the destination is the branches area itself, just reorder and update

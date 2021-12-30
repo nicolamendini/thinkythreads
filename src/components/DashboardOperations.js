@@ -323,6 +323,41 @@ const DashboardOperations = ({
             !doBackup
         )
     }
+
+    // show all notes that are not connected to other notes or present in any collection
+    const showIsolatedNotes = () => {
+        const newDashboard = {...dashboard}
+        closeAndSaveWorkspace(newDashboard, setNotesUpdating, threadOrCollection)
+
+        const copyMap = new Map(dashboard.notes)
+        for(const [, note] of dashboard.notes){
+            for(const id of note.branches){
+                copyMap.delete(id)
+            }
+            for(const id of note.roots){
+                copyMap.delete(id)
+            }
+            for(const id of note.collection){
+                copyMap.delete(id)
+            }
+        }
+        const lostNotes = [...copyMap.keys()]
+        
+        newDashboard.workspaceIds = lostNotes
+        packDashboard(newDashboard, false, true)
+        setCurrentPage('notes')
+    }
+
+    const getStats = () => {
+        const stats = {}
+        stats.numberOfNotes = dashboard.notes.size
+        stats.numberOfLinks = 0
+        for(const [, note] of dashboard.notes){
+            stats.numberOfLinks += note.branches.length
+        }
+        return stats
+    }
+
     return (
         <DashboardTree 
             dashboard={dashboard}
@@ -362,6 +397,8 @@ const DashboardOperations = ({
             signOutFunction={signOutFunction}
             threadCollectionSwap={threadCollectionSwap}
             handleOnDragEnd={handleOnDragEnd}
+            showIsolatedNotes={showIsolatedNotes}
+            getStats={getStats}
         />
     )
 }

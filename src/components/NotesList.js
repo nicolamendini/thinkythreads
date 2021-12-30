@@ -235,7 +235,7 @@ const NotesList = ({
 								: null}
 							</div>
 
-							{(areaName==='workspace-area' && workspaceFlag) &&
+							{areaName==='workspace-area' &&
 
 								<Wrapper 
 									threadOrCollection={threadOrCollection}
@@ -243,6 +243,7 @@ const NotesList = ({
 									draggableInfo={draggableInfo}
 									notes={notes}
 									darkMode={darkMode}
+									workspaceFlag={workspaceFlag}
 								/>
 							}
 

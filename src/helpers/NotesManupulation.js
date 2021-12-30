@@ -37,26 +37,47 @@ export function addToBranches (noteFrom, noteToAdd, destination, rootsOrBranches
     const notAlreadyInRoots = !noteToAdd.roots.includes(noteFrom.id);
     const rootsWithinLimits = noteToAdd.roots.length < LINKSLIMIT
 
-    if(notAlreadyInBranches && 
+    if(
     notChildOfItself && 
     branchesWithinLimit && 
-    notAlreadyInRoots && 
     rootsWithinLimits){
+
+        var anyChangesFlag = false
 
         if(destination!==undefined){
             if(rootsOrBranches){
-                noteFrom.branches.push(noteToAdd.id)
-                noteToAdd.roots = addElementAt(noteToAdd.roots, destination, noteFrom.id)
+                if(notAlreadyInBranches){
+                    anyChangesFlag = true
+                    noteFrom.branches.push(noteToAdd.id)
+                }
+                if(notAlreadyInRoots){
+                    anyChangesFlag = true
+                    noteToAdd.roots = addElementAt(noteToAdd.roots, destination, noteFrom.id)
+                }
             }
             else{
-                noteFrom.branches = addElementAt(noteFrom.branches, destination, noteToAdd.id)
-                noteToAdd.roots.push(noteFrom.id)
+                if(notAlreadyInBranches){
+                    anyChangesFlag = true
+                    noteFrom.branches = addElementAt(noteFrom.branches, destination, noteToAdd.id)
+                }
+                if(notAlreadyInRoots){
+                    anyChangesFlag = true
+                    noteToAdd.roots.push(noteFrom.id)
+                }
             }
-            return true
         }
         else{
-            noteFrom.branches.push(noteToAdd.id)
-            noteToAdd.roots.push(noteFrom.id)
+            if(notAlreadyInBranches){
+                anyChangesFlag = true
+                noteFrom.branches.push(noteToAdd.id)
+            }
+            if(notAlreadyInRoots){
+                anyChangesFlag = true
+                noteToAdd.roots.push(noteFrom.id)
+            }
+        }
+        if(anyChangesFlag){
+            return true
         }
     }
 }
@@ -228,7 +249,8 @@ export function closeAndSaveWorkspace(newDashboard, setNotesUpdating, threadOrCo
 
     if(newDashboard.openedWorkspaceId){
         const targetNote = newDashboard.notes.get(newDashboard.openedWorkspaceId)
-        // flag to check if any changes occurred and therefore if there needs to be backup
+        
+        // used to track whether the open note needs a backup
         var anyChangesFlag=false
 
         if(threadOrCollection){
@@ -236,10 +258,8 @@ export function closeAndSaveWorkspace(newDashboard, setNotesUpdating, threadOrCo
             anyChangesFlag = arraysEqual(targetNote.thread, newDashboard.workspaceIds)
 
             // if changes, assign and relink
-            if(anyChangesFlag){
-                targetNote.thread = newDashboard.workspaceIds;
-                linkThreadNotes(newDashboard, targetNote.thread, setNotesUpdating)
-            }
+            targetNote.thread = newDashboard.workspaceIds;
+            linkThreadNotes(newDashboard, targetNote.thread, setNotesUpdating)
         }
 
         else{

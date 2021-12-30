@@ -61,7 +61,7 @@ const Note = ({
 						ref={provided.innerRef} 
 						{...provided.draggableProps}
 						{...provided.dragHandleProps}
-						onClick={()=> areaName!=='branches-area' && handleNotePress(note)}
+						onClick={()=> selectedNote&&selectedNote.id===note.id ? openEditor(note) : areaName!=='branches-area' && handleNotePress(note)}
 						onDoubleClick={()=> openEditor(note)}
 						onContextMenu={(e) => {e.preventDefault(); areaName==='branches-area' && handleNotePress(note)}}
 						style={ 

@@ -56,7 +56,9 @@ const DashboardTree = ({
     signInFunction,
     signOutFunction,
     threadCollectionSwap,
-    handleOnDragEnd
+    handleOnDragEnd,
+    showIsolatedNotes,
+    getStats
 }) => {
 
 return (
@@ -149,7 +151,10 @@ return (
                         signInFunction={signInFunction} 
                         signOutFunction={signOutFunction} 
                         loadedUser={currentUser} 
-                        GAPIloaded={GAPIloaded}/>
+                        GAPIloaded={GAPIloaded}
+                        showIsolatedNotes={showIsolatedNotes}
+                        stats={getStats()}
+                        />
                 </Suspense>
             }
 

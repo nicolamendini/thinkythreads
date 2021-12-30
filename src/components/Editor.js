@@ -14,7 +14,7 @@ import {useState, useRef} from "react"
 import EditorFooter from "./EditorFooter"
 import ImageCompress from 'quill-image-compress';
 import ImageResize from '@taoqf/quill-image-resize-module'
-import { TEXTLIMIT } from './Dashboard';
+import { SHAREDMEX, TEXTLIMIT } from './Dashboard';
 import { charLimit } from '../helpers/Messages';
 import { setPreview } from '../helpers/DashboardUtils';
 import { toast } from 'react-toastify';
@@ -128,6 +128,11 @@ const handleChange = (value, delta, editorRef, setEditorState) => {
         // don't save any further text and send an alert
         if(value.length < TEXTLIMIT){
             setEditorState(value)
+
+            // auto scroll when typing at the bottom of the page, needed to fix a quill bug
+            if(quill.getLength()===delta.ops[0].retain+2){
+                document.getElementsByClassName('ql-editor')[0].scrollIntoView({block: 'end'})
+            }
         }
         else{
             notify()
@@ -204,8 +209,30 @@ const NoteEditor = ({
         if(editorRef && !editorState){
             editorRef.current.editor.focus()
         }
+
+        if(SHAREDMEX.ios){
+            const editorObj = document.getElementsByClassName('ql-editor')[0]
+            if(editorObj){
+                editorObj.style.fontSize = '15px'
+            }
+        }
     // eslint-disable-next-line
     },[])
+
+    useEffect(() => {
+        const toolbar = document.getElementsByClassName('ql-toolbar')[0]
+        if(toolbar){
+            const style = darkMode ? (backColor.color!=='#ffffff' ? 
+                {backgroundImage: 'linear-gradient(20deg, #171717 90%, ' + (backColor.colorPreview || '#171717') + ' 90%)', color: 'white'} 
+                : {backgroundColor: '#171717', color: 'white'}) :
+                {backgroundColor: backColor.color || '#ffffff'}
+
+            toolbar.style.backgroundImage = style.backgroundImage
+            toolbar.style.color = style.color
+            toolbar.style.backgroundColor = style.backgroundColor
+    }
+    // eslint-disable-next-line
+    },[backColor])
 
     return (
             <div 
@@ -216,20 +243,13 @@ const NoteEditor = ({
                 {backgroundColor: backColor.color}
                 }
             >            
-            <div
-                className='color-flag'
-                style={ darkMode ? (backColor.color!=='#ffffff' ? 
-                    {backgroundImage: 'linear-gradient(20deg, #171717 90%, ' + (backColor.colorPreview || '#171717') + ' 90%)', color: 'white'} 
-                    : {backgroundColor: '#171717', color: 'white'}) :
-                    {backgroundColor: backColor.color || '#ffffff'}
-                }
-            ></div>
+
                 <div className="editor no-scrollbar" id="editor">
                     <ReactQuill 
                         style={{zoom: 1.4}}
                         theme="snow"
                         value={editorState}
-                        onChange={(value, delta) => handleChange(value, delta, editorRef, setEditorState)}
+                        onChange={(value, delta) => {handleChange(value, delta, editorRef, setEditorState)}}
                         modules={modules}
                         placeholder={'Write your next idea here...'}
                         ref={editorRef}
@@ -237,7 +257,7 @@ const NoteEditor = ({
                     />
                 </div>
 
-                <div className='saved-changes' style={{backgroundColor: darkMode ? '#171717' : (backColor.color || 'white')}}>
+                <div className='saved-changes'>
                     {!backupState ? 'Unsaved changes...' : 'All changes have been saved'}
                 </div>
 

@@ -16,28 +16,34 @@ const Wrapper = ({
     notesLength,
     draggableInfo,
     notes,
-    darkMode
+    darkMode,
+    workspaceFlag
 }) => {
 
     // Disable dropping here unless the note comes from the search area
     // and it is empty if you are trying to wrap an unsaved thread/collection
     // or it is full if you are trying to expand it to show its content
     const isDropDisabled = 
-        draggableInfo.sourceArea!=='search-area' ||
-        (
-            notesLength>0 ? (
+        (workspaceFlag && draggableInfo.sourceArea==='workspace-area') 
+        
+        ||
 
-                draggableInfo.note.thread.length>0 || 
-                draggableInfo.note.collection.length>0
-            )
-            :
-            (
-                !draggableInfo.note.thread.length && 
-                !draggableInfo.note.collection.length 
-            )
+        (workspaceFlag && notes.find(note => note.id===draggableInfo.note.id)!==undefined)
+
+        ||
+
+        (workspaceFlag && draggableInfo.note.id!==null && (notesLength>0 ? (
+
+            draggableInfo.note.thread.length>0 || 
+            draggableInfo.note.collection.length>0
+        )
+        :
+        (
+            !draggableInfo.note.thread.length && 
+            !draggableInfo.note.collection.length 
+        )))
             
-        ) ||
-        (notes.find(note => note.id===draggableInfo.note.id)!==undefined)
+        
     
     return (
 
@@ -52,7 +58,7 @@ const Wrapper = ({
                     {...provided.droppableProps} 
                     ref={provided.innerRef} 
                     style={ 
-                        notesLength > 0 ? (
+                        (notesLength > 0 && workspaceFlag) ? (
                             {
                             ...(
                                 darkMode ?
@@ -62,24 +68,25 @@ const Wrapper = ({
                                     threadOrCollection ? {backgroundColor:'#fef3bd', color:'black'} 
                                     : {backgroundColor:'#c4def6', color:'black'}
                             ), 
-                            ...(!snapshot.isDraggingOver && {minWidth:"8vh"})
+                            ...(!snapshot.isDraggingOver && {minWidth:"8vh !important"})
                             })
                         : 
                         darkMode ?
-                        {backgroundColor: '#2e2e2e', minWidth:"8vh", color: '#666666'}
+                        {backgroundColor: snapshot.isDraggingOver ? '#aaaaaa' : '#2e2e2e', minWidth:"8vh", color: '#666666'}
                         :
-                        {backgroundColor: '#f4f4f4', minWidth:"8vh", boxShadow: '1px 0px 1px #dddddd'}
+                        {
+                            backgroundColor: snapshot.isDraggingOver ? draggableInfo.note.color : '#f4f4f4', 
+                            minWidth: "8vh", 
+                            boxShadow: '1px 0px 1px #dddddd', 
+                            border: snapshot.isDraggingOver ? '1px dashed #aaaaaa' : undefined,
+                        }
                     }
                 >
-
-                <div className='vertical-text'>{notesLength>0 ? 'WRAP' : 'drop to expand'}</div>
-
-                {provided.placeholder}
 
                 {
                     snapshot.isDraggingOver?
                     
-                        (notesLength > 0 ?
+                        ((notesLength > 0 && workspaceFlag) ?
                             (
                                 <div className='vertical-text'>
                                     wrap <br></br> 
@@ -98,8 +105,10 @@ const Wrapper = ({
                                     }
                                 </div>
                             ) 
-                        ) : null
+                        ) : <div className='vertical-text'>{(notesLength > 0 && workspaceFlag) ? 'wrap' : 'drop to expand'}</div>
                 }
+
+                {provided.placeholder}
 
                 </div>
 
