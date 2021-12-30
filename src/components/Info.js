@@ -140,7 +140,7 @@ const Info = () => {
             <h3>Here's an example of how to use the App</h3>
 
             <br></br>
-                <div className="info-img-container"><img src={draggingImg} alt="footer" className="use case example" style={{maxWidth:'600px'}}></img></div>
+                <div className="info-img-container"><img src={draggingImg} alt="use case example" className="info-images" style={{maxWidth:'600px'}}></img></div>
             <br></br>
 
             <ol>
