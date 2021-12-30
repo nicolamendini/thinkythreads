@@ -28,20 +28,11 @@ const Wrapper = ({
         
         ||
 
-        (workspaceFlag && notes.find(note => note.id===draggableInfo.note.id)!==undefined)
-
-        ||
-
-        (workspaceFlag && draggableInfo.note.id!==null && (notesLength>0 ? (
+        (workspaceFlag && draggableInfo.note.id!==null && notesLength>0 && (
 
             draggableInfo.note.thread.length>0 || 
             draggableInfo.note.collection.length>0
-        )
-        :
-        (
-            !draggableInfo.note.thread.length && 
-            !draggableInfo.note.collection.length 
-        )))
+        ))
             
         
     
@@ -59,17 +50,15 @@ const Wrapper = ({
                     ref={provided.innerRef} 
                     style={ 
                         (notesLength > 0 && workspaceFlag) ? (
-                            {
-                            ...(
+                            (
                                 darkMode ?
-                                    threadOrCollection ? {backgroundColor:'#fccb00', color:'black'} 
-                                    : {backgroundColor:'#1273de', color:'white'}
+                                    threadOrCollection ? {backgroundColor:'#fccb00', color:'black', minWidth:"8vh"} 
+                                    : {backgroundColor:'#1273de', color:'white', minWidth:"8vh"}
                                 :
-                                    threadOrCollection ? {backgroundColor:'#fef3bd', color:'black'} 
-                                    : {backgroundColor:'#c4def6', color:'black'}
-                            ), 
-                            ...(!snapshot.isDraggingOver && {minWidth:"8vh !important"})
-                            })
+                                    threadOrCollection ? {backgroundColor:'#fef3bd', color:'black', minWidth:"8vh"} 
+                                    : {backgroundColor:'#c4def6', color:'black', minWidth:"8vh"}
+                            ) 
+                            )
                         : 
                         darkMode ?
                         {backgroundColor: snapshot.isDraggingOver ? '#aaaaaa' : '#2e2e2e', minWidth:"8vh", color: '#666666'}

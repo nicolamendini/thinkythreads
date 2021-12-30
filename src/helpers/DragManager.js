@@ -54,7 +54,7 @@ export function dragManager(
             const newDashboard = {...dashboard}
             const noteFrom = newDashboard.notes.get(dashboard.search[result.source.index].id)
             dropToBranches(noteFrom, result, dashboard, newDashboard, rootsOrBranches, backupNote, setNotesUpdating)
-            packDashboard(newDashboard, false, false, true)
+            packDashboard(newDashboard)
         }
 
         // if the destination is the wrapper area
@@ -161,7 +161,7 @@ export function dragManager(
             const newDashboard = {...dashboard}
             const noteFrom = newDashboard.notes.get(dashboard.workspace[result.source.index].id)
             dropToBranches(noteFrom, result, dashboard, newDashboard, rootsOrBranches, backupNote, setNotesUpdating)
-            packDashboard(newDashboard, false, false, true)
+            packDashboard(newDashboard)
         }
     }
 
@@ -190,7 +190,7 @@ export function dragManager(
                 }
             }
 
-            packDashboard(newDashboard, true, false, true);
+            packDashboard(newDashboard)
         }
 
         // if the destination is the workspace area, add to thread
@@ -340,7 +340,7 @@ export function manageWrapper(newDashboard, targetNote, threadOrCollection, setT
             setThreadOrCollection(false)
         }
         else{
-            openInWorkspace(threadOrCollection, newDashboard, setNotesUpdating, threadOrCollection)
+            openInWorkspace(threadOrCollection, newDashboard, setNotesUpdating, threadOrCollection, targetNote)
         }
     }
 }
