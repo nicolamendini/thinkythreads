@@ -55,6 +55,9 @@ const Settings = ({
                 />
                 )}
 
+                <br></br>
+                You have {stats.numberOfNotes} notes and {stats.numberOfLinks} links.
+
 
                 <div className='settings-inline' style={darkMode ? {backgroundColor: '#101010', color: 'white'} : {}}>
                     <span style={{paddingTop:'5px'}}>Dashboard Toast Notifications</span>
@@ -69,8 +72,6 @@ const Settings = ({
                         />
                     </span>
                 </div>
-
-                You have {stats.numberOfNotes} notes and {stats.numberOfLinks} links.
 
                 <div className='settings-inline tools-btn' style={darkMode ? {backgroundColor: '#101010', color: 'white'} : {}} 
                     onClick={()=>showIsolatedNotes()}
