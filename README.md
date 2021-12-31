@@ -143,3 +143,11 @@ at most a Thread or a Collection.
 | ctrl/cmd + s (from editor)    | save the current note and quit the editor                                   |
 | ctrl/cmd + ?                  | see in what other notes the selected note occurs                            |
 | right click (from links area) | select the clicked note and expand its roots/branches dependind on the mode |
+
+# Privacy Policy
+
+  Thinkythreads is fully decentralised and local. No data about the user is collected, including location. 
+  What the user does or writes with the app only belongs to them.
+  The user can decide whether to link the app to their Google Account in order to access the Google Drive Backup functionality.
+  In that case, the app data will be stored as a simple folder containing separate files for each note. 
+  To disable this functionality, it is sufficient to log out. No third parties are involved except Google.
