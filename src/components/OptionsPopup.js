@@ -36,63 +36,61 @@ const OptionsPopup = ({
         modal
         open={open} 
         >   
-            <div className='blurrer' onClick={() => setOpen(false)}>
-                <div className='modal menu-popup'>
+            <div className='menu-popup'>
 
-                    <button 
-                        className='popup-btn tools-btn'
-                        onClick={() => {openOccurrences(); saveAndExit()}}
-                    >
-                        Show Threads or Collections that contain this Note
-                    </button>
+                <button 
+                    className='popup-btn tools-btn'
+                    onClick={() => {openOccurrences(); saveAndExit()}}
+                >
+                    Show Threads or Collections that contain this Note
+                </button>
 
-                    <button 
-                        className='popup-btn tools-btn'
-                        onClick={() => {moveToTheExtremity(true); saveAndExit(true)}}
-                    >
-                        Save and move to the end of the Search
-                    </button>
+                <button 
+                    className='popup-btn tools-btn'
+                    onClick={() => {moveToTheExtremity(true); saveAndExit(true)}}
+                >
+                    Save and move to the end of the Search
+                </button>
 
-                    <button 
-                        className='popup-btn tools-btn'
-                        onClick={() => {moveToTheExtremity(); saveAndExit(true)}}
-                    >
-                        Save and move to the beginning of the Search
-                    </button>
+                <button 
+                    className='popup-btn tools-btn'
+                    onClick={() => {moveToTheExtremity(); saveAndExit(true)}}
+                >
+                    Save and move to the beginning of the Search
+                </button>
 
-                    {selectedNote.thread.length ?
+                {selectedNote.thread.length ?
+                    <div>
+
+                        <button 
+                            className='popup-btn tools-btn'
+                            onClick={() => exportThread()}
+                        >
+                            Print or Export whole Thread
+                        </button>
+
+                        <button 
+                            className='popup-btn tools-btn'
+                            onClick={() => threadCollectionSwap(true)}
+                        >
+                            Convert Thread to Collection
+                        </button>
+
+                    </div> 
+                    : 
+                    (selectedNote.collection.length ?
                         <div>
 
                             <button 
                                 className='popup-btn tools-btn'
-                                onClick={() => exportThread()}
+                                onClick={() => threadCollectionSwap(false)}
                             >
-                                Print or Export whole Thread
+                                Convert Collection to Thread
                             </button>
 
-                            <button 
-                                className='popup-btn tools-btn'
-                                onClick={() => threadCollectionSwap(true)}
-                            >
-                                Convert Thread to Collection
-                            </button>
-
-                        </div> 
-                        : 
-                        (selectedNote.collection.length ?
-                            <div>
-
-                                <button 
-                                    className='popup-btn tools-btn'
-                                    onClick={() => threadCollectionSwap(false)}
-                                >
-                                    Convert Collection to Thread
-                                </button>
-
-                            </div>
-                        : null)
-                    }
-                </div>
+                        </div>
+                    : null)
+                }
             </div>
         </Popup>
     )

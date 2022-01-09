@@ -39,7 +39,7 @@ const Settings = ({
                     />
                 </div>
 
-                THINKYTHREADS BETA v1.0.1 
+                <strong>THINKYTHREADS BETA v1.0.1</strong>
                 <a href="https://nicolamendini.github.io/thinkythreads" target="_blank" rel="noreferrer">Available for browsers here</a>
                 <a href="https://github.com/nicolamendini/thinkythreads" target="_blank" rel="noreferrer">Github Page</a>
                 

@@ -167,7 +167,9 @@ const NoteEditor = ({
     moveToTheExtremity,
     openOccurrences,
     packDashboard,
-    setDelayedNoteUpdate
+    setDelayedNoteUpdate,
+    setNotesUpdating
+
 }) => {
 
     const selectedNote = dashboard.notes.get(dashboard.selectedNoteId)
@@ -213,7 +215,7 @@ const NoteEditor = ({
         if(SHAREDMEX.ios){
             const editorObj = document.getElementsByClassName('ql-editor')[0]
             if(editorObj){
-                editorObj.style.fontSize = '15px'
+                editorObj.style.fontSize = '16px'
             }
         }
     // eslint-disable-next-line
@@ -276,6 +278,7 @@ const NoteEditor = ({
                     openOccurrences={openOccurrences}
                     packDashboard={packDashboard}
                     editorRef={editorRef}
+                    setNotesUpdating={setNotesUpdating}
                     />
             </div>
         )

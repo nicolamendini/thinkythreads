@@ -83,7 +83,7 @@ textarea:focus {
 	padding: 5px;
 	display: flex;
 	flex-direction: column;
-	word-break: break-word;
+	word-break: break-all;
 	hyphens: auto;
 	overflow: hidden;
 	margin: 0 2px 0 2px;
@@ -91,6 +91,7 @@ textarea:focus {
 	width: 18vh;
 	height: 18vh;
 	z-index: 1000;
+	user-select: none;
 }
 
 .note h1 {
@@ -158,6 +159,7 @@ input:focus{
 	height: 30px;
 	max-height: 30px;
 	color: #464646;
+	user-select: none;
 }
 
 .search-bright input {
@@ -179,6 +181,7 @@ input:focus{
 	height: 30px;
 	max-height: 30px;
 	color: #666666;
+	user-select: none;
 }
 
 .search-dark input {
@@ -226,6 +229,7 @@ input:focus{
 	padding: 0px 5vw 5px 5vw;
 	color: #838383;
 	padding-bottom: 20px;
+	user-select: none;
 }
 
 .stripe-label {
@@ -261,7 +265,8 @@ input:focus{
 	align-items: center;
 	writing-mode: vertical-rl;
 	width: 100%;
-	margin: 0 10px 0 10px
+	margin: 0 10px 0 10px;
+	user-select: none;
 }
 
 .search-filter {
@@ -303,8 +308,6 @@ li h2{
 	overflow: hidden;
 	box-shadow: 0px 0px 5px rgb(56, 56, 56);
 	width: 50vh;
-	position: relative;
-	top: 30vh;
 }
 
 .popup-btn{
@@ -326,7 +329,7 @@ li h2{
 .blurrer{
 	width: 100vw;
 	height: 100vh;
-	background-color: rgba(0,0,0,0.4);
+	background-color: rgba(0,0,0,0.5);
 	text-align: center;
 }
 
@@ -342,6 +345,7 @@ li h2{
 .stripe-not-overflow {
 	overflow: hidden;
 	white-space: nowrap;
+	user-select: none;
 }
 
 .settings-btns{
@@ -392,7 +396,6 @@ li h2{
 
 
 .quill > .ql-container > .ql-editor.ql-blank::before{
-    font-size: 13px;
     color: rgb(133, 133, 133);
 }
 
@@ -440,11 +443,7 @@ li h2{
 	}
 	.quill > .ql-container > .ql-editor{
 		padding-top: 90px;
-	}
-	.quill > .ql-container > .ql-editor.ql-blank::before{
-		font-size: 12px;
-	}
-	
+	}	
 }
 
 .note ol > li{
@@ -484,6 +483,7 @@ counter-reset: list-3 list-4 list-5 list-6 list-7 list-8 list-9;
 	color:rgb(88, 88, 88);
 	font-size: 11px;
 	border-radius: 4px;
+	user-select: none;
 }
 
 .settings-inline{
@@ -502,11 +502,22 @@ counter-reset: list-3 list-4 list-5 list-6 list-7 list-8 list-9;
 .info-images{
 	width: 100%;
 	max-width: 600px;
+	object-fit: contain;
 }
 
 .info-img-container{
 	display: flex;
 	justify-content: center;
 	width: 100%;
+}
 
+.sorter{
+	border-radius: 6px;
+	width: 50vh;
+	text-align: center;
+	margin-bottom: 150px;
+}
+
+.popup-overlay{
+	background: rgba(0, 0, 0, 0.5);
 }

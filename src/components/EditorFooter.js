@@ -16,6 +16,7 @@ import { createThumbnail, setPreview } from '../helpers/DashboardUtils';
 import React from 'react'
 import { currOrPrevNoteDecice } from '../helpers/DashboardUtils';
 import { SHAREDMEX } from './Dashboard';
+import SorterPopup from './SorterPopup';
 
 const Mousetrap = require('mousetrap')
 
@@ -39,7 +40,9 @@ const EditorFooter = ({
     dashboard,
     openOccurrences,
     packDashboard,
-    editorRef
+    editorRef,
+    setNotesUpdating
+
 }) => {
 
     useEffect(() => {
@@ -71,6 +74,8 @@ const EditorFooter = ({
     // State to define whether the popup options have been opened through the
     // three dots button
     const [open, setOpen] = useState(false)
+    // or through the sorter
+    const [openSorter, setOpenSorter] = useState(false)
     // Check if the editing note has changed
     const [hasChanged, setHasChanged] = useState(false)
 
@@ -138,6 +143,7 @@ const EditorFooter = ({
     return(
 
         <div>
+
             <div className='page-footer' style={{
                 color: darkMode ? '#636363' : '#171717'
                 }}
@@ -167,6 +173,14 @@ const EditorFooter = ({
                     selectedNote={selectedNote}
                     setBackColor={setBackColor}
                     setHasChanged={setHasChanged}
+                />
+
+                <SorterPopup
+                    selectedNote={selectedNote}
+                    open={openSorter}
+                    setOpen={setOpenSorter}
+                    dashboard={dashboard}
+                    setNotesUpdating={setNotesUpdating}
                 />
 
                 <BsTrash

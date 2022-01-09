@@ -97,14 +97,13 @@ const ColorPicker = ({
                 }>
                     {searchProps ? '⬤' :
                         <BsDropletHalf
-                            size='1.6em'
+                            size='1.4em'
                         />
                     }
                 </div>
             } 
             nested
             modal
-            position='right'
         >
             <div className='picker'>
                 <GithubPicker 

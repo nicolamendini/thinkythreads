@@ -128,6 +128,7 @@ return (
                         openOccurrences={openOccurrences}
                         packDashboard={packDashboard}
                         setDelayedNoteUpdate={setDelayedNoteUpdate}
+                        setNotesUpdating={setNotesUpdating}
                     />
                 </Suspense>
             }
