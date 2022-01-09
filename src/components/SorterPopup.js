@@ -134,7 +134,6 @@ const SorterPopup = ({
                 />   
             </div>
         } 
-        
         modal
         open={open}
         >   
@@ -163,6 +162,8 @@ const SorterPopup = ({
                         hasSelectAll={false}
                         ClearSelectedIcon={" "}
                     />
+
+                    <div onClick={()=>setOpen(false)} style={{height: "150px"}}></div>
 
                 </div>
         </Popup>

@@ -78,12 +78,12 @@ textarea:focus {
 }
 
 .note {
+	font-family: 'Montserrat';
 	font-size: 13px;
 	border-radius: 10px;
 	padding: 5px;
 	display: flex;
 	flex-direction: column;
-	word-break: break-all;
 	hyphens: auto;
 	overflow: hidden;
 	margin: 0 2px 0 2px;
@@ -514,8 +514,6 @@ counter-reset: list-3 list-4 list-5 list-6 list-7 list-8 list-9;
 .sorter{
 	border-radius: 6px;
 	width: 50vh;
-	text-align: center;
-	margin-bottom: 150px;
 }
 
 .popup-overlay{
