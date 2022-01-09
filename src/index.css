@@ -308,6 +308,7 @@ li h2{
 	overflow: hidden;
 	box-shadow: 0px 0px 5px rgb(56, 56, 56);
 	width: 50vh;
+	user-select: none;
 }
 
 .popup-btn{
@@ -512,10 +513,24 @@ counter-reset: list-3 list-4 list-5 list-6 list-7 list-8 list-9;
 }
 
 .sorter{
-	border-radius: 6px;
 	width: 50vh;
+}
+
+.sorter-btn{
+	font: 16px 'Montserrat';
+	color: rgb(100, 100, 100);
+	padding: 15px;
+	background-color: white;
 }
 
 .popup-overlay{
 	background: rgba(0, 0, 0, 0.5);
+}
+
+.sb1{
+	border-radius: 6px 6px 0 0;
+}
+
+.sb2{
+	border-radius: 0 0 6px 6px;
 }

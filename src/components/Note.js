@@ -62,7 +62,7 @@ const Note = ({
 						{...provided.draggableProps}
 						{...provided.dragHandleProps}
 						onClick={()=> selectedNote&&selectedNote.id===note.id ? openEditor(note) : areaName!=='branches-area' && handleNotePress(note)}
-						onDoubleClick={()=> openEditor(note)}
+						onDoubleClick={()=> areaName==='branches-area' && openEditor(note)}
 						onContextMenu={(e) => {e.preventDefault(); areaName==='branches-area' && handleNotePress(note)}}
 						style={ 
 							!(mergeMode && selectedNote.id===note.id) ? (

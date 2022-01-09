@@ -140,6 +140,7 @@ const SorterPopup = ({
                 <div className='sorter'>
                     
                     <MultiSelect
+                        className="sorter-btn sb1"
                         options={threadOptions}
                         value={selectedThreads}
                         onChange={(newThreads) => addStructures(dashboard, newThreads, selectedThreads, setNotesUpdating, true) 
@@ -150,9 +151,8 @@ const SorterPopup = ({
                         ClearSelectedIcon={" "}
                     />
 
-                    <br></br>
-
                     <MultiSelect
+                        className="sorter-btn sb2"
                         options={collectionOptions}
                         value={selectedCollections}
                         onChange={(newCollections) => addStructures(dashboard, newCollections, selectedCollections, setNotesUpdating)
