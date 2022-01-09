@@ -134,6 +134,7 @@ const SorterPopup = ({
                 />   
             </div>
         } 
+        nested
         modal
         open={open}
         >   
