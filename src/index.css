@@ -306,7 +306,6 @@ li h2{
 	flex-direction: column;
 	border-radius: 6px;
 	overflow: hidden;
-	box-shadow: 0px 0px 5px rgb(56, 56, 56);
 	width: 50vh;
 	user-select: none;
 }
@@ -325,13 +324,6 @@ li h2{
 .popup-btn:active {
 	box-shadow: 3px 2px 22px 1px rgba(0, 0, 0, 0.24);
 	background-color: rgb(231, 231, 231);
-}
-
-.blurrer{
-	width: 100vw;
-	height: 100vh;
-	background-color: rgba(0,0,0,0.5);
-	text-align: center;
 }
 
 .picker{
