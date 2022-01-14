@@ -3,4 +3,9 @@
         "target" : { "namespace": "android_app", "package_name": "io.github.nicolamendini.twa",
                      "sha256_cert_fingerprints": ["61:19:C6:31:9A:0D:AD:00:E0:DB:EC:39:D9:5E:A4:94:09:5F:F6:03:64:27:A7:14:F3:63:E8:F4:A4:87:6C:C4"] }
       }
+,{
+        "relation": ["delegate_permission/common.handle_all_urls"],
+        "target" : { "namespace": "android_app", "package_name": "io.github.nicolamendini.twa",
+                     "sha256_cert_fingerprints": ["F3:43:A1:DA:04:38:88:0F:CD:73:BF:0B:00:9C:6D:B6:E6:D7:51:7F:12:42:84:5B:69:E4:17:0B:86:D4:71:41"] }
+      }
 ]
