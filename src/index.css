@@ -1,6 +1,11 @@
 @import url('https://fonts.googleapis.com/css?family=Open+Sans');
 @import url('https://fonts.googleapis.com/css?family=Montserrat');
 
+html {
+    overflow: hidden;
+    height: 100%;
+}
+
 body {
 	margin: 0;
 	font-family: 'Montserrat';
@@ -18,7 +23,6 @@ body {
 	right: 0;
 	overscroll-behavior: contain;
 }
-
 
 body::-webkit-scrollbar {
 	display: none;

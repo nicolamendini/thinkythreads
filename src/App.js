@@ -5,6 +5,8 @@ require('dotenv').config()
 var SCOPE = 'https://www.googleapis.com/auth/drive.file';
 var discoveryUrl = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest';
 
+
+
 export default class App extends Component {
 
   state = {
@@ -108,11 +110,14 @@ export default class App extends Component {
     console.log((localStorage.getItem('currentUser')));
 
     const currentUser = this.state.currentUser!==null && this.state.currentUser!=='null'
-    return <Dashboard 
-      signInFunction={this.signInFunction} 
-      signOutFunction={this.signOutFunction} 
-      GAPIloaded={this.state.loaded && this.state.onlineState} 
-      currentUser={currentUser}
+    return (
+      
+      <Dashboard 
+        signInFunction={this.signInFunction} 
+        signOutFunction={this.signOutFunction} 
+        GAPIloaded={this.state.loaded && this.state.onlineState} 
+        currentUser={currentUser}
       />
+    )
   }
 }

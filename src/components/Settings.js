@@ -13,6 +13,7 @@ import Info from './Info'
 import {IoIosArrowRoundBack} from 'react-icons/io'
 import { SHAREDMEX } from './Dashboard';
 import Switch from "react-switch";
+import logo from '../images/logo512.png'
 
 const Settings = ({ 
     darkMode,
@@ -39,10 +40,27 @@ const Settings = ({
                     />
                 </div>
 
-                <strong>THINKYTHREADS BETA v1.0.1</strong>
-                <a href="https://nicolamendini.github.io/thinkythreads" target="_blank" rel="noreferrer">Available for browsers here</a>
-                <a href="https://github.com/nicolamendini/thinkythreads" target="_blank" rel="noreferrer">Github Page</a>
-                
+                <div className="info-img-container">
+                    <div
+                    style={{borderRadius:'1000px', overflow:'hidden'}}>
+                        <img 
+                        height='120px' 
+                        width='120px' 
+                        src={logo} 
+                        alt="app logo" 
+                        className="info-images"></img>
+                    </div>
+                </div>
+
+                <strong>THINKYTHREADS v1.0</strong>
+                <a 
+                href="https://nicolamendini.github.io/thinkythreads" 
+                target="_blank" 
+                rel="noreferrer"
+                style={{paddingBottom: '50px'}}
+                >
+                    Available for PC and other devices in web version
+                </a>
 
                 { GAPIloaded && (!loadedUser ?
 
@@ -85,6 +103,11 @@ const Settings = ({
             </div>
 
             <Info />
+
+            <div className='page-footer'>
+                <a href="https://github.com/nicolamendini/thinkythreads" target="_blank" rel="noreferrer">Github Page</a>
+                <p> Ⓒ Nicola Mendini 2022 </p>
+            </div>
 
         </div>
     )
