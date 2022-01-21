@@ -59,7 +59,7 @@ const Settings = ({
                 rel="noreferrer"
                 style={{paddingBottom: '50px'}}
                 >
-                    Available for PC and other devices in web version
+                    Web version for PC and other devices
                 </a>
 
                 { GAPIloaded && (!loadedUser ?
