@@ -62,7 +62,7 @@ const Info = () => {
             You can organise your atomic 
             notes into 2 fundamental structures: <h3>Threads (~sequences of notes) and Collections (~folders of notes)</h3>
 
-            This structures are <strong>contained inside other notes</strong>, so that <strong>any note can contain either a Thread or a Collection.</strong> <br></br>
+            These structures are <strong>contained inside other notes</strong> so that <strong>any note can contain either a Thread or a Collection.</strong> <br></br>
             <strong>Threads</strong> are ordered sequences of notes
             that represent 'lines of thought' and that define the causal relationships between notes. <br></br>
             On the other 
@@ -100,8 +100,8 @@ const Info = () => {
 
                 <li>
                     A <strong>Workspace</strong>, that contains the Thread or Collection you are currently working at. <br></br>
-                    It also contain a <strong> Wrapper Area which allows you to save (wrap) </strong> your Workspace inside a note's 
-                    Thread or Collection. You can do so by dropping a note inside this area (coloured in gray).<br></br> It also allows you to expand the Thread or Collection present inside a note
+                    It also contains a <strong> Wrapper Area that allows you to save (wrap) </strong> your Workspace inside a note's 
+                    Thread or Collection. You can do so by dropping a note inside this area (coloured in grey).<br></br> It also allows you to expand the Thread or Collection present inside a note
                     if the workspace has already been saved before. <br></br>
                     The Workspace can either be in <strong>Thread or Collection Mode</strong>. 
                     Thread Mode means that you are creating or editing a thread. The Wrapper Area will save the Workspace that you are creating as a Thread 
@@ -147,13 +147,13 @@ const Info = () => {
                 <li>
                     First of all, make sure you <strong>log in with your Google Account</strong>. Thinkythreads uses your <strong>Google Drive </strong>
                     to store an online backup of all your notes so that you never lose them. Without this, your notes
-                    will only be stored locally and will be lost everytime you clean your browser's data. <br></br>
-                    No data besides the folder that the app iself has created will be touched or viewed. 
+                    will only be stored locally and will be lost every time you clean your browser's data. <br></br>
+                    No data besides the folder that the app itself has created will be touched or viewed. 
                 </li>
                 <br></br>
 
                 <li>
-                    From the Dashboard, you can <strong>create as many notes as you want by pressing the 'Add' button.</strong> 
+                    From the Dashboard, you can <strong>create as many notes as you want by pressing the 'Add' button. </strong> 
                     The notes will appear in the Search Area, which contains all the notes you ever created 
                     filtered by the filters that you set on the Search Bar. 
                 </li>
@@ -174,8 +174,8 @@ const Info = () => {
                 <br></br>
 
                 <li>
-                    As you keep adding structure to your notes, especially Threads, you'll notice that <strong>some Links
-                    will appear</strong> in the Links area when you select certain notes. The Links recommend the notes that
+                    As you keep adding structure to your notes, especially Threads, you'll notice that <strong>some links
+                    will appear</strong> in the Links area when you select certain notes. The links recommend the notes that
                     you can use to build other Threads, or simply give you contextual hints about the ideas that you are 
                     working with. This is when the system starts giving you back the knowledge that you inserted. <br></br>
                     You can also drag notes of the Link Area to the Workspace exactly as you did for the Search Area. <br></br>
@@ -208,28 +208,28 @@ const Info = () => {
                         <td><b>ACTION</b></td>
                     </tr>
                     <tr>
-                        <td>left arrow</td>
+                        <td>left-arrow</td>
                         <td>select note to the left</td>
                     </tr>
                     <tr>
-                        <td>right arrow</td>
+                        <td>right-arrow</td>
                         <td>select note to the right</td>
                     </tr>
                     <tr>
-                        <td>shift + left arrow</td>
+                        <td>shift + left-arrow</td>
                         <td>move the selected note all the way till the beginning of the search</td>
                     </tr>
                     <tr>
-                        <td>shift + right arrow</td>
+                        <td>shift + right-arrow</td>
                         <td>move the selected note all the way till the end of the search</td>
                     </tr>
                     <tr>
-                        <td>down arrow</td>
-                        <td>add the selected note to the workspace</td>
+                        <td>down-arrow</td>
+                        <td>adds the selected note to the workspace</td>
                     </tr>
                     <tr>
-                        <td>up arrow</td>
-                        <td>remove the selected note from the workspace</td>
+                        <td>up-arrow</td>
+                        <td>removes the selected note from the workspace</td>
                     </tr>
                     <tr>
                         <td>p</td>
@@ -245,7 +245,7 @@ const Info = () => {
                     </tr>
                     <tr>
                         <td>1-8</td>
-                        <td>change color of a note</td>
+                        <td>change colour of a note</td>
                     </tr>
                     <tr>
                         <td>spacebar</td>
@@ -268,8 +268,8 @@ const Info = () => {
                         <td>see in what other notes the selected note occurs</td>
                     </tr>
                     <tr>
-                        <td>right click (from links area)</td>
-                        <td>select the clicked note and expand its roots/branches dependind on the mode</td>
+                        <td>right-click (from links area)</td>
+                        <td>select the clicked note and expand its roots/branches depending on the mode</td>
                     </tr>
                 </tbody>
             </table>

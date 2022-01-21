@@ -26,7 +26,7 @@ You can organise your atomic notes into 2 fundamental structures:
 
 ### Threads (\~sequences of notes) and Collections (\~folders of notes)
 
-This structures are **contained inside other notes**, so that **any note
+These structures are **contained inside other notes** so that **any note
 can contain either a Thread or a Collection.**  
 **Threads** are ordered sequences of notes that represent 'lines of
 thought' and that define the causal relationships between notes.  
@@ -54,9 +54,9 @@ at most a Thread or a Collection.
     sequence. A new note can be added from here.
   - A **Workspace**, that contains the Thread or Collection you are
     currently working at.  
-    It also contain a **Wrapper Area which allows you to save (wrap)**
+    It also contains a **Wrapper Area that allows you to save (wrap)**
     your Workspace inside a note's Thread or Collection. You can do so
-    by dropping a note inside this area (coloured in gray).  
+    by dropping a note inside this area (coloured in grey).  
     It also allows you to expand the Thread or Collection present inside
     a note if the workspace has already been saved before.  
     The Workspace can either be in **Thread or Collection Mode**. Thread
@@ -82,12 +82,12 @@ at most a Thread or a Collection.
 1.  First of all, make sure you **log in with your Google Account**.
     Thinkythreads uses your **Google Drive** to store an online backup
     of all your notes so that you never lose them. Without this, your
-    notes will only be stored locally and will be lost everytime you
+    notes will only be stored locally and will be lost every time you
     clean your browser's data.  
-    No data besides the folder that the app iself has created will be
+    No data besides the folder that the app itself has created will be
     touched or viewed.
 2.  From the Dashboard, you can **create as many notes as you want by
-    pressing the 'Add' button.** The notes will appear in the Search
+    pressing the 'Add' button. **The notes will appear in the Search
     Area, which contains all the notes you ever created filtered by the
     filters that you set on the Search Bar.
 3.  Let's say you've created enough notes and now you want to structure
@@ -101,8 +101,8 @@ at most a Thread or a Collection.
     Once you're done with your Workspace, you can save it inside an
     existing note by dragging the note inside the Wrapper Area.
 4.  As you keep adding structure to your notes, especially Threads,
-    you'll notice that **some Links will appear** in the Links area when
-    you select certain notes. The Links recommend the notes that you can
+    you'll notice that **some links will appear** in the Links area when
+    you select certain notes. The links recommend the notes that you can
     use to build other Threads, or simply give you contextual hints
     about the ideas that you are working with. This is when the system
     starts giving you back the knowledge that you inserted.  
@@ -127,22 +127,22 @@ at most a Thread or a Collection.
 |                               |                                                                             |
 | ----------------------------- | --------------------------------------------------------------------------- |
 | **KEYS**                      | **ACTION**                                                                  |
-| left arrow                    | select note to the left                                                     |
-| right arrow                   | select note to the right                                                    |
-| shift + left arrow            | move the selected note all the way till the beginning of the search         |
-| shift + right arrow           | move the selected note all the way till the end of the search               |
-| down arrow                    | add the selected note to the workspace                                      |
-| up arrow                      | remove the selected note from the workspace                                 |
+| left-arrow                    | select note to the left                                                     |
+| right-arrow                   | select note to the right                                                    |
+| shift + left-arrow            | move the selected note all the way till the beginning of the search         |
+| shift + right-arrow           | move the selected note all the way till the end of the search               |
+| down-arrow                    | adds the selected note to the workspace                                      |
+| up-arrow                      | removes the selected note from the workspace                                 |
 | p                             | pin/unpin the selected note                                                 |
 | d                             | delete the selected note                                                    |
 | a                             | add a new note and open the editor                                          |
-| 1-8                           | change color of a note                                                      |
+| 1-8                           | change colour of a note                                                      |
 | spacebar                      | open the thread/collection contained in a note or wrap an unsaved thread    |
 | enter                         | open the selected note in the editor                                        |
 | ctrl/cmd + s (from dashboard) | close the current workspace and save it, if it was wrapped                  |
 | ctrl/cmd + s (from editor)    | save the current note and quit the editor                                   |
 | ctrl/cmd + ?                  | see in what other notes the selected note occurs                            |
-| right click (from links area) | select the clicked note and expand its roots/branches dependind on the mode |
+| right-click (from links area) | select the clicked note and expand its roots/branches depending on the mode |
 
 # Privacy Policy
 
