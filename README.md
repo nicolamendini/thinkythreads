@@ -40,11 +40,10 @@ at most a Thread or a Collection.
 
 ### The Dashboard is made of 5 main components
 
-  - A **Search Bar** that allows you to **search notes by matching the
-    keywords** that you input with the text of the preview of each
-    note.  
-    In addition, the Search Bar gives you the option to **apply the
-    Thread (T), Collection (C), Image and Colour Filters**, which only
+  - A **Search Bar** that allows you to **search notes by matching the keywords** 
+    that you input with the text of the preview of each note.  
+    In addition, the Search Bar gives you the option to 
+    **apply the Thread (T), Collection (C), Image and Colour Filters**, which only
     show you notes that contain a Thread, a Collection, an image, or
     belong to a colour class, respectively.  
     You can also drop a note onto the Search Bar to restrict the search
@@ -86,14 +85,13 @@ at most a Thread or a Collection.
     clean your browser's data.  
     No data besides the folder that the app itself has created will be
     touched or viewed.
-2.  From the Dashboard, you can **create as many notes as you want by
-    pressing the 'Add' button. **The notes will appear in the Search
+2.  From the Dashboard, you can **create as many notes as you want by pressing the 'Add' button.** 
+    The notes will appear in the Search
     Area, which contains all the notes you ever created filtered by the
     filters that you set on the Search Bar.
 3.  Let's say you've created enough notes and now you want to structure
-    them. All you have to do is to **set the Dashboard to Thread or
-    Collection Mode** and then **drag the notes you want to organise
-    from the Search Area into the Workspace**.  
+    them. All you have to do is to **set the Dashboard to Thread or Collection Mode** 
+    and then **drag the notes you want to organise from the Search Area into the Workspace**.  
     Once you populated the workspace, you can reorder the notes by
     dragging them in the desired position.  
     If you want to remove a note from the Workspace, just drag it back
@@ -111,9 +109,9 @@ at most a Thread or a Collection.
     If you want to **manually add or remove a link** to/from a note,
     just drag a note to the Search Area or drag it back to the Search
     Area, respectively.
-5.  The last big functionality implemented by this system is the **Merge
-    Mode**. The Merge Mode allows you to **merge the content and links
-    of any two arbitrary notes**, provided that at most one of the two
+5.  The last big functionality implemented by this system is the **Merge Mode**. 
+    The Merge Mode allows you to **merge the content and links of any two arbitrary notes**, 
+    provided that at most one of the two
     notes already contain a Thread or a Collection. Merging notes in
     this way is much simpler than doing it manually. All you have to do
     is to select a note by clicking on it, enable the Merge Mode from
