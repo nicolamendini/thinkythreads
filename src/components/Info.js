@@ -66,7 +66,7 @@ const Info = () => {
             <strong>Threads</strong> are ordered sequences of notes
             that represent 'lines of thought' and that define the causal relationships between notes. <br></br>
             On the other 
-            hand, <strong>Collections</strong> are unordered sets of notes. Unlikely Threads, Collections cannot contain repeated notes. <br></br>
+            hand, <strong>Collections</strong> are unordered sets of notes. Unlike Threads, Collections cannot contain repeated notes. <br></br>
             A note can belong to multiple Collections, and indeed Collections define the different groups 
             a note belongs to. Every Thread or Collection must be contained, or wrapped, inside a note in a way that 
             each note contains at most a Thread or a Collection. <br></br><br></br>
