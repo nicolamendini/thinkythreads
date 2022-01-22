@@ -26,11 +26,11 @@ You can organise your atomic notes into 2 fundamental structures:
 
 ### Threads (\~sequences of notes) and Collections (\~folders of notes)
 
-These structures are **contained inside other notes** so that **any note
-can contain either a Thread or a Collection.**  
+These structures are 
+**contained inside other notes** so that **any note can contain either a Thread or a Collection.**  
 **Threads** are ordered sequences of notes that represent 'lines of
 thought' and that define the causal relationships between notes.  
-On the other hand, **Collections** are unordered sets of notes. Unlikely
+On the other hand, **Collections** are unordered sets of notes. Unlike
 Threads, Collections cannot contain repeated notes.  
 A note can belong to multiple Collections, and indeed Collections define
 the different groups a note belongs to. Every Thread or Collection must
